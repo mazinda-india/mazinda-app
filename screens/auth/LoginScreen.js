@@ -16,11 +16,13 @@ import axios from 'axios';
 
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useToast } from "react-native-toast-notifications";
 
 import { FontAwesome5 } from '@expo/vector-icons';
 import MazindaLogoFull from '../../assets/logo/logo_mazinda_full.png';
 
 const LoginScreen = () => {
+  const toast = useToast();
   const styles = {
     container: {
       flex: 1,
@@ -144,7 +146,7 @@ const LoginScreen = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [credentials, setCredentials] = useState({
-    identifier: '', 
+    identifier: '',
     password: '',
   })
 
@@ -155,10 +157,10 @@ const LoginScreen = () => {
       const { data } = await axios.post("https://mazinda.com/api/auth/login", {
         credentials,
       });
-      console.log(data);
 
       if (data.success) {
-        AsyncStorage.setItem("user_token", data.user_token);
+        await AsyncStorage.setItem("user_token", data.user_token);
+        toast.show('Logged in successfully');
         navigation.replace("Main");
       } else {
         console.log('Error has occurred');
@@ -166,18 +168,23 @@ const LoginScreen = () => {
     } catch (error) {
       console.error("An error occurred during login:", error);
     }
-
-    setSubmitting(false);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.logoContainer}>
-          <Image source={MazindaLogoFull} style={styles.logo} resizeMode="contain" />
+          <Image
+            source={MazindaLogoFull}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </View>
 
-        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Log In</Text>
 
@@ -193,20 +200,43 @@ const LoginScreen = () => {
 
 
             <View style={styles.inputContainer}>
+
               <Text style={styles.inputLabel}>Phone/Email</Text>
-              <TextInput name="identifier" value={credentials.identifier} onChangeText={(text) => setCredentials({...credentials, identifier: text})} style={styles.input} placeholder="Enter your email or phone" />
+
+              <TextInput
+                name="identifier"
+                value={credentials.identifier}
+                onChangeText={(text) => setCredentials({ ...credentials, identifier: text })}
+                style={styles.input}
+                placeholder="Enter your email or phone"
+              />
 
               <Text style={styles.inputLabel}>Password</Text>
-              <TextInput name="password" value={credentials.password} onChangeText={(text) => setCredentials({...credentials, password: text})} autoCapitalize='none' autoCorrect={false} style={styles.input} secureTextEntry placeholder="Enter your password" />
+
+              <TextInput
+                name="password"
+                value={credentials.password}
+                onChangeText={(text) => setCredentials({ ...credentials, password: text })} autoCapitalize='none'
+                autoCorrect={false}
+                style={styles.input}
+                secureTextEntry
+                placeholder="Enter your password" />
+
             </View>
 
             <View style={styles.inputContainer}>
-              <Pressable style={styles.loginButton} onPress={handleLogin}>
-                {!submitting ? <Text style={styles.loginButtonText}>Log In</Text> : <ActivityIndicator size='small' color='white' />}
+              <Pressable
+                style={styles.loginButton}
+                onPress={handleLogin}>
+
+                {!submitting ?
+                  <Text style={styles.loginButtonText}>Log In</Text> : <ActivityIndicator size='small' color='white' />}
               </Pressable>
 
               <TouchableOpacity>
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                <Text style={styles.forgotPasswordText}>
+                  Forgot Password?
+                </Text>
               </TouchableOpacity>
 
               <Text style={styles.orText}>or</Text>
@@ -222,9 +252,18 @@ const LoginScreen = () => {
                 <Text style={styles.socialButtonText}>Continue With Google</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={()=> navigation.navigate("Main")} style={styles.guestButton}>
-                <FontAwesome5 name="users" size={20} color="white" style={{ marginRight: 10 }} />
-                <Text style={styles.guestButtonText}>Continue As Guest</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Main")}
+                style={styles.guestButton}
+              >
+                <FontAwesome5
+                  name="users"
+                  size={20}
+                  color="white"
+                  style={{ marginRight: 10 }} />
+                <Text style={styles.guestButtonText}>
+                  Continue As Guest
+                </Text>
               </TouchableOpacity>
 
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -233,22 +272,27 @@ const LoginScreen = () => {
                   @2023 All Rights Reserved{'\n'}Mazinda Commerce Private Limited{'\n'}
                 </Text>
 
-                  <View style={{flexDirection: 'row', gap: 6}}>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
 
-                <Pressable
-                  onPress={() => Linking.openURL('https://www.mazinda.com/privacy-policy')}>
+                  <Pressable
+                    onPress={() => Linking.openURL('https://www.mazinda.com/privacy-policy')}>
 
-                  <Text style={{ color: 'black', fontWeight: '500', textDecorationLine: 'underline' }}>privacy</Text>
-                </Pressable>
-                <Text style={{ color: 'gray' }}>and</Text>
-                <Pressable onPress={() => Linking.openURL('https://www.mazinda.com/terms-and-conditions')}>
+                    <Text style={{
+                      color: 'black',
+                      fontWeight: '500',
+                      textDecorationLine: 'underline'
+                    }}>
+                      privacy
+                    </Text>
+                  </Pressable>
+                  <Text style={{ color: 'gray' }}>and</Text>
+                  <Pressable onPress={() => Linking.openURL('https://www.mazinda.com/terms-and-conditions')}>
 
-                  <Text style={{ color: 'black', fontWeight: '500', textDecorationLine: 'underline' }}>terms</Text>
-                </Pressable>
+                    <Text style={{ color: 'black', fontWeight: '500', textDecorationLine: 'underline' }}>terms</Text>
+                  </Pressable>
                 </View>
 
               </View>
-
 
             </View>
           </View>

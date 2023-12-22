@@ -6,10 +6,15 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
 import CartScreen from '../screens/CartScreen';
+import SearchScreen from '../screens/SearchScreen';
+import ProductScreen from '../screens/ProductScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 import { Entypo, MaterialCommunityIcons, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import CategoriesScreen from '../screens/CategoriesScreen';
 import AccountScreen from '../screens/AccountScreen';
+
+import LocationProvider from '../contexts/LocationContext';
 
 const StackNavigator = () => {
     const Stack = createNativeStackNavigator();
@@ -19,9 +24,9 @@ const StackNavigator = () => {
     function BottomTabs() {
         return <Tab.Navigator screenOptions={{
             tabBarStyle: {
-              backgroundColor: '#fbe4d0',
+                backgroundColor: '#fbe4d0',
             },
-          }}>
+        }}>
             <Tab.Screen
                 name='Home'
                 component={HomeScreen}
@@ -56,8 +61,8 @@ const StackNavigator = () => {
                 }}
             />
             <Tab.Screen
-                name='Account'
-                component={AccountScreen}
+                name='AccountStack'
+                component={AccountStackNavigator}
                 options={{
                     tabBarLabel: 'Account',
                     tabBarLabelStyle: { color: 'black' },
@@ -69,14 +74,30 @@ const StackNavigator = () => {
         </Tab.Navigator>
     }
 
-    return (
-        <NavigationContainer>
+    function AccountStackNavigator() {
+        return (
             <Stack.Navigator>
-                <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
-                <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Account" component={AccountScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
             </Stack.Navigator>
-        </NavigationContainer>
+        )
+    }
+
+    return (
+        <LocationProvider>
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
+                    <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="Product" component={ProductScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+                </Stack.Navigator>
+            </NavigationContainer>
+
+        </LocationProvider>
+
     )
 }
 

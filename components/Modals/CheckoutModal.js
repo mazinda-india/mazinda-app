@@ -1,0 +1,266 @@
+import { Modal, SafeAreaView, Text, View, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios'
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux';
+
+import { Entypo, Ionicons, FontAwesome } from '@expo/vector-icons';
+
+import Overview from '../checkout/Overview';
+import Address from '../checkout/Address';
+import Payment from '../checkout/Payment';
+import PlaceOrder from '../checkout/PlaceOrder';
+
+const CheckoutModal = ({ checkoutModalVisible, setCheckoutModalVisible }) => {
+    const steps = [
+        { title: 'Overview', heading: 'Order Overview', buttonText: 'Continue' },
+        { title: 'Address', heading: 'Select Delivery Address', buttonText: 'Deliver Here' },
+        { title: 'Payment', heading: 'Select Payment Method', buttonText: 'Continue' },
+        { title: 'Place Order', heading: 'Order Summary', buttonText: 'Continue' },
+    ]
+
+    const [currentStep, setCurrentStep] = useState(0);
+
+    const [user, setUser] = useState({});
+    const [userLoading, setUserLoading] = useState(true);
+    const [deliveryAddress, setDeliveryAddress] = useState({});
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+
+    const cart = useSelector(state => state.cart.cart);
+    const [itemData, setItemData] = useState([]);
+    const [itemDataLoading, setItemDataLoading] = useState(true);
+    const [pricing, setPricing] = useState({
+        total_mrp: 0,
+        total_salesPrice: 0,
+        total_costPrice: 0,
+        service_charge: 0,
+        delivery_fees: 0,
+        additional_discount: 0,
+    });
+
+    const fetchPricing = (cart) => {
+        let total_mrp = 0;
+        let total_salesPrice = 0;
+        let total_costPrice = 0;
+
+        if (cart) {
+            cart.forEach((item) => {
+                total_mrp += parseFloat(item.pricing.mrp) * item.quantity;
+                total_salesPrice += parseFloat(item.pricing.salesPrice) * item.quantity;
+                total_costPrice += parseFloat(item.pricing.costPrice) * item.quantity;
+            });
+        }
+
+        setPricing({
+            ...pricing,
+            total_mrp,
+            total_salesPrice,
+            total_costPrice,
+        });
+    };
+
+    useEffect(() => {
+        (async () => {
+            const itemDataPromises = cart.map(async item => {
+                const { data } = await axios.post(`https://mazinda.com/api/product/fetch-product?id=${item._id}`);
+                return { ...data.product, quantity: item.quantity };
+            });
+
+            const fetchedItemData = await Promise.all(itemDataPromises);
+            setItemData(fetchedItemData);
+            fetchPricing(fetchedItemData);
+            setItemDataLoading(false);
+        })()
+    }, [cart]);
+
+    useEffect(() => {
+        (async () => {
+            const userToken = await AsyncStorage.getItem('user_token')
+
+            const { data } = await axios.post(
+                "https://mazinda.com/api/user/fetch-user",
+                {
+                    userToken: userToken,
+                });
+
+            console.log(data);
+
+            if (data.success) {
+                setUser(data.user);
+                setDeliveryAddress(data.user.currentAddress)
+            } else {
+                Alert('Oops, and error occurred')
+            }
+            setUserLoading(false);
+        })()
+    }, [])
+
+
+
+    return (
+        <Modal
+            animationType='slide'
+            onRequestClose={() => setCheckoutModalVisible(false)}
+            visible={checkoutModalVisible}
+        >
+            <SafeAreaView style={{
+                flex: 1,
+                backgroundColor: 'white',
+                position: 'relative'
+            }}>
+
+                {/* Header of the page */}
+                <View style={{
+                    position: 'relative',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingVertical: 10
+                }}>
+                    {currentStep === 0
+                        ?
+                        <TouchableOpacity
+                            onPress={() => setCheckoutModalVisible(false)}
+                            style={{
+                                position: 'absolute',
+                                left: 5
+                            }}>
+                            <Entypo name="cross" size={24} color="black" />
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity
+                            onPress={() => setCurrentStep(prev => prev - 1)}
+                            style={{
+                                position: 'absolute',
+                                left: 5
+                            }}>
+                            <Ionicons name="chevron-back" size={24} color="black" />
+                        </TouchableOpacity>}
+
+                    <Text style={{
+                        fontSize: 15
+                    }}>{steps[currentStep].title.toUpperCase()}</Text>
+                </View>
+
+                {/* Steps Box */}
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
+                    marginTop: 10,
+                    // borderTopColor: 'lightgray',
+                    borderBottomColor: 'lightgray',
+                    // borderTopWidth: 1,
+                    borderBottomWidth: 1,
+                    paddingVertical: 10
+                }}>
+                    {steps.map((step, index) => (
+                        <View key={index} style={{
+                            alignItems: 'center',
+                        }}>
+                            {currentStep > index ? (
+                                <View style={{
+                                    alignItems: 'center',
+                                    gap: 3
+                                }}>
+                                    <FontAwesome name="check-circle" size={24} color="#09ff00" />
+                                    <Text>{step.title}</Text>
+                                </View>
+                            ) : (
+                                <View style={{
+                                    alignItems: 'center',
+                                    gap: 3
+                                }}>
+                                    <View style={{
+                                        borderRadius: 100,
+                                        backgroundColor: '#dadada',
+                                        paddingHorizontal: 3,
+                                        paddingVertical: 4,
+                                        width: 25,
+                                        alignItems: 'center'
+                                    }}>
+                                        <Text style={{
+                                            fontWeight: 800,
+                                            color: 'white'
+                                        }}>
+                                            {index + 1}
+                                        </Text>
+                                    </View>
+                                    <Text>{step.title}</Text>
+                                </View>
+                            )}
+                        </View>
+                    ))}
+                </View>
+
+                {/* Bottom Button */}
+                <View style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    width: '100%',
+                    height: 100,
+                    backgroundColor: 'white',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 2,
+                    borderTopColor: 'lightgray',
+                    borderTopWidth: 1
+                }}>
+                    <TouchableOpacity
+                        style={{
+                            marginBottom: 10,
+                            backgroundColor: '#f17e13',
+                            paddingVertical: 12,
+                            paddingHorizontal: 20,
+                            borderRadius: 8
+                        }}
+                        onPress={() => setCurrentStep(currentStep + 1)}
+                    >
+                        <Text style={{
+                            fontSize: 16,
+                            color: 'white',
+                            fontWeight: 600
+                        }}>
+                            {steps[currentStep].buttonText}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                {
+                    currentStep === 0 ?
+                        <Overview
+                            itemData={itemData}
+                            setItemData={setItemData}
+                            itemDataLoading={itemDataLoading}
+                            pricing={pricing}
+                            setPricing={setPricing}
+                        />
+                        :
+                        currentStep === 1 ?
+                            <Address
+                                user={user}
+                                userLoading={userLoading}
+                                deliveryAddress={deliveryAddress}
+                                setDeliveryAddress={setDeliveryAddress}
+                            />
+                            : currentStep === 2 ?
+                                <Payment
+                                    selectedPaymentMethod={selectedPaymentMethod}
+                                    setSelectedPaymentMethod={setSelectedPaymentMethod}
+                                    pricing={pricing}
+                                />
+                                : currentStep === 3 ?
+                                    <PlaceOrder
+                                        itemData={itemData}
+                                        deliveryAddress={deliveryAddress}
+                                        selectedPaymentMethod={selectedPaymentMethod}
+                                        pricing={pricing}
+                                    />
+                                    : null
+                }
+
+            </SafeAreaView>
+
+        </Modal>
+    )
+}
+
+export default CheckoutModal;

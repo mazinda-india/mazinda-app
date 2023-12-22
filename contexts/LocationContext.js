@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useContext, useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const LocationContext = React.createContext()
 const UpdateLocationContext = React.createContext()
@@ -24,20 +24,18 @@ export default function LocationProvider({ children }) {
 
     const updateSelectedLocation = (location) => {
         setSelectedLocation(location)
-        Cookies.set("selectedLocation", JSON.stringify(location), {
-            expires: 1000,
-        });
+        AsyncStorage.setItem("selectedLocation", JSON.stringify(location))
     }
 
     useEffect(() => {
         (async () => {
             try {
                 setLocationLoading(true)
-                const response = await axios.get("/api/location/fetch-locations");
+                const response = await axios.get("https://mazinda.com/api/location/fetch-locations");
                 let selectedLocation;
 
                 try {
-                    selectedLocation = Cookies.get("selectedLocation");
+                    selectedLocation = await AsyncStorage.getItem("selectedLocation");
                     selectedLocation = JSON.parse(selectedLocation);
                 } catch (e) {
                     console.log(e);
@@ -50,10 +48,9 @@ export default function LocationProvider({ children }) {
                     setSelectedLocation(response.data.locations[2]);
 
                     // Setting location info in cookies
-                    Cookies.set(
+                    AsyncStorage.setItem(
                         "selectedLocation",
                         JSON.stringify(response.data.locations[0]),
-                        { expires: 1000 }
                     );
                 }
                 setLocationLoading(false);

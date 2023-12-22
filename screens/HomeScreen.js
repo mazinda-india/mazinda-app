@@ -1,6 +1,11 @@
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import Navbar from '../components/Navbar';
+import Story from '../components/home/Story';
+import Subcategories from '../components/home/Subcategories';
+import Categories from '../components/home/Categories';
+
+import { ScrollView } from 'react-native-virtualized-view'
 
 const HomeScreen = () => {
     return (
@@ -9,7 +14,18 @@ const HomeScreen = () => {
 
                 <Navbar />
 
-                {/* <Text>HomeScreen</Text> */}
+                <Story />
+
+                <View style={{padding: 10}}>
+
+                <Subcategories />
+                </View>
+
+                <View style={{padding: 10}}>
+
+                <Categories />
+                </View>
+
             </ScrollView>
         </SafeAreaView>
     )
