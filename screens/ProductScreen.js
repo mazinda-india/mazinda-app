@@ -1,17 +1,23 @@
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableHighlight, View, useWindowDimensions, TouchableOpacity } from 'react-native'
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View, useWindowDimensions, TouchableOpacity } from 'react-native'
 import Navbar from '../components/Navbar';
 import { AntDesign } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/CartReducer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native'
 import CheckoutModal from '../components/Modals/CheckoutModal';
+import axios from 'axios';
 
 const ProductScreen = ({ route }) => {
     const { item } = route.params;
-    const { width, height } = useWindowDimensions();
+    const { width } = useWindowDimensions();
+    const navigation = useNavigation();
 
     const [addedToCart, setAddedToCart] = useState(false);
     const [checkoutModalVisible, setCheckoutModalVisible] = useState(false);
+
+    const [storeInfo, setStoreInfo] = useState({})
+    const [storeProducts, setStoreProducts] = useState([]);
 
     const dispatch = useDispatch();
     // const cart = useSelector(state => state.cart.cart)
@@ -28,6 +34,22 @@ const ProductScreen = ({ route }) => {
         setCheckoutModalVisible(true);
     }
 
+    useEffect(() => {
+        (async () => {
+            const { data } = await axios.post('https://mazinda.com/api/store/fetch-store', { storeId: item.storeId });
+            setStoreInfo(data.store);
+        })()
+    }, [])
+
+    useEffect(() => {
+        (async () => {
+            if (Object.keys(storeInfo).length) {
+                const { data } = await axios.post('https://mazinda.com/api/product/fetch-store-products', { storeId: storeInfo._id })
+                setStoreProducts(data.products);
+            }
+        })()
+    }, [storeInfo]);
+
     return (
         <SafeAreaView style={{
             flex: 1,
@@ -36,7 +58,10 @@ const ProductScreen = ({ route }) => {
 
             <ScrollView>
 
-                <CheckoutModal checkoutModalVisible={checkoutModalVisible} setCheckoutModalVisible={setCheckoutModalVisible} />
+                <CheckoutModal
+                    checkoutModalVisible={checkoutModalVisible} setCheckoutModalVisible={setCheckoutModalVisible}
+                    cart={[{ _id: item._id, quantity: 1 }]}
+                />
 
                 <Navbar />
 
@@ -84,7 +109,14 @@ const ProductScreen = ({ route }) => {
                         }}>
                             ₹{item.pricing.mrp}
                         </Text>
-                        <View style={{ backgroundColor: '#d3ffd8', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10, borderRadius: 20, height: 20 }}>
+                        <View style={{
+                            backgroundColor: '#d3ffd8',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            paddingHorizontal: 10,
+                            borderRadius: 20,
+                            height: 20
+                        }}>
                             <Text style={{
                                 color: '#57e28d',
                                 fontWeight: 700,
@@ -155,7 +187,7 @@ const ProductScreen = ({ route }) => {
                     marginVertical: 50
                 }}>
                     <TouchableOpacity onPress={handleBuyNow} style={{
-                        backgroundColor: '#f17e13',
+                        backgroundColor: '#134272',
                         padding: 10,
                         borderRadius: 8,
                         paddingHorizontal: 15,
@@ -174,7 +206,7 @@ const ProductScreen = ({ route }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{
-                        borderColor: '#f17e13',
+                        borderColor: '#134272',
                         borderWidth: 1.2,
                         padding: 10,
                         borderRadius: 8,
@@ -187,20 +219,20 @@ const ProductScreen = ({ route }) => {
                     >
                         {addedToCart ?
                             <>
-                                <AntDesign name="checkcircle" size={24} color="#f17e13" />
+                                <AntDesign name="checkcircle" size={24} color="#134272" />
                                 <Text style={{
                                     fontSize: 16,
-                                    color: '#f17e13',
+                                    color: '#134272',
                                 }}>
                                     Added To Cart
                                 </Text>
                             </>
                             :
                             <>
-                                <AntDesign name="shoppingcart" size={24} color="#f17e13" />
+                                <AntDesign name="shoppingcart" size={24} color="#134272" />
                                 <Text style={{
                                     fontSize: 16,
-                                    color: '#f17e13',
+                                    color: '#134272',
                                 }}>
                                     Add To Cart
                                 </Text>
@@ -209,6 +241,92 @@ const ProductScreen = ({ route }) => {
                     </TouchableOpacity>
                 </View>
 
+                {/* Shop Details */}
+                {Object.keys(storeInfo).length ? <View style={{
+                    marginHorizontal: 18,
+                    borderColor: 'lightgray',
+                    borderWidth: 1,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    borderRadius: 10,
+                    marginBottom: 12
+                }}>
+                    <View style={{
+                        borderBottomColor: 'lightgray',
+                        borderBottomWidth: 1,
+                        paddingVertical: 5
+                    }}>
+                        <Text style={{
+                            fontSize: 20,
+                        }}>
+                            Sold By
+                        </Text>
+                    </View>
+
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginTop: 12
+                    }}>
+                        <Text style={{
+                            fontSize: 17,
+                        }}>
+                            {storeInfo.storeName}
+                        </Text>
+
+                        <TouchableOpacity style={{
+                            borderColor: '#134272',
+                            borderWidth: 1.2,
+                            borderRadius: 4,
+                            paddingHorizontal: 10,
+                            paddingVertical: 4,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 5
+                        }}
+                            onPress={() => navigation.navigate('Store', { storeInfo, setStoreInfo, storeProducts })}
+                        >
+                            <Text style={{
+                                fontSize: 16,
+                                color: '#134272',
+                            }}>
+                                View Shop
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-evenly',
+                        alignItems: 'center',
+                        marginTop: 12
+                    }}>
+                        <View style={{
+                            alignItems: 'center'
+                        }}>
+                            <Text style={{
+                                fontSize: 25
+                            }}>
+                                {storeInfo.followers.length}
+                            </Text>
+                            <Text>Followers</Text>
+                        </View>
+
+                        <View style={{
+                            alignItems: 'center'
+                        }}>
+                            <Text style={{
+                                fontSize: 25
+                            }}>
+                                {storeProducts?.length}
+                            </Text>
+                            <Text>Products</Text>
+                        </View>
+                    </View>
+                </View> : null}
+
+
                 {/* Product Description */}
                 <View>
                     {item.description.map((desc, index) =>
@@ -216,7 +334,6 @@ const ProductScreen = ({ route }) => {
                             key={index}
                             style={{
                                 marginHorizontal: 18,
-                                shadowColor: '#000000',
                                 borderColor: 'lightgray',
                                 borderWidth: 1,
                                 paddingHorizontal: 20,
@@ -230,7 +347,7 @@ const ProductScreen = ({ route }) => {
                                 paddingVertical: 5
                             }}>
                                 <Text style={{
-                                    fontSize: 23,
+                                    fontSize: 20,
                                     color: 'gray',
                                     textAlign: 'center'
                                 }}>
@@ -246,8 +363,6 @@ const ProductScreen = ({ route }) => {
                             </Text>
                         </View>)}
                 </View>
-
-
 
             </ScrollView>
 

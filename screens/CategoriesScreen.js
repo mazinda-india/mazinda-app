@@ -1,12 +1,14 @@
-import { Image, ScrollView, StyleSheet, Text, View, useWindowDimensions, SafeAreaView, TouchableOpacity } from 'react-native'
+import { Image, StyleSheet, Text, View, useWindowDimensions, SafeAreaView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios';
 import { FlatList } from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view';
 
 const CategoriesScreen = () => {
   const { width, height } = useWindowDimensions();
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const renderCategory = (item) =>
     <TouchableOpacity
@@ -41,6 +43,7 @@ const CategoriesScreen = () => {
     </TouchableOpacity>
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       const { data } = await axios.post("https://mazinda.com/api/category/fetch-categories");
 
@@ -49,8 +52,25 @@ const CategoriesScreen = () => {
       } else {
         return <Alert>Oops... Something Went Wrong !</Alert>;
       }
+      setLoading(false);
     })()
   }, [])
+
+  if (loading) {
+    return <SafeAreaView style={{
+      flex: 1,
+      backgroundColor: 'white'
+    }}>
+      <Navbar />
+      <View style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <ActivityIndicator size={'small'} />
+      </View>
+    </SafeAreaView>
+  }
 
   return (
     <SafeAreaView style={{

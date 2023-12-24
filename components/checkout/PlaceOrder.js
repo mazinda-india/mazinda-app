@@ -3,7 +3,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 const PlaceOrder = ({ itemData, deliveryAddress, selectedPaymentMethod, pricing }) => {
     return (
-        <ScrollView>
+        <ScrollView style={{
+            marginBottom: 60
+        }}>
             {itemData.map((item, index) => (
                 <View
                     key={index}

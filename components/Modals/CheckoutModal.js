@@ -11,12 +11,12 @@ import Address from '../checkout/Address';
 import Payment from '../checkout/Payment';
 import PlaceOrder from '../checkout/PlaceOrder';
 
-const CheckoutModal = ({ checkoutModalVisible, setCheckoutModalVisible }) => {
+const CheckoutModal = ({ checkoutModalVisible, setCheckoutModalVisible, cart }) => {
     const steps = [
         { title: 'Overview', heading: 'Order Overview', buttonText: 'Continue' },
         { title: 'Address', heading: 'Select Delivery Address', buttonText: 'Deliver Here' },
         { title: 'Payment', heading: 'Select Payment Method', buttonText: 'Continue' },
-        { title: 'Place Order', heading: 'Order Summary', buttonText: 'Continue' },
+        { title: 'Place Order', heading: 'Order Summary', buttonText: 'Place Order' },
     ]
 
     const [currentStep, setCurrentStep] = useState(0);
@@ -26,7 +26,6 @@ const CheckoutModal = ({ checkoutModalVisible, setCheckoutModalVisible }) => {
     const [deliveryAddress, setDeliveryAddress] = useState({});
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
-    const cart = useSelector(state => state.cart.cart);
     const [itemData, setItemData] = useState([]);
     const [itemDataLoading, setItemDataLoading] = useState(true);
     const [pricing, setPricing] = useState({
@@ -83,8 +82,6 @@ const CheckoutModal = ({ checkoutModalVisible, setCheckoutModalVisible }) => {
                     userToken: userToken,
                 });
 
-            console.log(data);
-
             if (data.success) {
                 setUser(data.user);
                 setDeliveryAddress(data.user.currentAddress)
@@ -94,8 +91,6 @@ const CheckoutModal = ({ checkoutModalVisible, setCheckoutModalVisible }) => {
             setUserLoading(false);
         })()
     }, [])
-
-
 
     return (
         <Modal
@@ -204,24 +199,63 @@ const CheckoutModal = ({ checkoutModalVisible, setCheckoutModalVisible }) => {
                     borderTopColor: 'lightgray',
                     borderTopWidth: 1
                 }}>
-                    <TouchableOpacity
-                        style={{
-                            marginBottom: 10,
-                            backgroundColor: '#f17e13',
-                            paddingVertical: 12,
-                            paddingHorizontal: 20,
-                            borderRadius: 8
-                        }}
-                        onPress={() => setCurrentStep(currentStep + 1)}
-                    >
-                        <Text style={{
-                            fontSize: 16,
-                            color: 'white',
-                            fontWeight: 600
-                        }}>
-                            {steps[currentStep].buttonText}
-                        </Text>
-                    </TouchableOpacity>
+                    {currentStep === 2
+                        ?
+                        selectedPaymentMethod === '' ? <View
+                            style={{
+                                marginBottom: 10,
+                                backgroundColor: 'lightgray',
+                                paddingVertical: 12,
+                                paddingHorizontal: 20,
+                                borderRadius: 5
+                            }}
+                        >
+                            <Text style={{
+                                fontSize: 16,
+                                color: 'white',
+                                fontWeight: 600
+                            }}>
+                                Select a Payment Method
+                            </Text>
+                        </View> : <TouchableOpacity
+                            style={{
+                                marginBottom: 10,
+                                backgroundColor: '#134272',
+                                paddingVertical: 12,
+                                paddingHorizontal: 20,
+                                borderRadius: 5
+                            }}
+                            onPress={() => setCurrentStep(currentStep + 1)}
+                        >
+                            <Text style={{
+                                fontSize: 16,
+                                color: 'white',
+                                fontWeight: 600
+                            }}>
+                                {`Continue with ${selectedPaymentMethod === 'online' ? 'PAY ONLINE' : 'PAY ON DELIVERY'}`}
+                            </Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity
+                            style={{
+                                marginBottom: 10,
+                                backgroundColor: '#134272',
+                                paddingVertical: 12,
+                                paddingHorizontal: 20,
+                                borderRadius: 8,
+                                width: '90%',
+                            }}
+                            onPress={() => setCurrentStep(currentStep + 1)}
+                        >
+                            <Text style={{
+                                fontSize: 16,
+                                color: 'white',
+                                fontWeight: 600,
+                                textAlign: 'center'
+                            }}>
+                                {steps[currentStep].buttonText}
+                            </Text>
+                        </TouchableOpacity>}
                 </View>
 
                 {

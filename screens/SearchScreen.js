@@ -1,4 +1,4 @@
-import { StyleSheet, View, SafeAreaView, ActivityIndicator, FlatList } from 'react-native'
+import { View, SafeAreaView, ActivityIndicator, FlatList } from 'react-native'
 
 import Navbar from '../components/Navbar'
 import { useEffect, useState } from 'react';
@@ -63,12 +63,9 @@ const SearchScreen = ({ route }) => {
                 keyExtractor={(item) => item._id}
                 numColumns={2}
                 style={{ marginTop: 10 }}
-            // contentContainerStyle={styles.productList}
             />
         </SafeAreaView>
     )
 }
 
-export default SearchScreen
-
-const styles = StyleSheet.create({})
+export default SearchScreen;

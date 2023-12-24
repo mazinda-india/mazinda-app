@@ -17,13 +17,13 @@ const Address = ({ user, userLoading, deliveryAddress, setDeliveryAddress }) => 
     return (
         <ScrollView>
             <TouchableOpacity style={{
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 1,
+                // borderBottomColor: 'gray',
+                // borderBottomWidth: 1,
             }}>
                 <Text style={{
                     fontWeight: 700,
                     textAlign: 'center',
-                    color: '#fe6321',
+                    color: '#134272',
                     backgroundColor: 'white',
                     paddingVertical: 12,
                 }}>
@@ -41,14 +41,14 @@ const Address = ({ user, userLoading, deliveryAddress, setDeliveryAddress }) => 
                         gap: 20,
                         paddingHorizontal: 20,
                         paddingVertical: 15,
-                        borderBottomColor: 'lightgray',
-                        borderBottomWidth: 1,
+                        // borderBottomColor: 'lightgray',
+                        // borderBottomWidth: 1,
                         backgroundColor: address.id === deliveryAddress.id ? '#ffefe8' : 'white'
                     }}>
                     <View style={{
                         width: 20,
                         height: 20,
-                        borderColor: 'lightgray',
+                        borderColor: '#f17e13',
                         borderWidth: 1,
                         borderRadius: 100,
                         alignItems: 'center',

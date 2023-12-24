@@ -5,7 +5,6 @@ import { ModalPortal } from 'react-native-modals';
 import { ToastProvider } from 'react-native-toast-notifications'
 
 export default function App() {
-
   return (
     <>
       <ToastProvider>

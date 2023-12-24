@@ -4,13 +4,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 
 const ProductCard = ({ item }) => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
   return (
     <Pressable
-        onPress={() => {
-            navigation.navigate('Product', { item })
-        }}
+      onPress={() => {
+        navigation.navigate('Product', { item })
+      }}
       style={{
         flex: 1,
         borderColor: "#e2e8f0",
@@ -22,16 +22,18 @@ const ProductCard = ({ item }) => {
         source={{ uri: item.imagePaths[0] }}
         resizeMode="contain"
         style={{
-          width: 175,
-          height: 175,
+          width: '100%',
+          height: 150,
         }}
       />
 
-      <View>
+      <View style={{
+        marginTop: 15
+      }}>
         <View
           style={{
             backgroundColor: "#e5e7eb",
-            width: "40%",
+            width: "45%",
             paddingHorizontal: 5,
             paddingVertical: 3,
             borderRadius: 20,
@@ -44,7 +46,7 @@ const ProductCard = ({ item }) => {
 
           <Text
             style={{
-              fontSize: 12,
+              fontSize: 10,
               textAlign: "center",
             }}
           >
@@ -63,10 +65,10 @@ const ProductCard = ({ item }) => {
       >
         <View
           style={{
-            width: "70%",
+            width: "68%",
           }}
         >
-          <Text>{item.productName.slice(0, 40)}...</Text>
+          <Text>{item.productName.slice(0, 35)}...</Text>
         </View>
 
         <View
@@ -76,7 +78,7 @@ const ProductCard = ({ item }) => {
         >
           <Text
             style={{
-              fontSize: item.pricing.costPrice.length > 3 ?  14 : 20,
+              fontSize: item.pricing.costPrice.length > 3 ? 14 : 16,
               fontWeight: 600,
             }}
           >
@@ -86,7 +88,7 @@ const ProductCard = ({ item }) => {
           <Text
             style={{
               textDecorationLine: "line-through",
-              fontSize: item.pricing.costPrice.length > 3 ?  11 : 12,
+              fontSize: 11,
               color: "gray",
               alignSelf: "flex-end",
             }}
@@ -115,7 +117,7 @@ const ProductCard = ({ item }) => {
         >
           {String(
             ((item.pricing.mrp - item.pricing.salesPrice) / item.pricing.mrp) *
-              100
+            100
           ).slice(0, 4)}
           % Off
         </Text>

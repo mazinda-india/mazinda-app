@@ -8,6 +8,7 @@ import HomeScreen from '../screens/HomeScreen';
 import CartScreen from '../screens/CartScreen';
 import SearchScreen from '../screens/SearchScreen';
 import ProductScreen from '../screens/ProductScreen';
+import StoreScreen from '../screens/StoreScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 import { Entypo, MaterialCommunityIcons, Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -90,6 +91,7 @@ const StackNavigator = () => {
                     <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
                     <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false }} />
                     <Stack.Screen name="Product" component={ProductScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="Store" component={StoreScreen} options={{ headerShown: false }} />
                     <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
                     <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
                     <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
