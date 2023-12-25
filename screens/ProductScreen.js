@@ -285,7 +285,7 @@ const ProductScreen = ({ route }) => {
                             alignItems: 'center',
                             gap: 5
                         }}
-                            onPress={() => navigation.navigate('Store', { storeInfo, setStoreInfo, storeProducts })}
+                            onPress={() => navigation.navigate('Store', { storeInfo, storeProducts })}
                         >
                             <Text style={{
                                 fontSize: 16,

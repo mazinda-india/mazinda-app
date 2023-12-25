@@ -1,7 +1,8 @@
 import { Button, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { EvilIcons } from '@expo/vector-icons';
+import { EvilIcons, AntDesign } from '@expo/vector-icons';
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import axios from 'axios';
+import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
 import { useLocation, useUpdateLocation } from '../../contexts/LocationContext';
 
 const LocationModal = ({ locationsModalVisible, setLocationsModalVisible }) => {
@@ -22,10 +23,8 @@ const LocationModal = ({ locationsModalVisible, setLocationsModalVisible }) => {
             if (data.success) {
                 setLocations(data.locations);
             }
-            //   setLocationLoading(false);
         } catch (error) {
             console.error("Error fetching locations:", error);
-            //   setLocationLoading(false);
         }
     };
 
@@ -33,28 +32,40 @@ const LocationModal = ({ locationsModalVisible, setLocationsModalVisible }) => {
         fetchLocations();
     }, [])
     return (
-        <Modal
-            onRequestClose={() => setLocationsModalVisible(false)}
-            presentationStyle='pageSheet'
-            animationType='slide'
-            visible={locationsModalVisible}>
+        <BottomModal
+            visible={locationsModalVisible}
+            onBackDropPress={() => setLocationsModalVisible(!locationsModalVisible)}
+            swipeDirection={['up', 'down']}
+            swipeThreshold={200}
+            modalAnimation={
+                new SlideAnimation({
+                    slideFrom: 'bottom'
+                })
+            }
+            onHardwareBackPress={() => setLocationsModalVisible(!locationsModalVisible)}
+            onTouchOutside={() => setLocationsModalVisible(!locationsModalVisible)}
+        >
 
             <SafeAreaView>
                 <View style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    paddingHorizontal: 10,
+                    paddingHorizontal: 20,
                     paddingVertical: 10
                 }}>
 
                     <Text style={{
                         textAlign: 'center',
                         marginVertical: 10,
-                        fontSize: 20,
+                        fontSize: 17,
                         marginLeft: 10
-                    }}>Choose Delivery Location</Text>
-                    <Button onPress={() => setLocationsModalVisible(false)} title='Close' />
+                    }}>
+                        Choose Delivery Location
+                    </Text>
+                    <TouchableOpacity onPress={() => setLocationsModalVisible(false)} >
+                        <AntDesign name="close" size={20} color="black" />
+                    </TouchableOpacity>
                 </View>
                 <View>
                     {locations && locations.map(location =>
@@ -66,19 +77,26 @@ const LocationModal = ({ locationsModalVisible, setLocationsModalVisible }) => {
                                 paddingHorizontal: 20,
                                 borderColor: location.city === selectedLocation.city ? '#fe6321' : 'lightgray',
                                 borderWidth: 1,
-                                margin: 10,
-                                borderRadius: 10,
+                                marginVertical: 6,
+                                marginHorizontal: 18,
+                                borderRadius: 8,
                                 backgroundColor: location.city === selectedLocation.city ? '#ffefe8' : 'white'
                             }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                            <View style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: 8
+                            }}>
                                 <EvilIcons name="location" size={25} color="darkorange" />
-                                <Text style={{ fontSize: 20 }}>{location.city}</Text>
+                                <Text style={{ fontSize: 16 }}>
+                                    {location.city}
+                                </Text>
                             </View>
                         </TouchableOpacity>
                     )}
                 </View>
             </SafeAreaView>
-        </Modal>
+        </BottomModal>
     )
 }
 

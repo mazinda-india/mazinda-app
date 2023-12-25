@@ -11,23 +11,18 @@ const AccountScreen = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white', }}>
 
-            <View>
-                <Text style={{ textAlign: 'center', fontSize: 30, marginTop: 10 }}>
-                    Settings
-                </Text>
-            </View>
-
             <View style={{
                 paddingHorizontal: 18,
+                marginTop: 16
             }}>
 
-                <Text style={{
-                    fontSize: 20,
+                {/* <Text style={{
+                    fontSize: 17,
                     marginTop: 20,
                     marginBottom: 10
                 }}>
-                    Others
-                </Text>
+                    Account and Security
+                </Text> */}
 
                 <View style={{
                     gap: 18

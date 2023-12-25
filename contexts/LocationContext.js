@@ -31,7 +31,7 @@ export default function LocationProvider({ children }) {
         (async () => {
             try {
                 setLocationLoading(true)
-                const response = await axios.get("https://mazinda.com/api/location/fetch-locations");
+                const { data } = await axios.get("https://mazinda.com/api/location/fetch-locations");
                 let selectedLocation;
 
                 try {
@@ -45,12 +45,12 @@ export default function LocationProvider({ children }) {
                     setSelectedLocation(selectedLocation);
                 } else {
                     // If no selected location in cookies, set the first location as default
-                    setSelectedLocation(response.data.locations[2]);
+                    setSelectedLocation(data.locations[2]);
 
                     // Setting location info in cookies
                     AsyncStorage.setItem(
                         "selectedLocation",
-                        JSON.stringify(response.data.locations[0]),
+                        JSON.stringify(data.locations[0]),
                     );
                 }
                 setLocationLoading(false);

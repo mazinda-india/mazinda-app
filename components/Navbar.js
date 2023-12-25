@@ -18,7 +18,10 @@ const Navbar = ({ searchQuery }) => {
     const navigation = useNavigation();
 
     return (
-        <View style={{ paddingTop: Platform.OS === 'ios' ? 8 : 45 }}>
+        <View style={{
+            paddingTop: Platform.OS === 'ios' ? 8 : 45,
+            paddingBottom: 10
+        }}>
 
             <LocationModal
                 locationsModalVisible={locationsModalVisible} setLocationsModalVisible={setLocationsModalVisible} />

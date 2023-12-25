@@ -46,7 +46,7 @@ const AccountScreen = () => {
             <ScrollView>
 
                 <View>
-                    <Text style={{ textAlign: 'center', fontSize: 30, marginTop: 10 }}>
+                    <Text style={{ textAlign: 'center', fontSize: 26, marginTop: 30 }}>
                         My Account
                     </Text>
                 </View>
@@ -103,23 +103,25 @@ const AccountScreen = () => {
                             </Text>
                         </View>
 
-                        <View style={{
-                            borderColor: 'gray',
-                            borderWidth: 1,
-                            flexDirection: 'row',
-                            width: '48%',
-                            padding: 10,
-                            alignItems: 'center',
-                            gap: 10,
-                            borderRadius: 10
-                        }}>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Followed Shops')}
+                            style={{
+                                borderColor: 'gray',
+                                borderWidth: 1,
+                                flexDirection: 'row',
+                                width: '48%',
+                                padding: 10,
+                                alignItems: 'center',
+                                gap: 10,
+                                borderRadius: 10
+                            }}>
                             <MaterialCommunityIcons name="store-check" size={24} color="black" />
                             <Text style={{
                                 fontSize: 16
                             }}>
                                 Followed Shops
                             </Text>
-                        </View>
+                        </TouchableOpacity>
 
                         <View style={{
                             borderColor: 'gray',
@@ -130,7 +132,7 @@ const AccountScreen = () => {
                             paddingHorizontal: 8,
                             alignItems: 'center',
                             gap: 8,
-                            borderRadius: 10
+                            borderRadius: 10,
                         }}>
                             <Foundation name="page-search" size={24} color="black" />
                             <Text style={{
