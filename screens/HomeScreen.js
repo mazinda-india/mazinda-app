@@ -1,7 +1,7 @@
 import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import Navbar from "../components/Navbar";
 import Story from "../components/home/Story";
@@ -11,6 +11,7 @@ import Categories from "../components/home/Categories";
 import { ScrollView } from "react-native-virtualized-view";
 import HorizontalProductList from "../components/utility/HorizontalProductList";
 import { fetchUserData } from "../redux/UserReducer";
+import { fetchStoriesData } from "../redux/StoryReducer";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -18,6 +19,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     dispatch(fetchUserData());
+    dispatch(fetchStoriesData());
   }, []);
 
   return (

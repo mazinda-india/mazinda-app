@@ -5,12 +5,18 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
-import { useState } from "react";
-import AddAddress from "../Modals/AddAddress";
+import { useEffect, useState } from "react";
+import AddAddress from "../modals/AddAddress";
 
 const Address = ({ user, deliveryAddress, setDeliveryAddress }) => {
   const savedAddresses = user?.savedAddresses;
   const [addAddressVisible, setAddAddressVisible] = useState(false);
+
+  useEffect(() => {
+    if (!savedAddresses.length) {
+      setAddAddressVisible(true);
+    }
+  }, []);
 
   return (
     <>
@@ -45,7 +51,7 @@ const Address = ({ user, deliveryAddress, setDeliveryAddress }) => {
               paddingHorizontal: 20,
               paddingVertical: 15,
               backgroundColor:
-                address.id === deliveryAddress.id ? "#1342721A" : "white",
+                address.id === deliveryAddress?.id ? "#1342721A" : "white",
             }}
           >
             <View
@@ -64,7 +70,7 @@ const Address = ({ user, deliveryAddress, setDeliveryAddress }) => {
                   width: 12,
                   height: 12,
                   backgroundColor:
-                    address.id === deliveryAddress.id ? "#134272" : "white",
+                    address.id === deliveryAddress?.id ? "#134272" : "white",
                   borderRadius: 100,
                 }}
               ></View>

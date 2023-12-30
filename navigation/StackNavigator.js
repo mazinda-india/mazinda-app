@@ -22,7 +22,6 @@ import {
 import CategoriesScreen from "../screens/CategoriesScreen";
 
 import LocationProvider from "../contexts/LocationContext";
-import OTPScreen from "../screens/auth/OTPScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -156,11 +155,6 @@ const StackNavigator = () => {
           <Stack.Screen
             name="Register"
             component={RegisterScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="OTP Verify"
-            component={OTPScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

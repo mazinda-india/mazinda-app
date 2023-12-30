@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native";
 import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import CheckoutModal from "../components/Modals/CheckoutModal";
+import CheckoutModal from "../components/modals/CheckoutModal";
 
 const CartScreen = () => {
   const cart = useSelector((state) => state.cart.cart);

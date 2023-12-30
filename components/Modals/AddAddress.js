@@ -22,7 +22,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
   const dispatch = useDispatch();
 
   const [error, setError] = useState("");
-  const [pincodeError, setPincodeError] = useState("");
+  const [pincodeError, setPincodeError] = useState(false);
   const [canProceed, setCanProceed] = useState(false);
 
   const [newAddress, setNewAddress] = useState({
@@ -40,7 +40,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
     if (field === "pincode" && value.length === 6) {
       if (value.length === 6) {
         if (!selectedLocation.pincodes.includes(value)) {
-          setPincodeError("Sorry, this pincode is currently not servicable");
+          setPincodeError(true);
           setCanProceed(false); // Disable the button if pincode is invalid
           return;
         }
@@ -48,7 +48,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
         setCanProceed(false);
       }
     } else {
-      setPincodeError("");
+      setPincodeError(false);
     }
 
     setNewAddress((prevState) => ({
@@ -91,6 +91,15 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
   };
 
   useEffect(() => {
+    console.log(newAddress.pincode);
+    if (
+      newAddress.pincode.length > 0 &&
+      !selectedLocation.pincodes.includes(newAddress.pincode)
+    ) {
+      setPincodeError(true);
+    } else {
+      setPincodeError(false);
+    }
     // Check if all fields except landmark are non-empty
     const allFieldsFilled =
       newAddress.name.trim() !== "" &&
@@ -102,7 +111,19 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
       newAddress.state.trim() !== "";
 
     setCanProceed(allFieldsFilled && newAddress.phone.length === 10);
+
+    console.log(allFieldsFilled && newAddress.phone.length === 10);
+
+    console.log("allFieldsFilled", allFieldsFilled);
+    console.log("phonelength === 10", newAddress.phone.length === 10);
+    console.log("pincodeError", pincodeError);
   }, [newAddress]);
+
+  useEffect(() => {
+    if (pincodeError) {
+      setCanProceed(false);
+    }
+  }, [pincodeError]);
 
   return (
     <Modal
@@ -133,6 +154,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
           }}
         >
           <TouchableOpacity
+            disabled={!canProceed}
             style={{
               marginBottom: 10,
               backgroundColor: canProceed ? "#134272" : "lightgray",
@@ -343,7 +365,9 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
               textAlign: "center",
             }}
           >
-            {pincodeError}
+            {pincodeError
+              ? "Sorry, this pincode is currently unservicable"
+              : ""}
           </Text>
         </View>
       </SafeAreaView>

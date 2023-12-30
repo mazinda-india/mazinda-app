@@ -5,12 +5,10 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
-  ActivityIndicator,
   Modal,
 } from "react-native";
 import { useState, useRef } from "react";
 import MazindaLogo from "../../assets/logo/logo_mazinda_full.png";
-// import axios from "axios";
 
 const OTPVerify = ({
   otpModalVisible,

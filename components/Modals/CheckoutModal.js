@@ -4,11 +4,9 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
 
 import { Entypo, Ionicons, FontAwesome } from "@expo/vector-icons";

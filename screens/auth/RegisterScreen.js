@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import OTPVerify from "../../components/Modals/OTPVerify";
+import OTPVerify from "../../components/modals/OTPVerify";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -47,14 +47,18 @@ const RegisterScreen = () => {
   };
 
   const sendOTP = async (phoneNumber) => {
-    const { data } = await axios.post(
-      "https://mazinda.com/api/whatsapp/msg-to-phone-no",
-      {
-        phone_number: phoneNumber,
-        message: `${verificationCode} is the verification code to verify your Mazinda account. DO NOT share this code with anyone. Thanks`,
-      }
-    );
-    return data;
+    try {
+      const { data } = await axios.post(
+        "https://mazinda.com/api/whatsapp/msg-to-phone-no",
+        {
+          phone_number: phoneNumber,
+          message: `${verificationCode} is the verification code to verify your Mazinda account. DO NOT share this code with anyone. Thanks`,
+        }
+      );
+      return data;
+    } catch (e) {
+      toast.show("Oops.. Network Error Occurred. Please try again");
+    }
   };
 
   const handleSubmit = async () => {
@@ -116,7 +120,7 @@ const RegisterScreen = () => {
           toast.show(`Welcome, ${credentials.name}!`);
           navigation.navigate("Main");
         } else {
-          toast.show(`Oops, a network error occurred. Please try again later`);
+          toast.show(`Oops, a network error occurred. Please try again`);
         }
       })();
 

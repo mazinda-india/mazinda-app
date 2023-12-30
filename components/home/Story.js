@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Text,
   View,
   ScrollView,
@@ -7,39 +6,33 @@ import {
   useWindowDimensions,
   TouchableOpacity,
 } from "react-native";
-
-const data = [
-  {
-    _id: 1,
-    storeName: "Simply Best",
-    imageURI: "https://cdn-icons-png.flaticon.com/512/1041/1041883.png",
-  },
-  {
-    _id: 2,
-    storeName: "Random Footwears",
-    imageURI:
-      "https://d1nhio0ox7pgb.cloudfront.net/_img/g_collection_png/standard/512x512/store.png",
-  },
-  {
-    _id: 3,
-    storeName: "Apni Dukaan",
-    imageURI:
-      "https://images.freeimages.com/365/images/previews/3b6/small-store-icon-psd-53185.jpg",
-  },
-  {
-    _id: 4,
-    storeName: "Simply Best",
-    imageURI: "https://cdn-icons-png.flaticon.com/512/1041/1041883.png",
-  },
-  {
-    _id: 5,
-    storeName: "Simply Best",
-    imageURI: "https://cdn-icons-png.flaticon.com/512/1041/1041883.png",
-  },
-];
+import { useSelector } from "react-redux";
+import StoryModal from "../modals/StoryModal";
+import { useState } from "react";
 
 const Story = () => {
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
+
+  const stories = useSelector((state) => state.stories.stories);
+
+  const [showStoryModal, setShowStoryModal] = useState(false);
+  const [selectedVendorStories, setSelectedVendorStories] = useState([]);
+
+  // Ensure stories is an array before using array functions
+  const storiesArray = Array.isArray(stories) ? stories : [];
+
+  // Create a Set to keep track of unique vendor IDs
+  const uniqueVendorSet = new Set();
+
+  // Filter out stories with duplicate vendors
+  const uniqueStories = storiesArray.filter((story) => {
+    if (!uniqueVendorSet.has(story.storeDetails._id)) {
+      uniqueVendorSet.add(story.storeDetails._id);
+      return true;
+    }
+    return false;
+  });
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
@@ -55,8 +48,6 @@ const Story = () => {
           alignItems: "center",
           gap: 10,
           width: width / 5,
-          // borderColor: 'black',
-          // borderWidth: 1
         }}
       >
         <View
@@ -88,9 +79,17 @@ const Story = () => {
           Mazinda
         </Text>
       </TouchableOpacity>
-      {data.map((item) => (
+      {uniqueStories.map((story) => (
         <TouchableOpacity
-          key={item._id}
+          onPress={() => {
+            // Filter stories of the selected vendor
+            const selectedVendorStories = stories.filter(
+              (s) => s.storeDetails._id === story.storeDetails._id
+            );
+            setSelectedVendorStories(selectedVendorStories);
+            setShowStoryModal(true);
+          }}
+          key={story._id}
           style={{
             marginHorizontal: 5,
             alignItems: "center",
@@ -113,7 +112,7 @@ const Story = () => {
                 width: 60,
                 height: 60,
               }}
-              source={{ uri: item.imageURI }}
+              source={{ uri: story.storeDetails.imageURI }}
             />
           </View>
           <Text
@@ -123,14 +122,20 @@ const Story = () => {
               textAlign: "center",
             }}
           >
-            {item.storeName.slice(0, 9)}..
+            {story.storeDetails.storeName.slice(0, 9)}..
           </Text>
         </TouchableOpacity>
       ))}
+
+      {showStoryModal && (
+        <StoryModal
+          showStoryModal={showStoryModal}
+          setShowStoryModal={setShowStoryModal}
+          vendorStories={selectedVendorStories}
+        />
+      )}
     </ScrollView>
   );
 };
 
 export default Story;
-
-const styles = StyleSheet.create({});
