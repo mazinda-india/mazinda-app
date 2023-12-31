@@ -1,4 +1,10 @@
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -30,6 +36,23 @@ const HomeScreen = () => {
 
         <View style={{ padding: 10 }}>
           <Subcategories />
+        </View>
+
+        <View
+          style={{
+            marginVertical: 20,
+          }}
+        >
+          <Image
+            source={{
+              uri: "https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/banner_one.JPG",
+            }}
+            style={{
+              width: "100%",
+              height: 50,
+            }}
+            resizeMode="contain"
+          />
         </View>
 
         <View style={{ padding: 10 }}>
@@ -88,6 +111,23 @@ const HomeScreen = () => {
             Trending Products
           </Text>
           <HorizontalProductList filter={"trending"} />
+        </View>
+
+        <View
+          style={{
+            marginVertical: 20,
+          }}
+        >
+          <Image
+            source={{
+              uri: "https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/banner_end.JPG",
+            }}
+            style={{
+              width: "100%",
+              height: 100,
+            }}
+            resizeMode="contain"
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
