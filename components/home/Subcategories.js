@@ -15,7 +15,6 @@ const Subcategories = () => {
       <View
         style={{
           padding: 10,
-          overflow: "hidden",
         }}
       >
         <ImageBackground
@@ -26,8 +25,6 @@ const Subcategories = () => {
           style={{
             width: width / 2.35,
             height: width / 2.35,
-            borderColor: "lightgray",
-            borderWidth: 1,
             position: "relative",
           }}
         >
@@ -37,8 +34,8 @@ const Subcategories = () => {
               bottom: 0,
               backgroundColor: "black",
               width: "100%",
-              height: 30,
-              opacity: 0.5,
+              height: 20,
+              opacity: 0.3,
               justifyContent: "center",
             }}
           >
@@ -46,7 +43,9 @@ const Subcategories = () => {
               style={{
                 color: "white",
                 fontWeight: 700,
+                fontSize: 11,
                 marginHorizontal: 7,
+                textAlign: "center",
               }}
             >
               View More {" >"}

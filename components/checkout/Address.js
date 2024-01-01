@@ -31,7 +31,7 @@ const Address = ({ user, deliveryAddress, setDeliveryAddress }) => {
             style={{
               fontWeight: 700,
               textAlign: "center",
-              color: "#134272",
+              color: "#2d77f0",
               backgroundColor: "white",
               paddingVertical: 12,
             }}
@@ -51,14 +51,14 @@ const Address = ({ user, deliveryAddress, setDeliveryAddress }) => {
               paddingHorizontal: 20,
               paddingVertical: 15,
               backgroundColor:
-                address.id === deliveryAddress?.id ? "#1342721A" : "white",
+                address.id === deliveryAddress?.id ? "#80808015" : "white",
             }}
           >
             <View
               style={{
                 width: 20,
                 height: 20,
-                borderColor: "#134272",
+                borderColor: "gray",
                 borderWidth: 1,
                 borderRadius: 100,
                 alignItems: "center",
@@ -70,7 +70,7 @@ const Address = ({ user, deliveryAddress, setDeliveryAddress }) => {
                   width: 12,
                   height: 12,
                   backgroundColor:
-                    address.id === deliveryAddress?.id ? "#134272" : "white",
+                    address.id === deliveryAddress?.id ? "black" : "white",
                   borderRadius: 100,
                 }}
               ></View>

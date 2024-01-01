@@ -158,6 +158,8 @@ const ProductScreen = ({ route }) => {
         </View>
       </View>
 
+      <Navbar />
+
       <ScrollView
         style={{
           marginBottom: 60,
@@ -168,8 +170,6 @@ const ProductScreen = ({ route }) => {
           setCheckoutModalVisible={setCheckoutModalVisible}
           cart={[{ _id: item._id, quantity: 1 }]}
         />
-
-        <Navbar />
 
         {/* Image Container View */}
         <View style={{ width: width, height: width, padding: 20 }}>
@@ -340,13 +340,14 @@ const ProductScreen = ({ route }) => {
                   fontSize: 17,
                 }}
               >
-                {storeInfo.storeName}
+                {storeInfo.storeName.toUpperCase()}
               </Text>
 
               <TouchableOpacity
                 style={{
-                  borderColor: "black",
-                  borderWidth: 1.2,
+                  // borderColor: "black",
+                  // borderWidth: 1.2,
+                  backgroundColor: "black",
                   borderRadius: 4,
                   paddingHorizontal: 10,
                   paddingVertical: 4,
@@ -361,7 +362,8 @@ const ProductScreen = ({ route }) => {
                 <Text
                   style={{
                     fontSize: 16,
-                    color: "black",
+                    color: "white",
+                    fontWeight: 600,
                   }}
                 >
                   View Shop

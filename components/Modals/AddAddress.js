@@ -91,7 +91,6 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
   };
 
   useEffect(() => {
-    console.log(newAddress.pincode);
     if (
       newAddress.pincode.length > 0 &&
       !selectedLocation.pincodes.includes(newAddress.pincode)
@@ -111,12 +110,6 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
       newAddress.state.trim() !== "";
 
     setCanProceed(allFieldsFilled && newAddress.phone.length === 10);
-
-    console.log(allFieldsFilled && newAddress.phone.length === 10);
-
-    console.log("allFieldsFilled", allFieldsFilled);
-    console.log("phonelength === 10", newAddress.phone.length === 10);
-    console.log("pincodeError", pincodeError);
   }, [newAddress]);
 
   useEffect(() => {

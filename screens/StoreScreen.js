@@ -80,9 +80,8 @@ const ShopScreen = ({ route }) => {
         backgroundColor: "white",
       }}
     >
+      <Navbar />
       <ScrollView>
-        <Navbar />
-
         <View
           style={{
             marginTop: 15,
@@ -187,7 +186,7 @@ const ShopScreen = ({ route }) => {
               <TouchableOpacity
                 onPress={toggleFollow}
                 style={{
-                  borderColor: "#134272",
+                  borderColor: "black",
                   borderWidth: 1,
                   paddingVertical: 8,
                   marginHorizontal: 25,
@@ -199,10 +198,10 @@ const ShopScreen = ({ route }) => {
                   gap: 10,
                 }}
               >
-                <AntDesign name="checkcircleo" size={19} color="#134272" />
+                <AntDesign name="checkcircleo" size={19} color="black" />
                 <Text
                   style={{
-                    color: "#134272",
+                    color: "black",
                     textAlign: "center",
                     fontSize: 17,
                     fontWeight: 500,
@@ -215,7 +214,7 @@ const ShopScreen = ({ route }) => {
               <TouchableOpacity
                 onPress={toggleFollow}
                 style={{
-                  backgroundColor: "#134272",
+                  backgroundColor: "black",
                   paddingVertical: 8,
                   marginHorizontal: 25,
                   borderRadius: 6,

@@ -4,10 +4,14 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Entypo, Ionicons, FontAwesome } from "@expo/vector-icons";
 
@@ -15,6 +19,7 @@ import Overview from "../checkout/Overview";
 import Address from "../checkout/Address";
 import Payment from "../checkout/Payment";
 import PlaceOrder from "../checkout/PlaceOrder";
+import { clearCart } from "../../redux/CartReducer";
 
 const CheckoutModal = ({
   checkoutModalVisible,
@@ -42,12 +47,15 @@ const CheckoutModal = ({
   const [currentStep, setCurrentStep] = useState(0);
 
   const user = useSelector((state) => state.user.user);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const [deliveryAddress, setDeliveryAddress] = useState(user.currentAddress);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
   const [itemData, setItemData] = useState([]);
   const [itemDataLoading, setItemDataLoading] = useState(true);
+  const [orderPlacing, setOrderPlacing] = useState(false);
   const [pricing, setPricing] = useState({
     total_mrp: 0,
     total_salesPrice: 0,
@@ -93,6 +101,77 @@ const CheckoutModal = ({
       setItemDataLoading(false);
     })();
   }, [cart]);
+
+  const handlePlaceOrder = async () => {
+    const userToken = await AsyncStorage.getItem("user_token");
+    try {
+      setOrderPlacing(true);
+      const { data } = await axios.post(
+        "https://mazinda.com/api/order/create-order",
+        {
+          userToken,
+          userCart: itemData,
+          pricing,
+          address: deliveryAddress,
+          paymentMethod: selectedPaymentMethod,
+        }
+      );
+      console.log(data);
+
+      if (data.success) {
+        // Clear the cart after placing the order
+        // await axios.post("/api/user/cart/clear-cart", {
+        //   userToken,
+        // });
+
+        dispatch(clearCart());
+
+        // try {
+        //   await axios.post("/api/whatsapp/msg-to-group");
+        // } catch (err) {
+        //   console.log(err);
+        // }
+
+        navigation.navigate("Order Placed");
+        setCheckoutModalVisible(false);
+        setOrderPlacing(false);
+
+        // const storeIDs = cart.map((item) => item.storeID);
+        // let storeMobileNumbers = [];
+
+        // for (let store_id of storeIDs) {
+        //   const { data } = await axios.post("/api/store/fetch-store-number", {
+        //     id: store_id,
+        //   });
+        //   storeMobileNumbers.push(data.storeMobileNumber);
+        // }
+
+        // for (let store_mobile_number of storeMobileNumbers) {
+        //   try {
+        //     await axios.post("/api/whatsapp/msg-to-store", {
+        //       store_mobile_number,
+        //     });
+        //     await delay(2000); // 2000 milliseconds = 2 seconds
+        //   } catch (err) {
+        //     console.log(err);
+        //   }
+        // }
+      } else {
+        Alert.alert(
+          "Oops! Something went wrong",
+          "There was an issue placing your order. Please try again later"
+        );
+        setOrderPlacing(false);
+      }
+    } catch (err) {
+      console.log(err);
+      Alert.alert(
+        "Oops! Something went wrong",
+        "There was an issue placing your order. Please try again later"
+      );
+      setOrderPlacing(false);
+    }
+  };
 
   return (
     <Modal
@@ -153,9 +232,7 @@ const CheckoutModal = ({
             flexDirection: "row",
             justifyContent: "space-evenly",
             marginTop: 10,
-            // borderTopColor: 'lightgray',
             borderBottomColor: "lightgray",
-            // borderTopWidth: 1,
             borderBottomWidth: 1,
             paddingVertical: 10,
           }}
@@ -250,7 +327,7 @@ const CheckoutModal = ({
               <TouchableOpacity
                 style={{
                   marginBottom: 10,
-                  backgroundColor: "#134272",
+                  backgroundColor: "black",
                   paddingVertical: 12,
                   paddingHorizontal: 20,
                   borderRadius: 5,
@@ -272,11 +349,39 @@ const CheckoutModal = ({
                 </Text>
               </TouchableOpacity>
             )
+          ) : currentStep === 3 ? (
+            <TouchableOpacity
+              style={{
+                marginBottom: 10,
+                backgroundColor: orderPlacing ? "lightgray" : "black",
+                paddingVertical: 12,
+                paddingHorizontal: 20,
+                borderRadius: 8,
+                width: "90%",
+                alignItems: "center",
+              }}
+              onPress={handlePlaceOrder}
+            >
+              {orderPlacing ? (
+                <ActivityIndicator color={"white"} size={"small"} />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: "white",
+                    fontWeight: 600,
+                    textAlign: "center",
+                  }}
+                >
+                  Place Your Order
+                </Text>
+              )}
+            </TouchableOpacity>
           ) : (
             <TouchableOpacity
               style={{
                 marginBottom: 10,
-                backgroundColor: "#134272",
+                backgroundColor: "black",
                 paddingVertical: 12,
                 paddingHorizontal: 20,
                 borderRadius: 8,
