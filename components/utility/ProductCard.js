@@ -114,13 +114,14 @@ const ProductCard = ({ item }) => {
         }}
       >
         <View>
-          <Text numberOfLines={2}>{item.productName.slice(0, 35)}...</Text>
+          <Text numberOfLines={1}>{item.productName}</Text>
         </View>
 
         <View
           style={{
             flexDirection: "row",
             marginRight: 2,
+            marginTop: 5,
             justifyContent: "space-between",
             alignItems: "center",
           }}
