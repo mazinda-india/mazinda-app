@@ -33,63 +33,38 @@ const Story = () => {
     return false;
   });
 
+  if (!uniqueStories.length) {
+    return (
+      <Text
+        style={{
+          paddingVertical: 30,
+          paddingHorizontal: 10,
+          fontSize: 12,
+          color: "gray",
+          textAlign: "center",
+        }}
+      >
+        Follow shops to view their latest deals, offers and products!
+      </Text>
+    );
+  }
+
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
       style={{
         marginTop: 8,
-        marginBottom: 20,
+        marginBottom: 8,
       }}
       horizontal
     >
-      <TouchableOpacity
+      <View
         style={{
-          marginHorizontal: 5,
-          alignItems: "center",
-          gap: 10,
-          width: width / 5,
+          paddingHorizontal: 10,
+          flexDirection: "row",
         }}
       >
-        <View
-          style={{
-            borderColor: "orange",
-            borderWidth: 3,
-            borderRadius: 100,
-            padding: 5,
-            overflow: "hidden",
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            style={{
-              width: 60,
-              height: 60,
-            }}
-            source={require("../../assets/logo/logo_mazinda_mini.png")}
-          />
-        </View>
-
-        <Text
-          style={{
-            fontWeight: 600,
-            fontSize: 14,
-            textAlign: "center",
-          }}
-        >
-          Mazinda
-        </Text>
-      </TouchableOpacity>
-      {uniqueStories.map((story) => (
-        <TouchableOpacity
-          onPress={() => {
-            // Filter stories of the selected vendor
-            const selectedVendorStories = stories.filter(
-              (s) => s.storeDetails._id === story.storeDetails._id
-            );
-            setSelectedVendorStories(selectedVendorStories);
-            setShowStoryModal(true);
-          }}
-          key={story._id}
+        {/* <TouchableOpacity
           style={{
             marginHorizontal: 5,
             alignItems: "center",
@@ -112,9 +87,10 @@ const Story = () => {
                 width: 60,
                 height: 60,
               }}
-              source={{ uri: story.storeDetails.imageURI }}
+              source={require("../../assets/logo/logo_mazinda_mini.png")}
             />
           </View>
+
           <Text
             style={{
               fontWeight: 600,
@@ -122,10 +98,58 @@ const Story = () => {
               textAlign: "center",
             }}
           >
-            {story.storeDetails.storeName.slice(0, 9)}..
+            Mazinda
           </Text>
-        </TouchableOpacity>
-      ))}
+        </TouchableOpacity> */}
+
+        {uniqueStories.map((story) => (
+          <TouchableOpacity
+            onPress={() => {
+              // Filter stories of the selected vendor
+              const selectedVendorStories = stories.filter(
+                (s) => s.storeDetails._id === story.storeDetails._id
+              );
+              setSelectedVendorStories(selectedVendorStories);
+              setShowStoryModal(true);
+            }}
+            key={story._id}
+            style={{
+              marginHorizontal: 5,
+              alignItems: "center",
+              gap: 10,
+              width: width / 5,
+            }}
+          >
+            <View
+              style={{
+                borderColor: "orange",
+                borderWidth: 3,
+                borderRadius: 100,
+                padding: 5,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                resizeMode="contain"
+                style={{
+                  width: 60,
+                  height: 60,
+                }}
+                source={{ uri: story.storeDetails.imageURI }}
+              />
+            </View>
+            <Text
+              style={{
+                fontWeight: 600,
+                fontSize: 14,
+                textAlign: "center",
+              }}
+            >
+              {story.storeDetails.storeName.slice(0, 9)}..
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       {showStoryModal && (
         <StoryModal

@@ -77,7 +77,7 @@ const OrderList = ({ filter }) => {
 
   return (
     <ScrollView>
-      {orders.map((order) =>
+      {orders.reverse().map((order) =>
         order.cart.map((item) => (
           <View
             key={item._id}
@@ -88,12 +88,14 @@ const OrderList = ({ filter }) => {
               gap: 8,
               alignItems: "center",
               justifyContent: "space-evenly",
+              marginVertical: 1,
             }}
           >
             <Image
               style={{
-                width: 65,
-                height: 65,
+                width: 50,
+                height: 50,
+                margin: 5,
               }}
               source={{ uri: item.imagePaths[0] }}
               resizeMode="contain"
@@ -141,8 +143,6 @@ const OrderList = ({ filter }) => {
               >
                 {item.productName.slice(0, 30)}...
               </Text>
-
-              {/* <Text>Qty. {item.quantity}</Text> */}
             </View>
           </View>
         ))

@@ -3,44 +3,186 @@ import { AntDesign } from "@expo/vector-icons";
 import {
   View,
   Modal,
+  Text,
   SafeAreaView,
   Image,
   useWindowDimensions,
   TouchableOpacity,
-  ActivityIndicator,
+  FlatList,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../../redux/CartReducer";
+import { useNavigation } from "@react-navigation/native";
 
 import MazindaLogo from "../../assets/logo/logo_mazinda.png";
 
 const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
   const [stories, setStories] = useState([...vendorStories]);
-  const { height, width } = useWindowDimensions();
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  const { width } = useWindowDimensions();
   const [current, setCurrent] = useState(0);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let timeout;
+  const addItemToCart = () => {
+    dispatch(
+      addToCart({
+        _id: stories[current].product._id,
+        quantity: stories[current].product.quantity,
+      })
+    );
+    setAddedToCart(true);
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 3000);
+  };
 
-    if (showStoryModal) {
-      // Reset loading state when current changes
-      setLoading(true);
+  const handleScroll = (event) => {
+    // Get the scroll position
+    const scrollPosition = event.nativeEvent.contentOffset.x;
+    // Get the index of current active item
+    const index = scrollPosition / width;
 
-      timeout = setTimeout(() => {
-        if (current !== stories.length - 1) {
-          setCurrent(current + 1);
-        } else {
-          setShowStoryModal(false);
-        }
-      }, 5000);
-    }
+    setCurrent(index);
+  };
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [current, showStoryModal]);
+  const renderDotIndicators = () => {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        {stories.map((dot, index) => {
+          if (current === index) {
+            return (
+              <View
+                key={index}
+                style={{
+                  backgroundColor: "#212325",
+                  height: 10,
+                  width: 20,
+                  borderRadius: 5,
+                  marginHorizontal: 6,
+                }}
+              ></View>
+            );
+          } else {
+            return (
+              <View
+                key={index}
+                style={{
+                  backgroundColor: "lightgray",
+                  height: 10,
+                  width: 10,
+                  borderRadius: 5,
+                  marginHorizontal: 6,
+                }}
+              ></View>
+            );
+          }
+        })}
+      </View>
+    );
+  };
 
-  const onImageLoad = () => {
-    setLoading(false);
+  const renderItem = ({ item }) => {
+    return (
+      <View
+        style={{
+          paddingHorizontal: 10,
+          flexDirection: "column",
+          maxWidth: width,
+        }}
+      >
+        <Image
+          resizeMode="contain"
+          source={{ uri: item.product.imagePaths[0] }}
+          style={{
+            height: "65%",
+            width: width - 20,
+          }}
+        />
+        <View
+          style={{
+            paddingHorizontal: 40,
+            marginTop: 25,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: 24,
+              color: "#00000099",
+            }}
+            numberOfLines={1}
+          >
+            {item.product.productName}
+          </Text>
+
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 10,
+              justifyContent: "center",
+              marginTop: 40,
+            }}
+          >
+            <Text
+              style={{
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: 35,
+              }}
+              numberOfLines={1}
+            >
+              ₹
+              {item.product.pricing.salesPrice -
+                (item.product.pricing.costPrice - item.specialPrice)}
+            </Text>
+            <Text
+              style={{
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: 22,
+                textDecorationLine: "line-through",
+                color: "gray",
+                alignSelf: "flex-end",
+              }}
+              numberOfLines={1}
+            >
+              ₹{item.product.pricing.salesPrice}
+            </Text>
+          </View>
+          <View
+            style={{
+              alignItems: "center",
+              marginTop: 10,
+              borderRadius: 30,
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: 600,
+                color: "#14be47",
+                fontSize: 27,
+              }}
+            >
+              {String(
+                ((item.product.pricing.mrp - item.specialPrice) /
+                  item.product.pricing.mrp) *
+                  100
+              ).slice(0, 4)}
+              % Off
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
   };
 
   return (
@@ -80,7 +222,7 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
             </TouchableOpacity>
           </View>
 
-          <View
+          {/* <View
             style={{
               width,
               justifyContent: "space-evenly",
@@ -98,36 +240,96 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
                 }}
               ></View>
             ))}
-          </View>
+          </View> */}
 
-          {/* Loading UI */}
-          {loading && (
-            <ActivityIndicator
-              style={{
-                marginVertical: 40,
-              }}
-              size="large"
-              color="#FFA500"
-            />
-          )}
-
-          <Image
-            key={stories[current].product.imagePaths[0]}
-            source={{ uri: stories[current].product.imagePaths[0] }}
-            onLoad={onImageLoad}
-            onError={onImageLoad} // Set loading to false in case of an error
+          <View
             style={{
-              marginTop: 100,
-              width: 300,
-              height: 300,
-              // display: 'none'
+              width: width,
             }}
-            resizeMode="contain"
-          />
+          >
+            <FlatList
+              data={stories.map((story) => story)}
+              keyExtractor={(item) => item._id}
+              renderItem={renderItem}
+              onScroll={handleScroll}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
         </View>
 
-        {/* View for left right touch */}
+        {/* {image_paths.length > 1 ? ( */}
         <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            position: "absolute",
+            bottom: 0,
+            width: "100%",
+            gap: 20,
+          }}
+        >
+          {renderDotIndicators()}
+
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 10,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setShowStoryModal(false);
+                navigation.navigate("Product", {
+                  item: stories[current].product,
+                });
+              }}
+              style={{
+                backgroundColor: "#ececec",
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 20,
+                width: width / 2.5,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  textAlign: "center",
+                }}
+              >
+                VIEW PRODUCT
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => addItemToCart()}
+              style={{
+                backgroundColor: "#ececec",
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 20,
+                width: width / 2.5,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  textAlign: "center",
+                }}
+              >
+                {addedToCart ? "ADDED TO CART" : "ADD TO CART"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* ) : null} */}
+
+        {/* View for left right touch */}
+        {/* <View
           style={{
             width,
             height,
@@ -162,7 +364,7 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
               height: "100%",
             }}
           ></TouchableOpacity>
-        </View>
+        </View> */}
       </SafeAreaView>
     </Modal>
   );

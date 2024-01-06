@@ -1,6 +1,5 @@
 import {
   Image,
-  StyleSheet,
   Text,
   View,
   useWindowDimensions,
@@ -13,14 +12,21 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import { FlatList } from "react-native";
 import { ScrollView } from "react-native-virtualized-view";
+import { useNavigation } from "@react-navigation/native";
 
 const CategoriesScreen = () => {
-  const { width, height } = useWindowDimensions();
+  const navigation = useNavigation();
+  const { width } = useWindowDimensions();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const renderCategory = (item) => (
     <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("Category", {
+          categoryName: item.categoryName,
+        })
+      }
       style={{
         marginHorizontal: 15,
         alignItems: "center",
@@ -31,33 +37,32 @@ const CategoriesScreen = () => {
       <View
         style={{
           borderRadius: 100,
-          padding: 5,
           overflow: "hidden",
         }}
       >
         <Image
           resizeMode="contain"
           style={{
-            width: 120,
-            height: 120,
+            width: 100,
+            height: 100,
           }}
           source={{ uri: item.categoryImage }}
         />
       </View>
       <Text
+        numberOfLines={1}
         style={{
-          fontWeight: 600,
-          fontSize: 12,
           textAlign: "center",
+          fontSize: 15,
+          fontWeight: 500,
         }}
       >
-        {item.storeName}
+        {item.categoryName}
       </Text>
     </TouchableOpacity>
   );
 
   useEffect(() => {
-    setLoading(true);
     (async () => {
       const { data } = await axios.post(
         "https://mazinda.com/api/category/fetch-categories"
@@ -113,12 +118,14 @@ const CategoriesScreen = () => {
             style={{
               fontSize: 27,
               textAlign: "center",
+              marginBottom: 20,
             }}
           >
             Browse Categories
           </Text>
 
           <FlatList
+            gap={25}
             numColumns={3}
             keyExtractor={(item) => item._id}
             data={categories}
@@ -134,5 +141,3 @@ const CategoriesScreen = () => {
 };
 
 export default CategoriesScreen;
-
-const styles = StyleSheet.create({});

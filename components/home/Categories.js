@@ -10,9 +10,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const Categories = () => {
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
+  const navigation = useNavigation();
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,29 +58,44 @@ const Categories = () => {
       >
         {categories.map((item) => (
           <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Category", {
+                categoryName: item.categoryName,
+              })
+            }
             key={item._id}
             style={{
-              marginHorizontal: 5,
+              marginHorizontal: 3,
+              width: width / 3.8,
               alignItems: "center",
-              gap: 10,
-              width: width / 4,
             }}
           >
             <View
               style={{
-                borderRadius: 100,
-                padding: 5,
+                paddingHorizontal: 5,
                 overflow: "hidden",
+                gap: 8,
               }}
             >
               <Image
                 resizeMode="contain"
                 style={{
-                  width: 120,
-                  height: 120,
+                  width: 90,
+                  height: 90,
+                  borderRadius: 100,
                 }}
                 source={{ uri: item.categoryImage }}
               />
+              <Text
+                numberOfLines={1}
+                style={{
+                  textAlign: "center",
+                  fontSize: 15,
+                  fontWeight: 500,
+                }}
+              >
+                {item.categoryName}
+              </Text>
             </View>
             <Text
               style={{

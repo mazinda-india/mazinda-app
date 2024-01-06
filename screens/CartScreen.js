@@ -15,6 +15,7 @@ import CheckoutModal from "../components/modals/CheckoutModal";
 
 const CartScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
+  // console.log(cart);
   const [checkoutModalVisible, setCheckoutModalVisible] = useState(false);
 
   const [itemData, setItemData] = useState([]);
@@ -50,7 +51,7 @@ const CartScreen = () => {
   };
 
   useEffect(() => {
-    setItemDataLoading(true);
+    // setItemDataLoading(true);
     (async () => {
       const itemDataPromises = cart.map(async (item) => {
         const { data } = await axios.post(
@@ -143,14 +144,14 @@ const CartScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <Navbar />
+
       <ScrollView>
         <CheckoutModal
           checkoutModalVisible={checkoutModalVisible}
           setCheckoutModalVisible={setCheckoutModalVisible}
           cart={cart}
         />
-
-        <Navbar />
 
         <Text
           style={{
@@ -171,13 +172,14 @@ const CartScreen = () => {
               padding: 10,
               gap: 8,
               alignItems: "center",
-              justifyContent: "space-evenly",
+              justifyContent: "space-between",
             }}
           >
             <Image
               style={{
                 width: 75,
                 height: 75,
+                marginHorizontal: 12,
               }}
               source={{ uri: item.imagePaths[0] }}
             />
@@ -185,14 +187,17 @@ const CartScreen = () => {
               style={{
                 flexDirection: "column",
                 gap: 5,
+                width: "100%",
               }}
             >
               <Text
                 style={{
                   fontSize: 16,
+                  color: "#525252",
                 }}
+                numberOfLines={1}
               >
-                {item.productName.slice(0, 30)}...
+                {item.productName.slice(0, 31)}...
               </Text>
               <View
                 style={{
@@ -229,7 +234,13 @@ const CartScreen = () => {
                   % OFF
                 </Text>
               </View>
-              <Text>Quantity: {item.quantity}</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                }}
+              >
+                <Text>Quantity: {item.quantity}</Text>
+              </View>
             </View>
             {/* <MaterialIcons name="navigate-next" size={24} color="black" /> */}
           </View>
@@ -424,7 +435,7 @@ const CartScreen = () => {
           <TouchableOpacity
             onPress={() => setCheckoutModalVisible(true)}
             style={{
-              backgroundColor: "#f17e13",
+              backgroundColor: "#212121",
               paddingVertical: 10,
               paddingHorizontal: 20,
               borderRadius: 7,

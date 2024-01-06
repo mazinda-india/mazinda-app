@@ -25,6 +25,7 @@ import LocationProvider from "../contexts/LocationContext";
 import OrderPlacedScreen from "../screens/OrderPlacedScreen";
 import CurrentOrders from "../screens/Account/CurrentOrders";
 import OrderHistory from "../screens/Account/OrderHistory";
+import CategoryScreen from "../screens/CategoryScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -135,6 +136,11 @@ const StackNavigator = () => {
           <Stack.Screen
             name="Main"
             component={BottomTabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Category"
+            component={CategoryScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

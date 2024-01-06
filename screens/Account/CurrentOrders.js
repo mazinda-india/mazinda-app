@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView } from "react-native";
+import { SafeAreaView } from "react-native";
 import OrderList from "../../components/utility/OrderList";
 
 const CurrentOrders = () => {
@@ -6,7 +6,6 @@ const CurrentOrders = () => {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "white",
       }}
     >
       <OrderList filter={"current"} />

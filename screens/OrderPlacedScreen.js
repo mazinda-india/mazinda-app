@@ -14,12 +14,10 @@ const OrderPlacedScreen = () => {
     <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <LottieView
         source={require("../assets/thumbs.json")}
-        // ref={animation}
         style={{
           height: 260,
           width: 400,
           alignSelf: "center",
-          //   marginTop: 40,
           justifyContent: "center",
         }}
         autoPlay

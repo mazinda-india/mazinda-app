@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   View,
   Image,
+  useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
@@ -18,8 +19,10 @@ import { ScrollView } from "react-native-virtualized-view";
 import HorizontalProductList from "../components/utility/HorizontalProductList";
 import { fetchUserData } from "../redux/UserReducer";
 import { fetchStoriesData } from "../redux/StoryReducer";
+import Carousel from "../components/utility/Carousel";
 
 const HomeScreen = () => {
+  const { width } = useWindowDimensions();
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -28,11 +31,25 @@ const HomeScreen = () => {
     dispatch(fetchStoriesData());
   }, []);
 
+  const top_carousel_img = [1, 2, 3, 4].map(
+    (counter) =>
+      `https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/top-carousel/${counter}.jpeg`
+  );
+  console.log(top_carousel_img);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Navbar />
       <ScrollView>
         <Story />
+
+        <View
+          style={{
+            height: 120,
+          }}
+        >
+          <Carousel image_paths={top_carousel_img} showDotsIndicator={false} />
+        </View>
 
         <View style={{ padding: 10 }}>
           <Subcategories />

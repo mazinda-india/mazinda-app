@@ -1,7 +1,6 @@
 import {
   Image,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -16,20 +15,59 @@ import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import CheckoutModal from "../components/modals/CheckoutModal";
 import axios from "axios";
+import Carousel from "../components/utility/Carousel";
+import { ScrollView } from "react-native-virtualized-view";
 
 const ProductScreen = ({ route }) => {
   const { item } = route.params;
+
+  const variants = item.variants;
+  const variantsInfo = item.variantsInfo;
+
   const { width } = useWindowDimensions();
   const navigation = useNavigation();
 
   const [addedToCart, setAddedToCart] = useState(false);
+  const [itemData, setItemData] = useState({
+    combinationName: item.combinationName,
+    description: item.description,
+    imagePaths: item.imagePaths,
+    pricing: item.pricing,
+    productName: item.productName,
+  });
   const [checkoutModalVisible, setCheckoutModalVisible] = useState(false);
 
   const [storeInfo, setStoreInfo] = useState({});
   const [storeProducts, setStoreProducts] = useState([]);
 
   const dispatch = useDispatch();
-  // const cart = useSelector(state => state.cart.cart)
+
+  const handleCombinationChange = (newVarient, index) => {
+    let arr = itemData.combinationName.split("-");
+    arr[index] = newVarient;
+    newCombination = arr.join("-");
+    setItemData((prevData) => ({
+      ...prevData,
+      combinationName: newCombination,
+    }));
+  };
+
+  useEffect(() => {
+    if (variants && Object.keys(variants).length) {
+      if (Object.keys(variants).includes(itemData.combinationName)) {
+        const { productName, pricing, imagePaths, description } =
+          variants[itemData.combinationName];
+
+        setItemData((prevData) => ({
+          ...prevData,
+          description,
+          imagePaths,
+          pricing,
+          productName,
+        }));
+      }
+    }
+  }, [itemData.combinationName]);
 
   const addItemToCart = (item) => {
     dispatch(addToCart({ _id: item._id, quantity: item.quantity }));
@@ -80,6 +118,8 @@ const ProductScreen = ({ route }) => {
           bottom: 0,
           backgroundColor: "white",
           zIndex: 2,
+          borderTopColor: "lightgray",
+          borderTopWidth: 1,
         }}
       >
         <View
@@ -89,29 +129,30 @@ const ProductScreen = ({ route }) => {
             alignItems: "center",
             justifyContent: "center",
             gap: 10,
-            paddingBottom: 30,
+            paddingBottom: 36,
+            paddingTop: 12,
           }}
         >
           <TouchableOpacity
             style={{
-              borderColor: "black",
+              borderColor: addedToCart ? "green" : "#2e2f34",
               borderWidth: 1.2,
-              paddingVertical: 14,
+              paddingVertical: 11,
               borderRadius: 4,
               paddingHorizontal: 20,
               flexDirection: "row",
               alignItems: "center",
-              gap: 5,
+              gap: 6,
             }}
             onPress={() => addItemToCart(item)}
           >
             {addedToCart ? (
               <>
-                <AntDesign name="checkcircle" size={24} color="black" />
+                <AntDesign name="checkcircle" size={20} color="green" />
                 <Text
                   style={{
                     fontSize: 16,
-                    color: "black",
+                    color: "green",
                   }}
                 >
                   Added To Cart
@@ -119,11 +160,11 @@ const ProductScreen = ({ route }) => {
               </>
             ) : (
               <>
-                <AntDesign name="shoppingcart" size={20} color="black" />
+                <AntDesign name="shoppingcart" size={20} color="#2e2f34" />
                 <Text
                   style={{
                     fontSize: 15,
-                    color: "black",
+                    color: "#2e2f34",
                   }}
                 >
                   Add To Cart
@@ -135,8 +176,8 @@ const ProductScreen = ({ route }) => {
           <TouchableOpacity
             onPress={handleBuyNow}
             style={{
-              backgroundColor: "black",
-              paddingVertical: 15,
+              backgroundColor: "#2e2f34",
+              paddingVertical: 12,
               borderRadius: 4,
               paddingHorizontal: 30,
               flexDirection: "row",
@@ -163,6 +204,7 @@ const ProductScreen = ({ route }) => {
       <ScrollView
         style={{
           marginBottom: 60,
+          backgroundColor: "#f5f5f5",
         }}
       >
         <CheckoutModal
@@ -172,20 +214,89 @@ const ProductScreen = ({ route }) => {
         />
 
         {/* Image Container View */}
-        <View style={{ width: width, height: width, padding: 20 }}>
-          <Image
-            resizeMode="contain"
-            style={{ width: "100%", height: "100%" }}
-            source={{
-              uri: item.imagePaths[0],
-            }}
-          />
-        </View>
-
-        {/* Product Name, pricing, mazinda features Container View */}
         <View
           style={{
-            paddingHorizontal: 10,
+            width: width,
+            height: width + 80,
+            backgroundColor: "white",
+          }}
+        >
+          <Carousel image_paths={itemData.imagePaths} />
+        </View>
+
+        <View
+          style={{
+            backgroundColor: "white",
+            padding: 15,
+          }}
+        >
+          {variantsInfo &&
+            Object.keys(variantsInfo).map((variantCategory, index) => (
+              <View
+                style={{
+                  borderBottomColor: "lightgray",
+                  borderBottomWidth: 1,
+                  paddingVertical: 12,
+                  gap: 16,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                    }}
+                  >
+                    {variantCategory.charAt(0).toUpperCase() +
+                      variantCategory.slice(1)}
+                    :{" "}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {itemData.combinationName.split("-")[index]}
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 10,
+                  }}
+                >
+                  {variantsInfo[variantCategory].map((variant) => (
+                    <TouchableOpacity
+                      onPress={() => handleCombinationChange(variant, index)}
+                      style={{
+                        borderWidth: 1,
+                        borderColor:
+                          itemData.combinationName.split("-")[index] === variant
+                            ? "black"
+                            : "lightgray",
+                        borderRadius: 5,
+                        paddingVertical: 9,
+                        paddingHorizontal: 15,
+                      }}
+                    >
+                      <Text>{variant}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            ))}
+        </View>
+
+        {/* Product Name, pricing*/}
+        <View
+          style={{
+            backgroundColor: "white",
+            padding: 10,
           }}
         >
           <Text
@@ -193,7 +304,7 @@ const ProductScreen = ({ route }) => {
               fontSize: 20,
             }}
           >
-            {item.productName}
+            {itemData.productName}
           </Text>
 
           <View
@@ -211,7 +322,7 @@ const ProductScreen = ({ route }) => {
                 fontWeight: 500,
               }}
             >
-              ₹{item.pricing.salesPrice}
+              ₹{itemData.pricing.salesPrice}
             </Text>
 
             <Text
@@ -222,7 +333,7 @@ const ProductScreen = ({ route }) => {
                 color: "gray",
               }}
             >
-              ₹{item.pricing.mrp}
+              ₹{itemData.pricing.mrp}
             </Text>
             <View
               style={{
@@ -242,59 +353,61 @@ const ProductScreen = ({ route }) => {
                 }}
               >
                 {String(
-                  ((item.pricing.mrp - item.pricing.salesPrice) /
-                    item.pricing.mrp) *
+                  ((itemData.pricing.mrp - itemData.pricing.salesPrice) /
+                    itemData.pricing.mrp) *
                     100
                 ).slice(0, 4)}
                 % OFF
               </Text>
             </View>
           </View>
+        </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 10,
-              marginBottom: 8,
-              paddingHorizontal: 4,
-              borderRadius: 10,
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={styles.mazinda_feature_box}>
-              <Image
-                style={styles.mazinda_feature_image}
-                source={require("../assets/item_desc_icons/delivery_30_min.png")}
-              />
-              <Text style={styles.mazinda_feature_text}>
-                Delivery Within 30 Mins
-              </Text>
-            </View>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 10,
+            marginBottom: 8,
+            marginTop: 8,
+            paddingHorizontal: 18,
+            paddingVertical: 12,
+            justifyContent: "space-between",
+            backgroundColor: "white",
+          }}
+        >
+          <View style={styles.mazinda_feature_box}>
+            <Image
+              style={styles.mazinda_feature_image}
+              source={require("../assets/item_desc_icons/delivery_30_min.png")}
+            />
+            <Text numberOfLines={2} style={styles.mazinda_feature_text}>
+              Delivery Within 30 Mins
+            </Text>
+          </View>
 
-            <View style={styles.mazinda_feature_box}>
-              <Image
-                style={styles.mazinda_feature_image}
-                source={require("../assets/item_desc_icons/instant_refund.png")}
-              />
+          <View style={styles.mazinda_feature_box}>
+            <Image
+              style={styles.mazinda_feature_image}
+              source={require("../assets/item_desc_icons/instant_refund.png")}
+            />
 
-              <Text style={styles.mazinda_feature_text}>Instant Return</Text>
-            </View>
-            <View style={styles.mazinda_feature_box}>
-              <Image
-                style={styles.mazinda_feature_image}
-                source={require("../assets/item_desc_icons/mazinda_delivered.png")}
-              />
+            <Text style={styles.mazinda_feature_text}>Instant Return</Text>
+          </View>
+          <View style={styles.mazinda_feature_box}>
+            <Image
+              style={styles.mazinda_feature_image}
+              source={require("../assets/item_desc_icons/mazinda_delivered.png")}
+            />
 
-              <Text style={styles.mazinda_feature_text}>Mazinda Delivered</Text>
-            </View>
+            <Text style={styles.mazinda_feature_text}>Mazinda Delivered</Text>
+          </View>
 
-            <View style={styles.mazinda_feature_box}>
-              <Image
-                style={styles.mazinda_feature_image}
-                source={require("../assets/item_desc_icons/pay_on_delivery.png")}
-              />
-              <Text style={styles.mazinda_feature_text}>Pay On Delivery</Text>
-            </View>
+          <View style={styles.mazinda_feature_box}>
+            <Image
+              style={styles.mazinda_feature_image}
+              source={require("../assets/item_desc_icons/pay_on_delivery.png")}
+            />
+            <Text style={styles.mazinda_feature_text}>Pay On Delivery</Text>
           </View>
         </View>
 
@@ -302,13 +415,9 @@ const ProductScreen = ({ route }) => {
         {Object.keys(storeInfo).length ? (
           <View
             style={{
-              marginHorizontal: 18,
-              borderColor: "lightgray",
-              borderWidth: 1,
+              backgroundColor: "white",
               paddingHorizontal: 20,
               paddingVertical: 10,
-              borderRadius: 10,
-              marginVertical: 15,
             }}
           >
             <View
@@ -320,7 +429,8 @@ const ProductScreen = ({ route }) => {
             >
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: 18,
+                  fontWeight: 500,
                 }}
               >
                 Sold By
@@ -345,9 +455,6 @@ const ProductScreen = ({ route }) => {
 
               <TouchableOpacity
                 style={{
-                  // borderColor: "black",
-                  // borderWidth: 1.2,
-                  backgroundColor: "black",
                   borderRadius: 4,
                   paddingHorizontal: 10,
                   paddingVertical: 4,
@@ -361,12 +468,12 @@ const ProductScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 16,
-                    color: "white",
+                    fontSize: 15,
+                    color: "gray",
                     fontWeight: 600,
                   }}
                 >
-                  View Shop
+                  VIEW SHOP
                 </Text>
               </TouchableOpacity>
             </View>
@@ -386,7 +493,7 @@ const ProductScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 25,
+                    fontSize: 22,
                   }}
                 >
                   {storeInfo.followers.length}
@@ -401,7 +508,7 @@ const ProductScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 25,
+                    fontSize: 22,
                   }}
                 >
                   {storeProducts?.length}
@@ -413,17 +520,18 @@ const ProductScreen = ({ route }) => {
         ) : null}
 
         {/* Product Description */}
-        <View>
-          {item.description.map((desc, index) => (
+        <View
+          style={{
+            marginTop: 8,
+          }}
+        >
+          {itemData.description.map((desc, index) => (
             <View
               key={index}
               style={{
-                marginHorizontal: 18,
-                borderColor: "lightgray",
-                borderWidth: 1,
                 paddingHorizontal: 20,
                 paddingVertical: 10,
-                borderRadius: 10,
+                backgroundColor: "white",
               }}
             >
               <View
@@ -445,9 +553,10 @@ const ProductScreen = ({ route }) => {
               </View>
               <Text
                 style={{
-                  marginVertical: 15,
+                  marginVertical: 18,
                   fontSize: 17,
-                  marginHorizontal: 20,
+                  color: "#2e2f34",
+                  // marginHorizontal: 5,
                 }}
               >
                 {desc.description}
@@ -464,15 +573,16 @@ export default ProductScreen;
 
 const styles = StyleSheet.create({
   mazinda_feature_box: {
-    width: "22%",
+    width: "20%",
     alignItems: "center",
-    gap: 10,
+    gap: 9,
   },
   mazinda_feature_image: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
   },
   mazinda_feature_text: {
     textAlign: "center",
+    fontSize: 12,
   },
 });
