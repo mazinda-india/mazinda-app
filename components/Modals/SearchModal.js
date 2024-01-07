@@ -4,6 +4,7 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -41,6 +42,7 @@ const SearchModal = ({
             flexDirection: "row",
             paddingHorizontal: 10,
             alignItems: "center",
+            marginTop: 13,
           }}
         >
           <TouchableOpacity onPress={() => setSearchModalVisible(false)}>
@@ -49,6 +51,7 @@ const SearchModal = ({
 
           <TextInput
             autoCorrect={false}
+            placeholder="Enter Here"
             value={searchQuery}
             onChangeText={(text) => setSearchQuery(text)}
             returnKeyType="search"
@@ -56,7 +59,8 @@ const SearchModal = ({
             style={{
               borderColor: "lightgray",
               borderWidth: 1,
-              padding: 12,
+              paddingHorizontal: 12,
+              paddingVertical: Platform.OS === "android" ? 7 : 12,
               marginHorizontal: 10,
               borderRadius: 5,
               width: "88%",

@@ -1,5 +1,14 @@
-import { Image, ScrollView, Pressable, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  Text,
+  View,
+  FlatList,
+  useWindowDimensions,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+
+import { ScrollView } from "react-native-virtualized-view";
 
 const PlaceOrder = ({
   itemData,
@@ -7,86 +16,107 @@ const PlaceOrder = ({
   selectedPaymentMethod,
   pricing,
 }) => {
-  console.log(itemData);
+  const { height, width } = useWindowDimensions();
   return (
     <ScrollView
       style={{
-        marginBottom: 60,
+        marginBottom: 100,
+        backgroundColor: "#f5f5f5",
       }}
     >
-      {itemData.map((item, index) => (
-        <View
-          key={index}
-          style={{
-            backgroundColor: "white",
-            flexDirection: "row",
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            gap: 8,
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Image
-            style={{
-              width: 75,
-              height: 75,
-            }}
-            source={{ uri: item.imagePaths[0] }}
-          />
+      <FlatList
+        data={itemData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => (
           <View
             style={{
-              flexDirection: "column",
-              gap: 5,
+              width: width,
+              backgroundColor: "white",
+              flexDirection: "row",
+              paddingHorizontal: 10,
+              paddingVertical: 20,
+              gap: 8,
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 8,
             }}
           >
-            <Text
+            <Image
               style={{
-                fontSize: 15,
+                width: width / 6.5,
+                height: 75,
+                marginHorizontal: 12,
               }}
-            >
-              {item.productName.slice(0, 30)}...
-            </Text>
+              source={{ uri: item.imagePaths[0] }}
+              resizeMode="contain"
+            />
+
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
+                flexDirection: "column",
+                gap: 5,
+                width: "100%",
               }}
             >
               <Text
                 style={{
-                  fontSize: 18,
+                  fontSize: 16,
+                  color: "#525252",
                 }}
+                numberOfLines={1}
               >
-                ₹{item.pricing.salesPrice}
+                {item.productName.slice(0, 27)}...
               </Text>
-              <Text
+              <View
                 style={{
-                  textDecorationLine: "line-through",
-                  color: "gray",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
                 }}
               >
-                ₹{item.pricing.mrp}
-              </Text>
-              <Text
+                <Text
+                  style={{
+                    fontSize: 18,
+                  }}
+                >
+                  ₹{item.pricing.salesPrice}
+                </Text>
+                <Text
+                  style={{
+                    textDecorationLine: "line-through",
+                    color: "gray",
+                  }}
+                >
+                  ₹{item.pricing.mrp}
+                </Text>
+                <Text
+                  style={{
+                    color: "#22c55e",
+                    fontWeight: 600,
+                  }}
+                >
+                  {String(
+                    ((item.pricing.mrp - item.pricing.salesPrice) /
+                      item.pricing.mrp) *
+                      100
+                  ).slice(0, 4)}
+                  % OFF
+                </Text>
+              </View>
+              <View
                 style={{
-                  color: "green",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "75%",
+                  alignItems: "center",
                 }}
               >
-                {String(
-                  ((item.pricing.mrp - item.pricing.salesPrice) /
-                    item.pricing.mrp) *
-                    100
-                ).slice(0, 4)}
-                % OFF
-              </Text>
+                <Text>Quantity: {item.quantity}</Text>
+              </View>
             </View>
-            <Text>Quantity: {item.quantity}</Text>
           </View>
-          <MaterialIcons name="navigate-next" size={24} color="black" />
-        </View>
-      ))}
+        )}
+      />
 
       <View
         style={{
@@ -96,8 +126,6 @@ const PlaceOrder = ({
           gap: 8,
           alignItems: "center",
           justifyContent: "space-between",
-          borderColor: "lightgray",
-          borderWidth: 1,
         }}
       >
         <View
@@ -156,13 +184,13 @@ const PlaceOrder = ({
       <Pressable
         style={{
           padding: 20,
-          borderBottomColor: "lightgray",
-          borderBottomWidth: 1,
+          backgroundColor: "white",
+          marginVertical: 8,
         }}
       >
         <Text
           style={{
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: 18,
             marginBottom: 10,
           }}
@@ -199,8 +227,6 @@ const PlaceOrder = ({
           paddingHorizontal: 20,
           backgroundColor: "white",
           paddingVertical: 15,
-          borderTopColor: "lightgray",
-          borderTopWidth: 1,
         }}
       >
         <Text

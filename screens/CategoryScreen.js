@@ -1,4 +1,10 @@
-import { View, SafeAreaView, ActivityIndicator, FlatList } from "react-native";
+import {
+  View,
+  SafeAreaView,
+  ActivityIndicator,
+  FlatList,
+  Text,
+} from "react-native";
 
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
@@ -59,13 +65,43 @@ const CategoryScreen = ({ route }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Navbar />
-      <FlatList
-        data={products}
-        renderItem={renderProductItem}
-        keyExtractor={(item) => item._id}
-        numColumns={2}
-        style={{ marginTop: 10 }}
-      />
+
+      <Text
+        style={{
+          textAlign: "center",
+          fontSize: 22,
+          marginVertical: 10,
+          fontWeight: 500,
+        }}
+      >
+        Browsing "{categoryName}"
+      </Text>
+      {products.length ? (
+        <FlatList
+          data={products}
+          renderItem={renderProductItem}
+          keyExtractor={(item) => item._id}
+          numColumns={2}
+          style={{ marginTop: 10 }}
+        />
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              color: "gray",
+            }}
+          >
+            Coming Soon
+          </Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };

@@ -97,10 +97,15 @@ const CheckoutModal = ({
 
       const fetchedItemData = await Promise.all(itemDataPromises);
       setItemData(fetchedItemData);
-      fetchPricing(fetchedItemData);
-      setItemDataLoading(false);
     })();
   }, [cart]);
+
+  useEffect(() => {
+    if (Object.keys(itemData).length) {
+      fetchPricing(itemData);
+      setItemDataLoading(false);
+    }
+  }, [itemData]);
 
   const handlePlaceOrder = async () => {
     const userToken = await AsyncStorage.getItem("user_token");
@@ -182,6 +187,7 @@ const CheckoutModal = ({
       <SafeAreaView
         style={{
           flex: 1,
+          // backgroundColor: "#f5f5f5",
           backgroundColor: "white",
           position: "relative",
         }}
@@ -231,7 +237,6 @@ const CheckoutModal = ({
           style={{
             flexDirection: "row",
             justifyContent: "space-evenly",
-            marginTop: 10,
             borderBottomColor: "lightgray",
             borderBottomWidth: 1,
             paddingVertical: 10,
@@ -298,8 +303,6 @@ const CheckoutModal = ({
             justifyContent: "center",
             alignItems: "center",
             zIndex: 2,
-            borderTopColor: "lightgray",
-            borderTopWidth: 1,
           }}
         >
           {currentStep === 2 ? (

@@ -23,7 +23,7 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const [current, setCurrent] = useState(0);
 
   const addItemToCart = () => {
@@ -93,6 +93,7 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
     return (
       <View
         style={{
+          flex: 1,
           paddingHorizontal: 10,
           flexDirection: "column",
           maxWidth: width,
@@ -102,7 +103,7 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
           resizeMode="contain"
           source={{ uri: item.product.imagePaths[0] }}
           style={{
-            height: "65%",
+            height: height / 2.5,
             width: width - 20,
           }}
         />
@@ -129,7 +130,7 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
               flexDirection: "row",
               gap: 10,
               justifyContent: "center",
-              marginTop: 40,
+              marginTop: 20,
             }}
           >
             <Text
@@ -189,6 +190,7 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
     <Modal visible={showStoryModal} animationType="fade">
       <SafeAreaView
         style={{
+          flex: 1,
           position: "relative",
         }}
       >
@@ -259,23 +261,31 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
           </View>
         </View>
 
-        {/* {image_paths.length > 1 ? ( */}
         <View
           style={{
-            alignItems: "center",
-            justifyContent: "center",
-            position: "absolute",
-            bottom: 0,
-            width: "100%",
             gap: 20,
+            position: "absolute",
+            bottom: 35,
+            left: 0,
+            right: 0,
           }}
         >
-          {renderDotIndicators()}
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              gap: 20,
+            }}
+          >
+            {renderDotIndicators()}
+          </View>
 
           <View
             style={{
               flexDirection: "row",
               gap: 10,
+              justifyContent: "center",
             }}
           >
             <TouchableOpacity
@@ -294,8 +304,9 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
               }}
             >
               <Text
+                numberOfLines={1}
                 style={{
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: 700,
                   textAlign: "center",
                 }}
@@ -315,8 +326,9 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
               }}
             >
               <Text
+                numberOfLines={1}
                 style={{
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: 700,
                   textAlign: "center",
                 }}

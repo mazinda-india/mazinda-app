@@ -4,18 +4,35 @@ import {
   View,
   Image,
   TouchableOpacity,
-  ScrollView,
+  useWindowDimensions,
+  FlatList,
 } from "react-native";
+import { ScrollView } from "react-native-virtualized-view";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native";
 import Navbar from "../components/Navbar";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { useToast } from "react-native-toast-notifications";
+import { useNavigation } from "@react-navigation/native";
 import CheckoutModal from "../components/modals/CheckoutModal";
+import {
+  decrementQuantity,
+  incrementQuantity,
+  removeFromCart,
+  updateCartOnServer,
+} from "../redux/CartReducer";
 
 const CartScreen = () => {
+  const toast = useToast();
+  const navigation = useNavigation();
+
+  const user = useSelector((state) => state.user.user);
+  const isLoggedIn = Object.keys(user).length ? true : false;
+
+  const { width, height } = useWindowDimensions();
+  const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cart);
-  // console.log(cart);
   const [checkoutModalVisible, setCheckoutModalVisible] = useState(false);
 
   const [itemData, setItemData] = useState([]);
@@ -51,7 +68,6 @@ const CartScreen = () => {
   };
 
   useEffect(() => {
-    // setItemDataLoading(true);
     (async () => {
       const itemDataPromises = cart.map(async (item) => {
         const { data } = await axios.post(
@@ -99,21 +115,11 @@ const CartScreen = () => {
       >
         <Navbar />
 
-        <Text
-          style={{
-            textAlign: "center",
-            fontSize: 24,
-            marginTop: 18,
-          }}
-        >
-          Your Shopping Cart
-        </Text>
-
         <Image
           source={require("../assets/vectors/empty_cart.png")}
           style={{
             width: "100%",
-            height: 350,
+            height: height / 3,
           }}
           resizeMode="contain"
         />
@@ -123,17 +129,20 @@ const CartScreen = () => {
             textAlign: "center",
             fontWeight: 400,
             fontSize: 23,
+            marginTop: height / 20,
           }}
         >
           Your Shopping Cart Is Empty
         </Text>
 
         <Text
+          numberOfLines={2}
           style={{
             textAlign: "center",
             marginTop: 15,
             fontSize: 18,
             color: "#6b7280",
+            marginHorizontal: 10,
           }}
         >
           Your cart looks empty, time to fill it with some amazing finds.
@@ -145,8 +154,11 @@ const CartScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Navbar />
-
-      <ScrollView>
+      <ScrollView
+        style={{
+          backgroundColor: "#f5f5f5",
+        }}
+      >
         <CheckoutModal
           checkoutModalVisible={checkoutModalVisible}
           setCheckoutModalVisible={setCheckoutModalVisible}
@@ -157,102 +169,186 @@ const CartScreen = () => {
           style={{
             textAlign: "center",
             fontSize: 24,
-            marginVertical: 18,
+            paddingVertical: 18,
+            backgroundColor: "white",
           }}
         >
           Your Shopping Cart
         </Text>
 
-        {itemData.map((item, index) => (
-          <View
-            key={index}
-            style={{
-              backgroundColor: "white",
-              flexDirection: "row",
-              padding: 10,
-              gap: 8,
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Image
-              style={{
-                width: 75,
-                height: 75,
-                marginHorizontal: 12,
-              }}
-              source={{ uri: item.imagePaths[0] }}
-            />
+        <FlatList
+          data={itemData}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => (
             <View
               style={{
-                flexDirection: "column",
-                gap: 5,
-                width: "100%",
+                width: width,
+                backgroundColor: "white",
+                flexDirection: "row",
+                paddingHorizontal: 10,
+                paddingVertical: 20,
+                gap: 8,
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 5,
               }}
             >
-              <Text
+              <Image
                 style={{
-                  fontSize: 16,
-                  color: "#525252",
+                  width: width / 6.5,
+                  height: 75,
+                  marginHorizontal: 12,
                 }}
-                numberOfLines={1}
-              >
-                {item.productName.slice(0, 31)}...
-              </Text>
+                source={{ uri: item.imagePaths[0] }}
+                resizeMode="contain"
+              />
+
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 8,
+                  flexDirection: "column",
+                  gap: 5,
+                  width: "100%",
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 18,
+                    fontSize: 16,
+                    color: "#525252",
                   }}
+                  numberOfLines={1}
                 >
-                  ₹{item.pricing.salesPrice}
+                  {item.productName.slice(0, 27)}...
                 </Text>
-                <Text
+                <View
                   style={{
-                    textDecorationLine: "line-through",
-                    color: "gray",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
                   }}
                 >
-                  ₹{item.pricing.mrp}
-                </Text>
-                <Text
+                  <Text
+                    style={{
+                      fontSize: 18,
+                    }}
+                  >
+                    ₹{item.pricing.salesPrice}
+                  </Text>
+                  <Text
+                    style={{
+                      textDecorationLine: "line-through",
+                      color: "gray",
+                    }}
+                  >
+                    ₹{item.pricing.mrp}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#22c55e",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {String(
+                      ((item.pricing.mrp - item.pricing.salesPrice) /
+                        item.pricing.mrp) *
+                        100
+                    ).slice(0, 4)}
+                    % OFF
+                  </Text>
+                </View>
+                <View
                   style={{
-                    color: "green",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "75%",
+                    alignItems: "center",
                   }}
                 >
-                  {String(
-                    ((item.pricing.mrp - item.pricing.salesPrice) /
-                      item.pricing.mrp) *
-                      100
-                  ).slice(0, 4)}
-                  % OFF
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                }}
-              >
-                <Text>Quantity: {item.quantity}</Text>
+                  <Text>Quantity: {item.quantity}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      borderColor: "#f17e13",
+                      borderWidth: 1,
+                      borderRadius: 10,
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => {
+                        dispatch(
+                          decrementQuantity({
+                            _id: item._id,
+                            quantity: item.quantity,
+                          })
+                        );
+                        dispatch(updateCartOnServer());
+                      }}
+                      style={{
+                        backgroundColor: "#f17e13",
+                        paddingHorizontal: 8,
+                        paddingVertical: 2,
+                        borderTopLeftRadius: 8,
+                        borderBottomLeftRadius: 8,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 18,
+                          fontWeight: 700,
+                        }}
+                      >
+                        -
+                      </Text>
+                    </TouchableOpacity>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingHorizontal: 7,
+                      }}
+                    >
+                      {item.quantity}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        dispatch(
+                          incrementQuantity({
+                            _id: item._id,
+                            quantity: item.quantity,
+                          })
+                        );
+                        dispatch(updateCartOnServer());
+                      }}
+                      style={{
+                        backgroundColor: "#f17e13",
+                        paddingHorizontal: 8,
+                        paddingVertical: 2,
+                        borderTopRightRadius: 8,
+                        borderBottomRightRadius: 8,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 18,
+                          fontWeight: 700,
+                        }}
+                      >
+                        +
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             </View>
-            {/* <MaterialIcons name="navigate-next" size={24} color="black" /> */}
-          </View>
-        ))}
+          )}
+        />
 
         <View
           style={{
             paddingHorizontal: 20,
             backgroundColor: "white",
             paddingVertical: 15,
-            borderTopColor: "lightgray",
-            borderTopWidth: 1,
           }}
         >
           <Text
@@ -300,7 +396,7 @@ const CartScreen = () => {
             <Text
               style={{
                 fontSize: 14,
-                color: "#57e28d",
+                color: "#22c55e",
                 fontWeight: 500,
               }}
             >
@@ -310,7 +406,7 @@ const CartScreen = () => {
             <Text
               style={{
                 fontSize: 14,
-                color: "#57e28d",
+                color: "#22c55e",
                 fontWeight: 500,
               }}
             >
@@ -429,16 +525,25 @@ const CartScreen = () => {
             width: "100%",
             alignItems: "center",
             justifyContent: "center",
-            marginTop: 15,
+            paddingTop: 15,
+            backgroundColor: "white",
           }}
         >
           <TouchableOpacity
-            onPress={() => setCheckoutModalVisible(true)}
+            onPress={() => {
+              if (isLoggedIn) {
+                setCheckoutModalVisible(true);
+              } else {
+                toast.show("Login Now and Start Placing Orders Now!");
+                navigation.navigate("Login");
+              }
+            }}
             style={{
               backgroundColor: "#212121",
               paddingVertical: 10,
               paddingHorizontal: 20,
               borderRadius: 7,
+              marginBottom: 20,
             }}
           >
             <Text

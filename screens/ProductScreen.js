@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Navbar from "../components/Navbar";
 import { AntDesign } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/CartReducer";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -17,14 +17,19 @@ import CheckoutModal from "../components/modals/CheckoutModal";
 import axios from "axios";
 import Carousel from "../components/utility/Carousel";
 import { ScrollView } from "react-native-virtualized-view";
+import { useToast } from "react-native-toast-notifications";
 
 const ProductScreen = ({ route }) => {
+  const toast = useToast();
+
+  const user = useSelector((state) => state.user.user);
+  const isLoggedIn = Object.keys(user).length ? true : false;
   const { item } = route.params;
 
   const variants = item.variants;
   const variantsInfo = item.variantsInfo;
 
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const navigation = useNavigation();
 
   const [addedToCart, setAddedToCart] = useState(false);
@@ -78,7 +83,12 @@ const ProductScreen = ({ route }) => {
   };
 
   const handleBuyNow = () => {
-    setCheckoutModalVisible(true);
+    if (isLoggedIn) {
+      setCheckoutModalVisible(true);
+    } else {
+      toast.show("Login Now and Start Placing Orders Now!");
+      navigation.navigate("Login");
+    }
   };
 
   useEffect(() => {
@@ -112,98 +122,91 @@ const ProductScreen = ({ route }) => {
     >
       <View
         style={{
-          flex: 1,
-          width: "100%",
           position: "absolute",
           bottom: 0,
+          left: 0,
+          right: 0,
+          flexDirection: "row",
+          justifyContent: "center",
+          gap: 12,
+          paddingTop: 15,
+          paddingBottom: 25,
           backgroundColor: "white",
-          zIndex: 2,
           borderTopColor: "lightgray",
           borderTopWidth: 1,
         }}
       >
-        <View
+        <TouchableOpacity
           style={{
+            borderColor: addedToCart ? "green" : "#2e2f34",
+            borderWidth: 1.2,
+            paddingVertical: 11,
+            borderRadius: 4,
+            paddingHorizontal: 20,
             flexDirection: "row",
-            width: "100%",
             alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
-            paddingBottom: 36,
-            paddingTop: 12,
+            gap: 6,
+          }}
+          onPress={() => addItemToCart(item)}
+        >
+          {addedToCart ? (
+            <>
+              <AntDesign name="checkcircle" size={20} color="green" />
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: "green",
+                }}
+              >
+                Added To Cart
+              </Text>
+            </>
+          ) : (
+            <>
+              <AntDesign name="shoppingcart" size={20} color="#2e2f34" />
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: "#2e2f34",
+                }}
+              >
+                Add To Cart
+              </Text>
+            </>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleBuyNow}
+          style={{
+            backgroundColor: "#2e2f34",
+            paddingVertical: 12,
+            borderRadius: 4,
+            paddingHorizontal: 30,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 5,
           }}
         >
-          <TouchableOpacity
+          <AntDesign name="doubleright" size={20} color="white" />
+          <Text
             style={{
-              borderColor: addedToCart ? "green" : "#2e2f34",
-              borderWidth: 1.2,
-              paddingVertical: 11,
-              borderRadius: 4,
-              paddingHorizontal: 20,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 6,
-            }}
-            onPress={() => addItemToCart(item)}
-          >
-            {addedToCart ? (
-              <>
-                <AntDesign name="checkcircle" size={20} color="green" />
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: "green",
-                  }}
-                >
-                  Added To Cart
-                </Text>
-              </>
-            ) : (
-              <>
-                <AntDesign name="shoppingcart" size={20} color="#2e2f34" />
-                <Text
-                  style={{
-                    fontSize: 15,
-                    color: "#2e2f34",
-                  }}
-                >
-                  Add To Cart
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleBuyNow}
-            style={{
-              backgroundColor: "#2e2f34",
-              paddingVertical: 12,
-              borderRadius: 4,
-              paddingHorizontal: 30,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 5,
+              fontSize: 15,
+              color: "white",
+              fontWeight: 600,
             }}
           >
-            <AntDesign name="doubleright" size={20} color="white" />
-            <Text
-              style={{
-                fontSize: 15,
-                color: "white",
-                fontWeight: 600,
-              }}
-            >
-              Buy Now
-            </Text>
-          </TouchableOpacity>
-        </View>
+            Buy Now
+          </Text>
+        </TouchableOpacity>
       </View>
+      {/* </View> */}
 
       <Navbar />
 
       <ScrollView
         style={{
-          marginBottom: 60,
+          marginBottom: 70,
           backgroundColor: "#f5f5f5",
         }}
       >
@@ -217,7 +220,8 @@ const ProductScreen = ({ route }) => {
         <View
           style={{
             width: width,
-            height: width + 80,
+            // height: width + 50,
+            height: height / 1.8,
             backgroundColor: "white",
           }}
         >
@@ -381,7 +385,7 @@ const ProductScreen = ({ route }) => {
               source={require("../assets/item_desc_icons/delivery_30_min.png")}
             />
             <Text numberOfLines={2} style={styles.mazinda_feature_text}>
-              Delivery Within 30 Mins
+              30 Min Delivery
             </Text>
           </View>
 
@@ -447,7 +451,7 @@ const ProductScreen = ({ route }) => {
             >
               <Text
                 style={{
-                  fontSize: 17,
+                  fontSize: 16,
                 }}
               >
                 {storeInfo.storeName.toUpperCase()}
@@ -543,12 +547,13 @@ const ProductScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: 17,
                     color: "gray",
                     textAlign: "center",
+                    fontWeight: 600,
                   }}
                 >
-                  {desc.heading}
+                  {desc.heading.toUpperCase()}
                 </Text>
               </View>
               <Text

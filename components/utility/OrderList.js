@@ -1,40 +1,49 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   SafeAreaView,
   ActivityIndicator,
   Image,
-  ScrollView,
+  FlatList,
+  useWindowDimensions,
+  Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import LottieView from "lottie-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const OrderList = ({ filter }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
+
+  const { width } = useWindowDimensions();
+
+  const fetchOrders = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("user_token");
+      const { data } = await axios.post(
+        "https://mazinda.com/api/order/fetch-user-orders",
+        { userToken, filter }
+      );
+
+      if (data.success) {
+        setOrders(data.orders.reverse());
+      } else {
+        console.log("An error occurred");
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    (async () => {
-      try {
-        const userToken = await AsyncStorage.getItem("user_token");
-        const { data } = await axios.post(
-          "https://mazinda.com/api/order/fetch-user-orders",
-          { userToken, filter }
-        );
-
-        if (data.success) {
-          setOrders(data.orders);
-        } else {
-          console.log("An error occurred");
-        }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    })();
+    fetchOrders();
   }, [filter]);
 
   if (loading) {
@@ -65,7 +74,6 @@ const OrderList = ({ filter }) => {
           style={{
             color: "gray",
             fontSize: 16,
-            // marginVertical: 10,
             textAlign: "center",
           }}
         >
@@ -75,79 +83,115 @@ const OrderList = ({ filter }) => {
     );
   }
 
-  return (
-    <ScrollView>
-      {orders.reverse().map((order) =>
-        order.cart.map((item) => (
-          <View
-            key={item._id}
+  const renderItem = ({ item }) => {
+    const order = orders.find((order) => order.cart.includes(item));
+    console.log("order", order);
+    return (
+      <Pressable
+        onPress={() =>
+          navigation.navigate("View Order", {
+            item: item,
+            status: order.status,
+            address: order.address,
+          })
+        }
+        style={{
+          backgroundColor: "white",
+          flexDirection: "row",
+          paddingHorizontal: 10,
+          paddingVertical: 20,
+          gap: 8,
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginVertical: 1,
+        }}
+      >
+        <View
+          style={{
+            width: width / 5,
+            paddingLeft: 10,
+          }}
+        >
+          <Image
             style={{
-              backgroundColor: "white",
+              width: 50,
+              height: 50,
+              marginVertical: 5,
+            }}
+            source={{ uri: item.imagePaths[0] }}
+            resizeMode="contain"
+          />
+        </View>
+
+        <View
+          style={{
+            flexDirection: "column",
+            gap: 5,
+            width: (4 * width) / 5,
+            paddingRight: 40,
+            overflow: "hidden",
+          }}
+        >
+          <View
+            style={{
               flexDirection: "row",
-              padding: 10,
-              gap: 8,
               alignItems: "center",
-              justifyContent: "space-evenly",
-              marginVertical: 1,
+              gap: 3,
             }}
           >
-            <Image
-              style={{
-                width: 50,
-                height: 50,
-                margin: 5,
-              }}
-              source={{ uri: item.imagePaths[0] }}
-              resizeMode="contain"
-            />
+            {order.status !== "delivered" ? (
+              <LottieView
+                source={require("../../assets/status-green.json")}
+                style={{
+                  height: 25,
+                  width: 25,
+                }}
+                speed={1}
+                autoPlay
+                loop
+              />
+            ) : null}
 
-            <View
+            <Text
               style={{
-                flexDirection: "column",
-                gap: 5,
+                color: order.status === "delivered" ? "black" : "#83d429",
+                fontWeight: 500,
               }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 3,
-                }}
-              >
-                <LottieView
-                  source={require("../../assets/status-green.json")}
-                  style={{
-                    height: 25,
-                    width: 25,
-                  }}
-                  speed={1}
-                  autoPlay
-                  loop
-                />
-
-                <Text
-                  style={{
-                    color: "#83d429",
-                    fontWeight: 600,
-                  }}
-                >
-                  {order.status}
-                </Text>
-              </View>
-
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: "#525156",
-                }}
-              >
-                {item.productName.slice(0, 30)}...
-              </Text>
-            </View>
+              {order.status === "out_for_delivery"
+                ? "OUT FOR DELIVERY".toUpperCase()
+                : order.status === "delivered"
+                ? "DELIVERED"
+                : order.status.toUpperCase()}
+            </Text>
           </View>
-        ))
-      )}
-    </ScrollView>
+
+          <Text
+            numberOfLines={1}
+            style={{
+              fontSize: 16,
+              color: "#525156",
+            }}
+          >
+            {item.productName}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  };
+
+  return (
+    <FlatList
+      data={orders.flatMap((order) => order.cart)}
+      keyExtractor={(item, index) => index}
+      renderItem={renderItem}
+      refreshing={refreshing}
+      onRefresh={async () => {
+        setRefreshing(true);
+        await fetchOrders();
+        setRefreshing(false);
+      }}
+    />
   );
 };
 

@@ -8,27 +8,32 @@ import {
 
 const Payment = ({ selectedPaymentMethod, setSelectedPaymentMethod }) => {
   return (
-    <ScrollView>
+    <ScrollView
+      style={{
+        backgroundColor: "#f5f5f5",
+      }}
+    >
       <Text
         style={{
           fontWeight: 500,
           paddingVertical: 15,
           paddingHorizontal: 20,
           fontSize: 18,
+          backgroundColor: "white",
         }}
       >
         Choose your payment method
       </Text>
       <Pressable
-        onPress={() => setSelectedPaymentMethod("online")}
+        // onPress={() => setSelectedPaymentMethod("online")}
         style={{
           flexDirection: "row",
           alignItems: "center",
           gap: 20,
           paddingHorizontal: 20,
           paddingVertical: 15,
-          borderBottomColor: "lightgray",
-          borderBottomWidth: 1,
+          backgroundColor: "white",
+          marginTop: 5,
         }}
       >
         <View
@@ -47,14 +52,20 @@ const Payment = ({ selectedPaymentMethod, setSelectedPaymentMethod }) => {
               width: 12,
               height: 12,
               backgroundColor:
-                selectedPaymentMethod === "online" ? "black" : "white",
+                selectedPaymentMethod === "online" ? "gray" : "white",
               borderRadius: 100,
             }}
           ></View>
         </View>
 
         <View>
-          <Text>PAY ONLINE</Text>
+          <Text
+            style={{
+              color: "lightgray",
+            }}
+          >
+            PAY ONLINE
+          </Text>
         </View>
       </Pressable>
 
@@ -66,15 +77,15 @@ const Payment = ({ selectedPaymentMethod, setSelectedPaymentMethod }) => {
           gap: 20,
           paddingHorizontal: 20,
           paddingVertical: 15,
-          borderBottomColor: "lightgray",
-          borderBottomWidth: 1,
+          backgroundColor: "white",
+          marginTop: 5,
         }}
       >
         <View
           style={{
             width: 20,
             height: 20,
-            borderColor: "lightgray",
+            borderColor: "gray",
             borderWidth: 1,
             borderRadius: 100,
             alignItems: "center",

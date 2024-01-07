@@ -8,7 +8,7 @@ const CurrentOrders = () => {
         flex: 1,
       }}
     >
-      <OrderList filter={"current"} />
+      <OrderList filter={"all"} />
     </SafeAreaView>
   );
 };

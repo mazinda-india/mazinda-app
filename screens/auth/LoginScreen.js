@@ -66,14 +66,23 @@ const LoginScreen = () => {
   };
 
   const sendOTP = async (phoneNumber) => {
-    const { data } = await axios.post(
+    const res1 = await axios.post("https://mazinda.com/api/sms", {
+      phone: phoneNumber,
+      otp: verificationCode,
+    });
+    const data1 = res1.data;
+
+    const res2 = await axios.post(
       "https://mazinda.com/api/whatsapp/msg-to-phone-no",
       {
         phone_number: phoneNumber,
         message: `${verificationCode} is the verification code to verify your Mazinda account. DO NOT share this code with anyone. Thanks`,
       }
     );
-    return data;
+
+    const data2 = res2.data;
+
+    return data1.success || data2.success;
   };
 
   const handleLoginWithPassword = async () => {
@@ -111,9 +120,9 @@ const LoginScreen = () => {
         return;
       }
 
-      const otpData = await sendOTP(data.user.phoneNumber);
+      const otpSent = await sendOTP(data.user.phoneNumber);
 
-      if (otpData.success) {
+      if (otpSent) {
         setOtpModalVisible(true);
       }
     } catch (e) {
@@ -296,42 +305,49 @@ const LoginScreen = () => {
                 marginTop: 18,
               }}
             >
-              <Pressable
-                style={{
-                  backgroundColor: canProceed ? "black" : "lightgray",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderRadius: 100,
-                  justifyContent: "center",
-                }}
-                onPress={handleLoginWithPassword}
-                disabled={!canProceed}
-              >
-                {!submitting ? (
-                  <Text
-                    style={{
-                      color: "white",
-                      fontSize: 18,
-                      fontWeight: "700",
-                      textAlign: "center",
-                    }}
-                  >
-                    Log In
-                  </Text>
-                ) : (
-                  <ActivityIndicator size="small" color="white" />
-                )}
-              </Pressable>
+              {submitting ? null : (
+                <Pressable
+                  style={{
+                    backgroundColor: canProceed ? "black" : "lightgray",
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 100,
+                    justifyContent: "center",
+                  }}
+                  onPress={handleLoginWithPassword}
+                  disabled={!canProceed}
+                >
+                  {!submitting ? (
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 18,
+                        fontWeight: "700",
+                        textAlign: "center",
+                      }}
+                    >
+                      Log In
+                    </Text>
+                  ) : (
+                    <ActivityIndicator size="small" color="white" />
+                  )}
+                </Pressable>
+              )}
 
               <Pressable
                 style={{
-                  borderColor: canProceedOTP ? "black" : "lightgray",
+                  borderColor: submitting
+                    ? "white"
+                    : canProceedOTP
+                    ? "black"
+                    : "lightgray",
                   borderWidth: 1,
                   paddingVertical: 10,
                   paddingHorizontal: 20,
                   borderRadius: 100,
                   marginTop: 10,
                   justifyContent: "center",
+                  backgroundColor: submitting ? "#cccccc50" : "white",
                 }}
                 onPress={handleLoginWithOTP}
                 disabled={!canProceedOTP}
@@ -347,7 +363,7 @@ const LoginScreen = () => {
                     Verify with OTP
                   </Text>
                 ) : (
-                  <ActivityIndicator size="small" color="white" />
+                  <ActivityIndicator size="small" color="gray" />
                 )}
               </Pressable>
 

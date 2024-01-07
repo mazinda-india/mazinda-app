@@ -14,7 +14,7 @@ import LocationModal from "./modals/LocationModal";
 import SearchModal from "./modals/SearchModal";
 import { useNavigation } from "@react-navigation/native";
 
-const Navbar = ({ searchQuery }) => {
+const Navbar = ({ searchQuery, showSearchBar = true }) => {
   const [locationsModalVisible, setLocationsModalVisible] = useState(false);
   const [searchModalVisible, setSearchModalVisible] = useState(false);
 
@@ -49,15 +49,17 @@ const Navbar = ({ searchQuery }) => {
             paddingBottom: 5,
           }}
         >
-          <Image
-            source={MazindaLogo}
-            style={{
-              width: 100,
-              height: undefined,
-              aspectRatio: 3 / 1,
-            }}
-            resizeMode="contain"
-          />
+          <Pressable onPress={() => navigation.navigate("Main")}>
+            <Image
+              source={MazindaLogo}
+              style={{
+                width: 100,
+                height: undefined,
+                aspectRatio: 3 / 1,
+              }}
+              resizeMode="contain"
+            />
+          </Pressable>
 
           <View style={{ flexDirection: "row" }}>
             <View>
@@ -83,46 +85,48 @@ const Navbar = ({ searchQuery }) => {
         </View>
       )}
 
-      <View
-        style={{ marginTop: 5, flexDirection: "row", alignItems: "center" }}
-      >
-        {!searchQuery ? null : (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={{
-              marginLeft: 10,
-            }}
-          >
-            <Ionicons name="arrow-back" size={24} color="gray" />
-          </TouchableOpacity>
-        )}
-        <Pressable
-          onPress={() => setSearchModalVisible(true)}
-          style={{
-            borderColor: "lightgray",
-            borderWidth: 1,
-            padding: 12,
-            marginHorizontal: 10,
-            borderRadius: 5,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-            width: searchQuery ? "86%" : "95%",
-          }}
+      {showSearchBar ? (
+        <View
+          style={{ marginTop: 5, flexDirection: "row", alignItems: "center" }}
         >
-          <FontAwesome name="search" size={20} color="lightgray" />
-          <Text
+          {!searchQuery ? null : (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+              style={{
+                marginLeft: 10,
+              }}
+            >
+              <Ionicons name="arrow-back" size={24} color="gray" />
+            </TouchableOpacity>
+          )}
+          <Pressable
+            onPress={() => setSearchModalVisible(true)}
             style={{
-              color: searchQuery ? "black" : "lightgray",
-              fontSize: 16,
+              borderColor: "lightgray",
+              borderWidth: 1,
+              padding: 12,
+              marginHorizontal: 10,
+              borderRadius: 5,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              width: searchQuery ? "86%" : "95%",
             }}
           >
-            {searchQuery ? searchQuery : "Search Anything ..."}
-          </Text>
-        </Pressable>
-      </View>
+            <FontAwesome name="search" size={20} color="lightgray" />
+            <Text
+              style={{
+                color: searchQuery ? "black" : "lightgray",
+                fontSize: 16,
+              }}
+            >
+              {searchQuery ? searchQuery : "Search Anything ..."}
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
     </View>
   );
 };

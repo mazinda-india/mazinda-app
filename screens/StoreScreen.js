@@ -236,7 +236,30 @@ const ShopScreen = ({ route }) => {
           </View>
         </View>
 
-        <ProductList products={products} />
+        <View
+          style={{
+            marginTop: 10,
+          }}
+        >
+          {/* <View
+            style={{
+              backgroundColor: "white",
+              padding: 12,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                textAlign: "center",
+                fontWeight: 500,
+              }}
+            >
+              More Products From This Shop
+            </Text>
+          </View> */}
+
+          <ProductList products={products} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

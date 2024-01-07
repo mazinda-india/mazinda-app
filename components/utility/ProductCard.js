@@ -6,19 +6,22 @@ import {
 } from "@expo/vector-icons";
 
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { addToCart } from "../../redux/CartReducer";
+import { addToCart, updateCartOnServer } from "../../redux/CartReducer";
 
 const ProductCard = ({ item }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart.cart);
 
   const [addedToCart, setAddedToCart] = useState(false);
 
-  const addItemToCart = (item) => {
+  const addItemToCart = async (item) => {
     dispatch(addToCart({ _id: item._id, quantity: item.quantity }));
+    dispatch(updateCartOnServer(cart));
     setAddedToCart(true);
+
     setTimeout(() => {
       setAddedToCart(false);
     }, 3000);

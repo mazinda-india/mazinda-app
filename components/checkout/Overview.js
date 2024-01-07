@@ -1,4 +1,15 @@
-import { Text, View, ScrollView, Image, ActivityIndicator } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  ActivityIndicator,
+  FlatList,
+  useWindowDimensions,
+  TouchableOpacity,
+} from "react-native";
+import { ScrollView } from "react-native-virtualized-view";
+import { useDispatch } from "react-redux";
+import { decrementQuantity, incrementQuantity } from "../../redux/CartReducer";
 
 const Overview = ({
   itemData,
@@ -7,6 +18,29 @@ const Overview = ({
   pricing,
   setPricing,
 }) => {
+  const { width } = useWindowDimensions();
+  const dispatch = useDispatch();
+
+  const incrementItemQuantity = (id) => {
+    setItemData((prevData) =>
+      prevData.map((item) =>
+        item._id === id ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  };
+  const decrementItemQuantity = (id) => {
+    setItemData((prevData) =>
+      prevData.map((item) =>
+        item._id === id
+          ? {
+              ...item,
+              quantity: item.quantity > 1 ? item.quantity - 1 : item.quantity,
+            }
+          : item
+      )
+    );
+  };
+
   if (itemDataLoading) {
     return (
       <View
@@ -25,88 +59,177 @@ const Overview = ({
   return (
     <ScrollView
       style={{
-        backgroundColor: "#ecf0ef",
+        backgroundColor: "#f5f5f5",
       }}
     >
-      {itemData.map((item, index) => (
-        <View
-          key={index}
-          style={{
-            backgroundColor: "white",
-            flexDirection: "row",
-            padding: 10,
-            gap: 8,
-            alignItems: "center",
-            justifyContent: "space-evenly",
-          }}
-        >
-          <Image
-            style={{
-              width: 75,
-              height: 75,
-            }}
-            source={{ uri: item.imagePaths[0] }}
-          />
+      <FlatList
+        data={itemData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => (
           <View
             style={{
-              flexDirection: "column",
-              gap: 5,
+              width: width,
+              backgroundColor: "white",
+              flexDirection: "row",
+              paddingHorizontal: 10,
+              paddingVertical: 20,
+              gap: 8,
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 8,
             }}
           >
-            <Text
+            <Image
               style={{
-                fontSize: 16,
+                width: width / 6.5,
+                height: 75,
+                marginHorizontal: 12,
               }}
-            >
-              {item.productName.slice(0, 30)}...
-            </Text>
+              source={{ uri: item.imagePaths[0] }}
+              resizeMode="contain"
+            />
+
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
+                flexDirection: "column",
+                gap: 5,
+                width: "100%",
               }}
             >
               <Text
                 style={{
-                  fontSize: 18,
+                  fontSize: 16,
+                  color: "#525252",
                 }}
+                numberOfLines={1}
               >
-                ₹{item.pricing.salesPrice}
+                {item.productName.slice(0, 27)}...
               </Text>
-              <Text
+              <View
                 style={{
-                  textDecorationLine: "line-through",
-                  color: "gray",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
                 }}
               >
-                ₹{item.pricing.mrp}
-              </Text>
-              <Text
+                <Text
+                  style={{
+                    fontSize: 18,
+                  }}
+                >
+                  ₹{item.pricing.salesPrice}
+                </Text>
+                <Text
+                  style={{
+                    textDecorationLine: "line-through",
+                    color: "gray",
+                  }}
+                >
+                  ₹{item.pricing.mrp}
+                </Text>
+                <Text
+                  style={{
+                    color: "#22c55e",
+                    fontWeight: 600,
+                  }}
+                >
+                  {String(
+                    ((item.pricing.mrp - item.pricing.salesPrice) /
+                      item.pricing.mrp) *
+                      100
+                  ).slice(0, 4)}
+                  % OFF
+                </Text>
+              </View>
+              <View
                 style={{
-                  color: "green",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "75%",
+                  alignItems: "center",
                 }}
               >
-                {String(
-                  ((item.pricing.mrp - item.pricing.salesPrice) /
-                    item.pricing.mrp) *
-                    100
-                ).slice(0, 4)}
-                % OFF
-              </Text>
+                <Text>Quantity: {item.quantity}</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    borderColor: "#f17e13",
+                    borderWidth: 1,
+                    borderRadius: 10,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      decrementItemQuantity(item._id);
+                    }}
+                    style={{
+                      backgroundColor: "#f17e13",
+                      paddingHorizontal: 8,
+                      paddingVertical: 2,
+                      borderTopLeftRadius: 8,
+                      borderBottomLeftRadius: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 18,
+                        fontWeight: 700,
+                      }}
+                    >
+                      -
+                    </Text>
+                  </TouchableOpacity>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      paddingHorizontal: 7,
+                    }}
+                  >
+                    {item.quantity}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      // dispatch(
+                      //   incrementQuantity({
+                      //     _id: item._id,
+                      //     quantity: item.quantity,
+                      //   })
+                      // );
+                      // dispatch(updateCartOnServer());
+                      incrementItemQuantity(item._id);
+                    }}
+                    style={{
+                      backgroundColor: "#f17e13",
+                      paddingHorizontal: 8,
+                      paddingVertical: 2,
+                      borderTopRightRadius: 8,
+                      borderBottomRightRadius: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 18,
+                        fontWeight: 700,
+                      }}
+                    >
+                      +
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-            <Text>Quantity: {item.quantity}</Text>
           </View>
-        </View>
-      ))}
+        )}
+      />
 
       <View
         style={{
           paddingHorizontal: 20,
           backgroundColor: "white",
           paddingVertical: 15,
-          borderTopColor: "lightgray",
-          borderTopWidth: 1,
         }}
       >
         <Text
@@ -128,7 +251,7 @@ const Overview = ({
         >
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#535353",
             }}
           >
@@ -137,7 +260,7 @@ const Overview = ({
 
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#535353",
             }}
           >
@@ -153,7 +276,7 @@ const Overview = ({
         >
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#57e28d",
               fontWeight: 500,
             }}
@@ -163,7 +286,7 @@ const Overview = ({
 
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#57e28d",
               fontWeight: 500,
             }}
@@ -180,7 +303,7 @@ const Overview = ({
         >
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#535353",
             }}
           >
@@ -189,7 +312,7 @@ const Overview = ({
 
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#535353",
             }}
           >
@@ -205,7 +328,7 @@ const Overview = ({
         >
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#535353",
             }}
           >
@@ -214,7 +337,7 @@ const Overview = ({
 
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#535353",
             }}
           >
@@ -231,7 +354,7 @@ const Overview = ({
         >
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#535353",
             }}
           >
@@ -240,7 +363,7 @@ const Overview = ({
 
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: "#535353",
             }}
           >

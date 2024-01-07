@@ -11,18 +11,15 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 import {
   MaterialCommunityIcons,
-  MaterialIcons,
-  Foundation,
-  FontAwesome,
   Ionicons,
   Octicons,
   AntDesign,
 } from "@expo/vector-icons";
+import Navbar from "../../components/Navbar";
 
 const AccountScreen = () => {
   const navigation = useNavigation();
 
-  // Helper function to create individual option components
   const OptionItem = ({ icon, text, onPress }) => (
     <TouchableOpacity
       onPress={onPress}
@@ -57,9 +54,19 @@ const AccountScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <ScrollView>
+      <Navbar showSearchBar={false} />
+      <ScrollView
+        style={{
+          marginBottom: 25,
+        }}
+      >
         <View>
-          <Text style={{ textAlign: "center", fontSize: 26, marginTop: 30 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 26,
+            }}
+          >
             My Account
           </Text>
         </View>
@@ -92,8 +99,6 @@ const AccountScreen = () => {
             <TouchableOpacity
               onPress={() => navigation.navigate("Current Orders")}
               style={{
-                // borderColor: "gray",
-                // borderWidth: 1,
                 backgroundColor: "#f5f5f5",
                 flexDirection: "row",
                 width: "48%",
@@ -105,22 +110,20 @@ const AccountScreen = () => {
             >
               <MaterialCommunityIcons
                 name="cart-check"
-                size={24}
+                size={20}
                 color="black"
               />
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: 15,
                 }}
               >
-                Current Orders
+                My Orders
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => navigation.navigate("Order History")}
               style={{
-                // borderColor: "gray",
-                // borderWidth: 1,
                 backgroundColor: "#f5f5f5",
                 flexDirection: "row",
                 width: "48%",
@@ -132,23 +135,21 @@ const AccountScreen = () => {
             >
               <MaterialIcons
                 name="playlist-add-check"
-                size={24}
+                size={20}
                 color="black"
               />
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: 15,
                 }}
               >
                 Order History
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               onPress={() => navigation.navigate("Followed Shops")}
               style={{
-                // borderColor: "gray",
-                // borderWidth: 1,
                 backgroundColor: "#f5f5f5",
                 flexDirection: "row",
                 width: "48%",
@@ -160,22 +161,20 @@ const AccountScreen = () => {
             >
               <MaterialCommunityIcons
                 name="store-check"
-                size={24}
+                size={20}
                 color="black"
               />
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: 15,
                 }}
               >
                 Followed Shops
               </Text>
             </TouchableOpacity>
 
-            <View
+            {/* <View
               style={{
-                // borderColor: "gray",
-                // borderWidth: 1,
                 backgroundColor: "#f5f5f5",
                 flexDirection: "row",
                 width: "48%",
@@ -186,15 +185,15 @@ const AccountScreen = () => {
                 borderRadius: 10,
               }}
             >
-              <Foundation name="page-search" size={24} color="black" />
+              <Foundation name="page-search" size={20} color="black" />
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: 15,
                 }}
               >
                 Review Purchases
               </Text>
-            </View>
+            </View> */}
           </View>
 
           <Text
@@ -209,10 +208,10 @@ const AccountScreen = () => {
           </Text>
 
           <View style={{ gap: 18 }}>
-            <OptionItem
+            {/* <OptionItem
               icon={<FontAwesome name="thumbs-o-up" size={24} color="black" />}
               text="Rate Mazinda"
-            />
+            /> */}
             <OptionItem
               icon={
                 <Ionicons name="settings-outline" size={24} color="black" />
@@ -240,7 +239,7 @@ const AccountScreen = () => {
                 Linking.openURL("https://www.mazinda.com/privacy-policy")
               }
             />
-            <OptionItem
+            {/* <OptionItem
               icon={
                 <MaterialCommunityIcons
                   name="comment-question-outline"
@@ -249,14 +248,15 @@ const AccountScreen = () => {
                 />
               }
               text="FAQs"
-            />
-            <OptionItem
+            /> */}
+            {/* <OptionItem
               icon={<Ionicons name="call-outline" size={24} color="black" />}
               text="Contact Us"
-            />
+            /> */}
             <OptionItem
               icon={<Octicons name="graph" size={24} color="black" />}
               text="Become a Seller"
+              onPress={() => Linking.openURL("https://store.mazinda.com/")}
             />
           </View>
         </View>

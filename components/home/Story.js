@@ -144,8 +144,9 @@ const Story = () => {
                 fontSize: 14,
                 textAlign: "center",
               }}
+              numberOfLines={1}
             >
-              {story.storeDetails.storeName.slice(0, 9)}..
+              {story.storeDetails.storeName}
             </Text>
           </TouchableOpacity>
         ))}

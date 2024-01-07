@@ -3,10 +3,14 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useToast } from "react-native-toast-notifications";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../../redux/CartReducer";
+import { logout } from "../../redux/UserReducer";
 
 const AccountScreen = () => {
   const navigation = useNavigation();
   const toast = useToast();
+  const dispatch = useDispatch();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -35,6 +39,8 @@ const AccountScreen = () => {
           <TouchableOpacity
             onPress={async () => {
               await AsyncStorage.removeItem("user_token");
+              dispatch(clearCart());
+              dispatch(logout());
               toast.show("Logged out Successfully");
               navigation.replace("Main");
             }}

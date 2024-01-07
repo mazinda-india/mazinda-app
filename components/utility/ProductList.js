@@ -10,7 +10,6 @@ const ProductList = ({ products }) => {
       renderItem={renderProductItem}
       keyExtractor={(item) => item._id}
       numColumns={2}
-      style={{ marginTop: 10 }}
     />
   );
 };

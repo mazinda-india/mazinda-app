@@ -31,6 +31,9 @@ export const UserSlice = createSlice({
       const { newSavedAddresses } = action.payload;
       state.user.savedAddresses = newSavedAddresses;
     },
+    logout: (state, action) => {
+      state.user = {};
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserData.pending, (state, action) => {
@@ -45,6 +48,6 @@ export const UserSlice = createSlice({
   },
 });
 
-export const { addNewAddress } = UserSlice.actions;
+export const { addNewAddress, logout } = UserSlice.actions;
 
 export default UserSlice.reducer;

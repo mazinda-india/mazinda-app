@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   View,
   Image,
-  useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
@@ -19,23 +18,30 @@ import { ScrollView } from "react-native-virtualized-view";
 import HorizontalProductList from "../components/utility/HorizontalProductList";
 import { fetchUserData } from "../redux/UserReducer";
 import { fetchStoriesData } from "../redux/StoryReducer";
+import { fetchCart } from "../redux/CartReducer";
 import Carousel from "../components/utility/Carousel";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = () => {
-  const { width } = useWindowDimensions();
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchUserData());
     dispatch(fetchStoriesData());
+
+    (async () => {
+      const user_token = await AsyncStorage.getItem("user_token");
+      if (user_token) {
+        dispatch(fetchUserData());
+        dispatch(fetchCart());
+      }
+    })();
   }, []);
 
   const top_carousel_img = [1, 2, 3, 4].map(
     (counter) =>
       `https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/top-carousel/${counter}.jpeg`
   );
-  console.log(top_carousel_img);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>

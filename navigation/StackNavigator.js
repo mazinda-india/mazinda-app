@@ -26,6 +26,7 @@ import OrderPlacedScreen from "../screens/OrderPlacedScreen";
 import CurrentOrders from "../screens/Account/CurrentOrders";
 import OrderHistory from "../screens/Account/OrderHistory";
 import CategoryScreen from "../screens/CategoryScreen";
+import ViewOrderScreen from "../screens/ViewOrderScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -123,6 +124,11 @@ const StackNavigator = () => {
         />
         <Stack.Screen name="Current Orders" component={CurrentOrders} />
         <Stack.Screen name="Order History" component={OrderHistory} />
+        <Stack.Screen
+          name="View Order"
+          component={ViewOrderScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="Followed Shops" component={FollowedShopsScreen} />
       </Stack.Navigator>
