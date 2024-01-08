@@ -187,7 +187,8 @@ const LoginScreen = () => {
           width: "100%",
         }}
       >
-        <View
+        <Pressable
+          onPress={() => navigation.navigate("Main")}
           style={{
             alignItems: "center",
             marginTop: 50,
@@ -202,7 +203,7 @@ const LoginScreen = () => {
             }}
             resizeMode="contain"
           />
-        </View>
+        </Pressable>
 
         <KeyboardAvoidingView
           style={{
@@ -225,20 +226,6 @@ const LoginScreen = () => {
             >
               Log In
             </Text>
-
-            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: "#4b5563",
-                }}
-              >
-                or{" "}
-                <Text style={{ textDecorationLine: "underline" }}>
-                  create account
-                </Text>
-              </Text>
-            </TouchableOpacity>
           </View>
 
           <View style={{ alignItems: "center", marginTop: 15 }}>
@@ -413,7 +400,7 @@ const LoginScreen = () => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => navigation.navigate("Main")}
+                onPress={() => navigation.navigate("Register")}
                 style={{
                   backgroundColor: "#fe6321",
                   paddingVertical: 10,
@@ -439,7 +426,7 @@ const LoginScreen = () => {
                     fontWeight: "600",
                   }}
                 >
-                  Continue As Guest
+                  Create An Account
                 </Text>
               </TouchableOpacity>
 

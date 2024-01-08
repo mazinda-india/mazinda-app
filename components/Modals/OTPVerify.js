@@ -95,25 +95,38 @@ const OTPVerify = ({
             marginVertical: 45,
           }}
         >
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 18,
-              color: "#BDBDBD",
-              fontWeight: "700",
-            }}
-          >
-            Enter the OTP sent to{"  "}
+          {!credentials.phone ? (
             <Text
               style={{
-                color: "black",
-                fontWeight: 600,
-                fontSize: 19,
+                textAlign: "center",
+                fontSize: 18,
+                color: "#BDBDBD",
+                fontWeight: "700",
               }}
             >
-              +91 {credentials.phone}
+              Enter the OTP sent to your registered mobile number
             </Text>
-          </Text>
+          ) : (
+            <Text
+              style={{
+                textAlign: "center",
+                fontSize: 18,
+                color: "#BDBDBD",
+                fontWeight: "700",
+              }}
+            >
+              Enter the OTP sent to{" "}
+              <Text
+                style={{
+                  color: "black",
+                  fontWeight: 600,
+                  fontSize: 19,
+                }}
+              >
+                +91 {credentials.phone}
+              </Text>
+            </Text>
+          )}
 
           <View
             style={{

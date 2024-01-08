@@ -97,7 +97,7 @@ const AccountScreen = () => {
             }}
           >
             <TouchableOpacity
-              onPress={() => navigation.navigate("Current Orders")}
+              onPress={() => navigation.navigate("My Orders")}
               style={{
                 backgroundColor: "#f5f5f5",
                 flexDirection: "row",

@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import MazindaLogo from "../../assets/logo/logo_mazinda_full.png";
 import { useToast } from "react-native-toast-notifications";
+import { Pressable } from "react-native";
 
 const RegisterScreen = () => {
   const toast = useToast();
@@ -147,7 +148,8 @@ const RegisterScreen = () => {
           width: "100%",
         }}
       >
-        <View
+        <Pressable
+          onPress={() => navigation.navigate("Main")}
           style={{
             alignItems: "center",
             marginTop: 30,
@@ -162,7 +164,7 @@ const RegisterScreen = () => {
             }}
             resizeMode="contain"
           />
-        </View>
+        </Pressable>
 
         <KeyboardAvoidingView
           style={{
@@ -395,7 +397,7 @@ const RegisterScreen = () => {
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => navigation.navigate("Main")}
                 style={{
                   backgroundColor: "#fe6321",
@@ -424,7 +426,7 @@ const RegisterScreen = () => {
                 >
                   Continue As Guest
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               <Text
                 style={{
