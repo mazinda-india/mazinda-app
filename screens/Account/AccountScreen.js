@@ -249,10 +249,15 @@ const AccountScreen = () => {
               }
               text="FAQs"
             /> */}
-            {/* <OptionItem
+            <OptionItem
               icon={<Ionicons name="call-outline" size={24} color="black" />}
               text="Contact Us"
-            /> */}
+              onPress={() =>
+                Linking.openURL(
+                  "https://api.whatsapp.com/send?phone=917876901177&text=Hey%20Mazinda,%0APlease%20help%20me%20out."
+                )
+              }
+            />
             <OptionItem
               icon={<Octicons name="graph" size={24} color="black" />}
               text="Become a Seller"

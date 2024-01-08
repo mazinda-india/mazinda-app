@@ -25,7 +25,7 @@ const Navbar = ({ searchQuery, showSearchBar = true }) => {
   return (
     <View
       style={{
-        paddingTop: Platform.OS === "ios" ? 8 : 45,
+        paddingTop: 8,
         paddingBottom: 10,
       }}
     >

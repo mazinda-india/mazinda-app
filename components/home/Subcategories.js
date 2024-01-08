@@ -34,6 +34,15 @@ const Subcategories = () => {
 
   return (
     <>
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: 600,
+          marginBottom: 10,
+        }}
+      >
+        What are you looking for?
+      </Text>
       <FlatList
         data={[1, 2, 3, 4]}
         renderItem={renderSubcategory}

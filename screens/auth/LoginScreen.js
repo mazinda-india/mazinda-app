@@ -255,7 +255,7 @@ const LoginScreen = () => {
                 }}
               >
                 <Text style={styles.inputLabel}>Password</Text>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={{
                     marginTop: 10,
                   }}
@@ -271,7 +271,7 @@ const LoginScreen = () => {
                   >
                     Forgot Password?
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
 
               <TextInput

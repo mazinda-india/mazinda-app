@@ -156,7 +156,7 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
               }}
               numberOfLines={1}
             >
-              ₹{item.product.pricing.salesPrice}
+              ₹{item.product.pricing.mrp}
             </Text>
           </View>
           <View

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   useWindowDimensions,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
@@ -18,6 +19,7 @@ import { addNewAddress } from "../../redux/UserReducer";
 const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
   const { width } = useWindowDimensions();
   const selectedLocation = useLocation();
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -59,6 +61,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
 
   const handleSave = async () => {
     const userToken = await AsyncStorage.getItem("user_token");
+    setLoading(true);
 
     const { data } = await axios.post(
       "https://mazinda.com/api/user/shipping-addresses/add-new-address",
@@ -77,6 +80,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
 
     dispatch(addNewAddress({ newSavedAddresses: data.newSavedAddresses }));
 
+    setLoading(false);
     setAddAddressVisible(false);
     setNewAddress({
       name: "",
@@ -150,7 +154,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
             disabled={!canProceed}
             style={{
               marginBottom: 10,
-              backgroundColor: canProceed ? "#134272" : "lightgray",
+              backgroundColor: canProceed ? "black" : "lightgray",
               paddingVertical: 12,
               paddingHorizontal: 20,
               borderRadius: 8,
@@ -158,16 +162,27 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
             }}
             onPress={handleSave}
           >
-            <Text
+            <View
               style={{
-                fontSize: 16,
-                color: "white",
-                fontWeight: 600,
-                textAlign: "center",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              Add Address and Continue
-            </Text>
+              {loading ? (
+                <ActivityIndicator size={"small"} color={"white"} />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: "white",
+                    fontWeight: 600,
+                    textAlign: "center",
+                  }}
+                >
+                  Add Address and Continue
+                </Text>
+              )}
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -175,7 +190,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
           style={{
             paddingVertical: 16,
             paddingHorizontal: 20,
-            backgroundColor: "#1342721A",
+            backgroundColor: "#00000010",
             flexDirection: "row",
             alignItems: "center",
             gap: 10,

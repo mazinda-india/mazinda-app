@@ -50,7 +50,9 @@ const CheckoutModal = ({
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const [deliveryAddress, setDeliveryAddress] = useState(user.currentAddress);
+  const [deliveryAddress, setDeliveryAddress] = useState(
+    user.currentAddress || {}
+  );
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
   const [itemData, setItemData] = useState([]);
@@ -319,7 +321,52 @@ const CheckoutModal = ({
             zIndex: 2,
           }}
         >
-          {currentStep === 2 ? (
+          {currentStep === 1 ? (
+            !Object.keys(deliveryAddress).length ? (
+              <View
+                style={{
+                  marginBottom: 10,
+                  backgroundColor: "lightgray",
+                  paddingVertical: 12,
+                  paddingHorizontal: 20,
+                  borderRadius: 5,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: "white",
+                    fontWeight: 600,
+                  }}
+                >
+                  Select a delivery address
+                </Text>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={{
+                  marginBottom: 10,
+                  backgroundColor: "black",
+                  paddingVertical: 12,
+                  paddingHorizontal: 20,
+                  borderRadius: 8,
+                  width: "90%",
+                }}
+                onPress={() => setCurrentStep(currentStep + 1)}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: "white",
+                    fontWeight: 600,
+                    textAlign: "center",
+                  }}
+                >
+                  {steps[currentStep].buttonText}
+                </Text>
+              </TouchableOpacity>
+            )
+          ) : currentStep === 2 ? (
             selectedPaymentMethod === "" ? (
               <View
                 style={{

@@ -40,6 +40,17 @@ const ProductScreen = ({ route }) => {
     pricing: item.pricing,
     productName: item.productName,
   });
+
+  useEffect(() => {
+    setItemData({
+      combinationName: item.combinationName,
+      description: item.description,
+      imagePaths: item.imagePaths,
+      pricing: item.pricing,
+      productName: item.productName,
+    });
+  }, [item]);
+
   const [checkoutModalVisible, setCheckoutModalVisible] = useState(false);
 
   const [storeInfo, setStoreInfo] = useState({});
@@ -237,6 +248,7 @@ const ProductScreen = ({ route }) => {
           {variantsInfo &&
             Object.keys(variantsInfo).map((variantCategory, index) => (
               <View
+                key={index}
                 style={{
                   borderBottomColor: "lightgray",
                   borderBottomWidth: 1,

@@ -43,6 +43,21 @@ const FollowedShopsScreen = () => {
     );
   }
 
+  if (!followedShops.length) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text>Currently you don't follow any shop</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={{

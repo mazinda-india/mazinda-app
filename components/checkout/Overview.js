@@ -60,6 +60,7 @@ const Overview = ({
     <ScrollView
       style={{
         backgroundColor: "#f5f5f5",
+        marginBottom: 60,
       }}
     >
       <FlatList

@@ -13,7 +13,7 @@ const Address = ({ user, deliveryAddress, setDeliveryAddress }) => {
   const [addAddressVisible, setAddAddressVisible] = useState(false);
 
   useEffect(() => {
-    if (!savedAddresses.length) {
+    if (!savedAddresses?.length) {
       setAddAddressVisible(true);
     }
   }, []);

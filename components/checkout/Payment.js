@@ -33,7 +33,7 @@ const Payment = ({ selectedPaymentMethod, setSelectedPaymentMethod }) => {
           paddingHorizontal: 20,
           paddingVertical: 15,
           backgroundColor: "white",
-          marginTop: 5,
+          // marginBottom: 5,
         }}
       >
         <View
@@ -78,7 +78,7 @@ const Payment = ({ selectedPaymentMethod, setSelectedPaymentMethod }) => {
           paddingHorizontal: 20,
           paddingVertical: 15,
           backgroundColor: "white",
-          marginTop: 5,
+          // marginTop: 5,
         }}
       >
         <View

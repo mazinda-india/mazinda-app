@@ -48,18 +48,23 @@ const RegisterScreen = () => {
   };
 
   const sendOTP = async (phoneNumber) => {
-    try {
-      const { data } = await axios.post(
-        "https://mazinda.com/api/whatsapp/msg-to-phone-no",
-        {
-          phone_number: phoneNumber,
-          message: `${verificationCode} is the verification code to verify your Mazinda account. DO NOT share this code with anyone. Thanks`,
-        }
-      );
-      return data;
-    } catch (e) {
-      toast.show("Oops.. Network Error Occurred. Please try again");
-    }
+    const res1 = await axios.post("https://mazinda.com/api/sms", {
+      phone: phoneNumber,
+      otp: verificationCode,
+    });
+    const data1 = res1.data;
+
+    const res2 = await axios.post(
+      "https://mazinda.com/api/whatsapp/msg-to-phone-no",
+      {
+        phone_number: phoneNumber,
+        message: `${verificationCode} is the verification code to verify your Mazinda account. DO NOT share this code with anyone. Thanks`,
+      }
+    );
+
+    const data2 = res2.data;
+
+    return data1.success || data2.success;
   };
 
   const handleSubmit = async () => {
@@ -78,9 +83,9 @@ const RegisterScreen = () => {
       return;
     }
 
-    const otpData = await sendOTP(credentials.phone);
+    const otpSent = await sendOTP(credentials.phone);
 
-    if (otpData.success) {
+    if (otpSent) {
       setOtpModalVisible(true);
     }
   };
@@ -338,7 +343,7 @@ const RegisterScreen = () => {
                 )}
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              {/* <TouchableOpacity>
                 <Text
                   style={{
                     textDecorationLine: "underline",
@@ -350,7 +355,7 @@ const RegisterScreen = () => {
                 >
                   Forgot Password?
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               <Text
                 style={{
