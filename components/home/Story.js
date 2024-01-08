@@ -42,6 +42,7 @@ const Story = () => {
           fontSize: 12,
           color: "gray",
           textAlign: "center",
+          // fontFamily: "Quicksand-Regular",
         }}
       >
         Follow shops to view their latest deals, offers and products!

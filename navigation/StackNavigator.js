@@ -23,8 +23,7 @@ import CategoriesScreen from "../screens/CategoriesScreen";
 
 import LocationProvider from "../contexts/LocationContext";
 import OrderPlacedScreen from "../screens/OrderPlacedScreen";
-import CurrentOrders from "../screens/Account/CurrentOrders";
-import OrderHistory from "../screens/Account/OrderHistory";
+import MyOrders from "../screens/Account/MyOrders";
 import CategoryScreen from "../screens/CategoryScreen";
 import ViewOrderScreen from "../screens/ViewOrderScreen";
 
@@ -122,8 +121,7 @@ const StackNavigator = () => {
           component={AccountScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Current Orders" component={CurrentOrders} />
-        <Stack.Screen name="Order History" component={OrderHistory} />
+        <Stack.Screen name="My Orders" component={MyOrders} />
         <Stack.Screen
           name="View Order"
           component={ViewOrderScreen}

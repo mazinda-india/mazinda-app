@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native";
 import OrderList from "../../components/utility/OrderList";
 
-const CurrentOrders = () => {
+const MyOrders = () => {
   return (
     <SafeAreaView
       style={{
@@ -13,4 +13,4 @@ const CurrentOrders = () => {
   );
 };
 
-export default CurrentOrders;
+export default MyOrders;

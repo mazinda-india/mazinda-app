@@ -19,7 +19,7 @@ import Overview from "../checkout/Overview";
 import Address from "../checkout/Address";
 import Payment from "../checkout/Payment";
 import PlaceOrder from "../checkout/PlaceOrder";
-import { clearCart } from "../../redux/CartReducer";
+import { clearCart, updateCartOnServer } from "../../redux/CartReducer";
 
 const CheckoutModal = ({
   checkoutModalVisible,
@@ -64,6 +64,8 @@ const CheckoutModal = ({
     delivery_fees: 0,
     additional_discount: 0,
   });
+
+  const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
   const fetchPricing = (cart) => {
     let total_mrp = 0;
@@ -121,46 +123,58 @@ const CheckoutModal = ({
           paymentMethod: selectedPaymentMethod,
         }
       );
-      console.log(data);
 
       if (data.success) {
         // Clear the cart after placing the order
-        // await axios.post("/api/user/cart/clear-cart", {
-        //   userToken,
-        // });
-
         dispatch(clearCart());
+        dispatch(updateCartOnServer());
 
-        // try {
-        //   await axios.post("/api/whatsapp/msg-to-group");
-        // } catch (err) {
-        //   console.log(err);
-        // }
+        // Send message to Mazinda Team Group for convienience
+        try {
+          await axios.post("https://mazinda.com/api/whatsapp/msg-to-group");
+        } catch (err) {
+          console.log("Group message error", err);
+        }
 
+        // Navigate to the Order Placed Screen
         navigation.navigate("Order Placed");
         setCheckoutModalVisible(false);
         setOrderPlacing(false);
 
-        // const storeIDs = cart.map((item) => item.storeID);
-        // let storeMobileNumbers = [];
+        // Fetch the store Ids
+        let storeIds = [];
 
-        // for (let store_id of storeIDs) {
-        //   const { data } = await axios.post("/api/store/fetch-store-number", {
-        //     id: store_id,
-        //   });
-        //   storeMobileNumbers.push(data.storeMobileNumber);
-        // }
+        for (let item of cart) {
+          const { data } = await axios.post(
+            `https://mazinda.com/api/product/fetch-product?id=${item._id}`
+          );
+          storeIds.push(data.product.storeId);
+        }
 
-        // for (let store_mobile_number of storeMobileNumbers) {
-        //   try {
-        //     await axios.post("/api/whatsapp/msg-to-store", {
-        //       store_mobile_number,
-        //     });
-        //     await delay(2000); // 2000 milliseconds = 2 seconds
-        //   } catch (err) {
-        //     console.log(err);
-        //   }
-        // }
+        // Fetch store Mobile numbers using store Ids
+        let storeMobileNumbers = [];
+
+        for (let store_id of storeIds) {
+          const { data } = await axios.post(
+            "https://mazinda.com/api/store/fetch-store-number",
+            {
+              id: store_id,
+            }
+          );
+          storeMobileNumbers.push(data.storeMobileNumber);
+        }
+
+        // Send a message to individual phone number through whatsapp
+        for (let store_mobile_number of storeMobileNumbers) {
+          try {
+            await axios.post("https://mazinda.com/api/whatsapp/msg-to-store", {
+              store_mobile_number,
+            });
+            await delay(2000); // 2000 milliseconds = 2 seconds
+          } catch (err) {
+            console.log(err);
+          }
+        }
       } else {
         Alert.alert(
           "Oops! Something went wrong",
