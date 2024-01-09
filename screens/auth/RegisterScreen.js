@@ -16,16 +16,44 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import OTPVerify from "../../components/modals/OTPVerify";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome5 } from "@expo/vector-icons";
 import MazindaLogo from "../../assets/logo/logo_mazinda_full.png";
 import { useToast } from "react-native-toast-notifications";
 import { Pressable } from "react-native";
+
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import PhoneModal from "../../components/modals/PhoneModal";
+
+WebBrowser.maybeCompleteAuthSession();
+
+function generateRandomAlphanumeric() {
+  const alphanumericCharacters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let randomAlphanumeric = "";
+
+  for (let i = 0; i < 10; i++) {
+    const randomIndex = Math.floor(
+      Math.random() * alphanumericCharacters.length
+    );
+    randomAlphanumeric += alphanumericCharacters.charAt(randomIndex);
+  }
+
+  return randomAlphanumeric;
+}
 
 const RegisterScreen = () => {
   const toast = useToast();
   const navigation = useNavigation();
 
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId:
+      "872492645215-a9jkn8vhig4b57uidk63ns5dljhbb65g.apps.googleusercontent.com",
+    iosClientId:
+      "872492645215-vjq8n4427v4vfmqele54k6b7nu7v61kk.apps.googleusercontent.com",
+  });
+
   const [canProceed, setCanProceed] = useState(false);
+  const [canProceedWithGoogle, setCanProceedWithGoogle] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [credentials, setCredentials] = useState({
     name: "",
@@ -35,6 +63,8 @@ const RegisterScreen = () => {
   });
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [phoneModalVisible, setPhoneModalVisible] = useState(false);
 
   const [verificationCode, setVerificationCode] = useState(
     Math.floor(1000 + Math.random() * 9000).toString()
@@ -67,12 +97,38 @@ const RegisterScreen = () => {
     return data1.success || data2.success;
   };
 
+  const handleContinueWithGoogle = async () => {
+    const user_token = await AsyncStorage.getItem("user_token");
+
+    if (!user_token) {
+      if (response) {
+        if (response.type === "success") {
+          setGoogleLoading(true);
+          await getUserInfo(response.authentication.accessToken);
+        }
+      }
+    } else {
+      navigation.navigate("Main");
+    }
+  };
+
+  useEffect(() => {
+    handleContinueWithGoogle();
+  }, [response]);
+
   const handleSubmit = async () => {
     setLoading(true);
 
+    console.log("credentials", credentials);
+
     const { data } = await axios.post(
       "https://mazinda.com/api/auth/credentials-in-use",
-      { email: credentials.email, phone_number: credentials.phone }
+      {
+        email: credentials.email,
+        phone_number: credentials.phone,
+        checkEmail: true,
+        checkPhoneNumber: true,
+      }
     );
 
     const { usedStatus, message } = data;
@@ -87,6 +143,63 @@ const RegisterScreen = () => {
 
     if (otpSent) {
       setOtpModalVisible(true);
+    }
+  };
+
+  const getUserInfo = async (token) => {
+    if (!token) return;
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // Fetched the user data ( name and email ) from google
+      const user = await response.json();
+
+      // Checking if the email is already in use or not
+      const { data } = await axios.post(
+        "https://mazinda.com/api/auth/credentials-in-use",
+        {
+          email: user.email,
+          checkEmail: true,
+        }
+      );
+
+      // if it is in use, means account exists, then same flow as login with google
+      if (data.usedStatus) {
+        try {
+          const { data } = await axios.post(
+            "https://mazinda.com/api/auth/login-with-google",
+            {
+              name: user.name,
+              email: user.email,
+            }
+          );
+          console.log(data);
+          if (data.success) {
+            AsyncStorage.setItem("user_token", data.token);
+            toast.show("Logged In successfully");
+            navigation.navigate("Main");
+          } else {
+            toast.show(data.message);
+          }
+        } catch (err) {
+          toast.show("Oops, a network error occurred");
+        }
+      } else {
+        setCredentials((prev) => ({
+          ...prev,
+          name: user.name,
+          email: user.email,
+        }));
+        // Otherwise first input the phone number
+        setPhoneModalVisible(true);
+      }
+    } catch (error) {
+      console.log("Error occurred", error);
     }
   };
 
@@ -113,7 +226,9 @@ const RegisterScreen = () => {
           {
             credentials: {
               name: credentials.name,
-              password: credentials.password,
+              password: credentials.password
+                ? credentials.password
+                : generateRandomAlphanumeric(),
               phoneNumber: credentials.phone,
               email: credentials.email,
             },
@@ -125,14 +240,24 @@ const RegisterScreen = () => {
           AsyncStorage.setItem("user_token", token);
           toast.show(`Welcome, ${credentials.name}!`);
           navigation.navigate("Main");
+          setLoading(false);
         } else {
           toast.show(`Oops, a network error occurred. Please try again`);
         }
       })();
-
+      setGoogleLoading(false);
       setLoading(false);
     }
   }, [otpVerified]);
+
+  useEffect(() => {
+    const { name, phone, email } = credentials;
+    const fieldsFilled =
+      name.trim() !== "" && phone.trim() !== "" && email.trim() !== "";
+    if (canProceedWithGoogle && fieldsFilled) {
+      handleSubmit();
+    }
+  }, [credentials, canProceedWithGoogle]);
 
   return (
     <SafeAreaView
@@ -141,6 +266,13 @@ const RegisterScreen = () => {
         backgroundColor: "white",
       }}
     >
+      <PhoneModal
+        setCredentials={setCredentials}
+        phoneModalVisible={phoneModalVisible}
+        setPhoneModalVisible={setPhoneModalVisible}
+        setCanProceedWithGoogle={setCanProceedWithGoogle}
+      />
+
       <OTPVerify
         otpModalVisible={otpModalVisible}
         setOtpModalVisible={setOtpModalVisible}
@@ -226,6 +358,7 @@ const RegisterScreen = () => {
                 Name
               </Text>
               <TextInput
+                value={credentials.name}
                 style={{
                   borderColor: "lightgray",
                   borderWidth: 1,
@@ -234,6 +367,7 @@ const RegisterScreen = () => {
                   fontSize: 17,
                   borderRadius: 100,
                 }}
+                textContentType="name"
                 placeholder="Enter your name"
                 onChangeText={(text) => handleInputChange("name", text)}
               />
@@ -249,6 +383,7 @@ const RegisterScreen = () => {
                 Phone
               </Text>
               <TextInput
+                value={credentials.phone}
                 style={{
                   borderColor: "lightgray",
                   borderWidth: 1,
@@ -257,8 +392,11 @@ const RegisterScreen = () => {
                   fontSize: 17,
                   borderRadius: 100,
                 }}
-                placeholder="Enter your phone number"
+                textContentType="telephoneNumber"
+                placeholder="Enter your 10 digit phone number"
                 onChangeText={(text) => handleInputChange("phone", text)}
+                keyboardType="numeric"
+                maxLength={10}
               />
 
               <Text
@@ -283,6 +421,8 @@ const RegisterScreen = () => {
                 }}
                 placeholder="Enter your email"
                 onChangeText={(text) => handleInputChange("email", text)}
+                textContentType="emailAddress"
+                value={credentials.email}
               />
 
               <Text
@@ -305,7 +445,8 @@ const RegisterScreen = () => {
                   borderRadius: 100,
                 }}
                 secureTextEntry
-                placeholder="Enter your password"
+                placeholder="Create a strong password"
+                textContentType="newPassword"
                 onChangeText={(text) => handleInputChange("password", text)}
               />
             </View>
@@ -369,69 +510,55 @@ const RegisterScreen = () => {
                 or
               </Text>
 
-              <TouchableOpacity
-                style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderRadius: 100,
-                  marginTop: 20,
-                  borderColor: "lightgray",
-                  borderWidth: 1,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  source={{
-                    uri: "https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14.png",
-                  }}
+              {!googleLoading && (
+                <TouchableOpacity
+                  onPress={() => promptAsync()}
                   style={{
-                    width: 20,
-                    height: 20,
-                    marginRight: 10,
-                  }}
-                />
-                <Text
-                  style={{
-                    fontSize: 18,
-                    textAlign: "center",
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 100,
+                    marginTop: 20,
+                    borderColor: "lightgray",
+                    borderWidth: 1,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
-                  Continue With Google
-                </Text>
-              </TouchableOpacity>
+                  <Image
+                    source={{
+                      uri: "https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14.png",
+                    }}
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: 10,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      textAlign: "center",
+                    }}
+                  >
+                    Continue With Google
+                  </Text>
+                </TouchableOpacity>
+              )}
 
-              {/* <TouchableOpacity
-                onPress={() => navigation.navigate("Main")}
-                style={{
-                  backgroundColor: "#fe6321",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderRadius: 100,
-                  marginTop: 10,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <FontAwesome5
-                  name="users"
-                  size={20}
-                  color="white"
-                  style={{ marginRight: 10 }}
-                />
-                <Text
+              {googleLoading && (
+                <ActivityIndicator
+                  size={"small"}
                   style={{
-                    fontSize: 18,
-                    textAlign: "center",
-                    color: "white",
-                    fontWeight: "600",
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 100,
+                    marginTop: 20,
+                    borderColor: "lightgray",
+                    borderWidth: 1,
                   }}
-                >
-                  Continue As Guest
-                </Text>
-              </TouchableOpacity> */}
+                />
+              )}
 
               <Text
                 style={{

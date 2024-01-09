@@ -22,9 +22,21 @@ import OTPVerify from "../../components/modals/OTPVerify";
 import { FontAwesome5 } from "@expo/vector-icons";
 import MazindaLogoFull from "../../assets/logo/logo_mazinda_full.png";
 
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+
+WebBrowser.maybeCompleteAuthSession();
+
 const LoginScreen = () => {
   const toast = useToast();
   const navigation = useNavigation();
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId:
+      "872492645215-a9jkn8vhig4b57uidk63ns5dljhbb65g.apps.googleusercontent.com",
+    iosClientId:
+      "872492645215-vjq8n4427v4vfmqele54k6b7nu7v61kk.apps.googleusercontent.com",
+  });
 
   const [verificationCode, setVerificationCode] = useState(
     Math.floor(1000 + Math.random() * 9000).toString()
@@ -34,29 +46,14 @@ const LoginScreen = () => {
   const [otpVerified, setOtpVerified] = useState(false);
 
   const [otpModalVisible, setOtpModalVisible] = useState(false);
+  const [userToken, setUserToken] = useState(null);
 
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [credentials, setCredentials] = useState({
     identifier: "",
     password: "",
   });
-
-  const styles = {
-    inputLabel: {
-      fontSize: 18,
-      fontWeight: "500",
-      marginTop: 15,
-      marginBottom: 5,
-    },
-    input: {
-      borderColor: "lightgray",
-      borderWidth: 1,
-      paddingVertical: 8,
-      paddingHorizontal: 20,
-      fontSize: 17,
-      borderRadius: 100,
-    },
-  };
 
   const handleInputChange = (field, value) => {
     setCredentials((prevCredentials) => ({
@@ -83,6 +80,62 @@ const LoginScreen = () => {
     const data2 = res2.data;
 
     return data1.success || data2.success;
+  };
+
+  useEffect(() => {
+    handleSignInWithGoogle();
+  }, [response]);
+
+  const handleSignInWithGoogle = async () => {
+    const user_token = await AsyncStorage.getItem("user_token");
+
+    if (!user_token) {
+      if (response) {
+        if (response.type === "success") {
+          setGoogleLoading(true);
+          await getUserInfo(response.authentication.accessToken);
+        }
+      }
+    } else {
+      navigation.navigate("Main");
+    }
+  };
+
+  const getUserInfo = async (token) => {
+    if (!token) return;
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const user = await response.json();
+
+      try {
+        const { data } = await axios.post(
+          "https://mazinda.com/api/auth/login-with-google",
+          {
+            name: user.name,
+            email: user.email,
+          }
+        );
+        if (data.success) {
+          AsyncStorage.setItem("user_token", data.token);
+          toast.show("Logged In successfully");
+          navigation.navigate("Main");
+        } else {
+          toast.show(data.message);
+        }
+      } catch (err) {
+        toast.show("Oops, a network error occurred");
+      }
+    } catch (error) {
+      console.log("Error occurred", error);
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   const handleLoginWithPassword = async () => {
@@ -167,6 +220,23 @@ const LoginScreen = () => {
       setSubmitting(false);
     }
   }, [otpVerified]);
+
+  const styles = {
+    inputLabel: {
+      fontSize: 18,
+      fontWeight: "500",
+      marginTop: 15,
+      marginBottom: 5,
+    },
+    input: {
+      borderColor: "lightgray",
+      borderWidth: 1,
+      paddingVertical: 8,
+      paddingHorizontal: 20,
+      fontSize: 17,
+      borderRadius: 100,
+    },
+  };
 
   return (
     <SafeAreaView
@@ -314,6 +384,7 @@ const LoginScreen = () => {
                       }}
                     >
                       Log In
+                      {userToken}
                     </Text>
                   ) : (
                     <ActivityIndicator size="small" color="white" />
@@ -366,38 +437,55 @@ const LoginScreen = () => {
                 or
               </Text>
 
-              <TouchableOpacity
-                style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderRadius: 100,
-                  marginTop: 20,
-                  borderColor: "lightgray",
-                  borderWidth: 1,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  source={{
-                    uri: "https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14.png",
-                  }}
+              {!googleLoading && (
+                <TouchableOpacity
+                  onPress={() => promptAsync()}
                   style={{
-                    width: 20,
-                    height: 20,
-                    marginRight: 10,
-                  }}
-                />
-                <Text
-                  style={{
-                    fontSize: 18,
-                    textAlign: "center",
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 100,
+                    marginTop: 20,
+                    borderColor: "lightgray",
+                    borderWidth: 1,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
-                  Continue With Google
-                </Text>
-              </TouchableOpacity>
+                  <Image
+                    source={{
+                      uri: "https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14.png",
+                    }}
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: 10,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      textAlign: "center",
+                    }}
+                  >
+                    Continue With Google
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {googleLoading && (
+                <ActivityIndicator
+                  size={"small"}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 100,
+                    marginTop: 20,
+                    borderColor: "lightgray",
+                    borderWidth: 1,
+                  }}
+                />
+              )}
 
               <TouchableOpacity
                 onPress={() => navigation.navigate("Register")}

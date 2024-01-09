@@ -13,7 +13,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.abheygupta.MazindaApp"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "scheme": "mazinda",
     "extra": {
       "eas": {
         "projectId": "ab9c3df0-4476-4644-9699-4b8133795b5f"
