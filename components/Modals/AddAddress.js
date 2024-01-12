@@ -224,6 +224,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
                   padding: 7,
                 }}
                 onChangeText={(text) => handleInputChange("subAddress1", text)}
+                textContentType="streetAddressLine1"
               />
             </View>
             <View
@@ -241,6 +242,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
                   padding: 7,
                 }}
                 onChangeText={(text) => handleInputChange("subAddress2", text)}
+                textContentType="streetAddressLine2"
               />
             </View>
             <View style={{ marginVertical: 6, gap: 3 }}>
@@ -273,6 +275,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
                     width: width / 3.6,
                   }}
                   onChangeText={(text) => handleInputChange("pincode", text)}
+                  textContentType="postalCode"
                 />
               </View>
 
@@ -288,6 +291,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
                     width: width / 3.6,
                     color: "gray",
                   }}
+                  textContentType="addressCity"
                 />
               </View>
 
@@ -302,6 +306,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
                     width: width / 3.6,
                   }}
                   onChangeText={(text) => handleInputChange("state", text)}
+                  textContentType="addressState"
                 />
               </View>
             </View>
@@ -330,6 +335,7 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
                   width: width / 2.3,
                 }}
                 onChangeText={(text) => handleInputChange("name", text)}
+                textContentType="name"
               />
             </View>
 
@@ -344,6 +350,8 @@ const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
                   width: width / 2.3,
                 }}
                 onChangeText={(text) => handleInputChange("phone", text)}
+                maxLength={10}
+                textContentType="telephoneNumber"
               />
             </View>
           </View>

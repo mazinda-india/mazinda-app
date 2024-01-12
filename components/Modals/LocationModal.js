@@ -1,10 +1,4 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import { EvilIcons, AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -120,5 +114,3 @@ const LocationModal = ({ locationsModalVisible, setLocationsModalVisible }) => {
 };
 
 export default LocationModal;
-
-const styles = StyleSheet.create({});

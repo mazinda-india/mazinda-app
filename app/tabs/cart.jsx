@@ -10,7 +10,7 @@ import {
 import { ScrollView } from "react-native-virtualized-view";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { useToast } from "react-native-toast-notifications";
@@ -20,7 +20,7 @@ import {
   incrementQuantity,
   removeFromCart,
   updateCartOnServer,
-} from "../redux/CartReducer";
+} from "../../redux/CartReducer";
 
 const CartScreen = () => {
   const toast = useToast();
@@ -114,7 +114,7 @@ const CartScreen = () => {
         <Navbar />
 
         <Image
-          source={require("../assets/vectors/empty_cart.png")}
+          source={require("../../assets/vectors/empty_cart.png")}
           style={{
             width: "100%",
             height: height / 3,

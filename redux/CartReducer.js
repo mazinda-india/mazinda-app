@@ -32,6 +32,7 @@ export const CartSlice = createSlice({
   name: "cart",
   initialState: {
     cart: [],
+    buyNowCart: [],
     isLoading: false,
     isError: false,
   },
@@ -76,6 +77,9 @@ export const CartSlice = createSlice({
     clearCart: (state, action) => {
       state.cart = [];
     },
+    setBuyNowCart: (state, action) => {
+      state.buyNowCart = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchCart.pending, (state) => {
@@ -96,6 +100,7 @@ export const {
   incrementQuantity,
   decrementQuantity,
   clearCart,
+  setBuyNowCart,
 } = CartSlice.actions;
 
 export default CartSlice.reducer;

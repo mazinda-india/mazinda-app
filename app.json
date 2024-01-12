@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "MazindaApp",
+    "name": "Mazinda",
     "slug": "HelloWorld",
-    "version": "1.0.0",
+    "version": "1.1.0",
+    "scheme": "mazinda",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -26,11 +27,23 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "mazinda",
     "extra": {
       "eas": {
         "projectId": "ab9c3df0-4476-4644-9699-4b8133795b5f"
       }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-updates",
+        {
+          "username": "abhey_gupta"
+        }
+      ]
+    ],
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/ab9c3df0-4476-4644-9699-4b8133795b5f"
     }
   }
 }

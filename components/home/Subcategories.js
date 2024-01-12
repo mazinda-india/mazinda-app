@@ -1,25 +1,33 @@
 import { ImageBackground } from "react-native";
-import {
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { FlatList, Text, Pressable, useWindowDimensions } from "react-native";
+import { useLocation } from "../../contexts/LocationContext";
+import { useNavigation } from "@react-navigation/native";
 
 const Subcategories = () => {
   const { width } = useWindowDimensions();
+  const navigation = useNavigation();
+  const selectedLocation = useLocation();
+  // const foodBakeryVisible = selectedLocation._id === "655f1b9f9f019ff01503fc7b";
+  const foodBakeryVisible = false;
 
   const renderSubcategory = ({ item }) => {
     return (
-      <View
+      <Pressable
+        onPress={() => {
+          if (foodBakeryVisible && item === 1) {
+            navigation.navigate("Food And Bakery");
+          }
+        }}
         style={{
           width: width / 2,
         }}
       >
         <ImageBackground
           source={{
-            uri: `https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/square-four-images/${item}.jpg`,
+            uri:
+              foodBakeryVisible && item === 1
+                ? "https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/square-four-images/5.png"
+                : `https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/square-four-images/${item}.jpg`,
           }}
           resizeMode="contain"
           style={{
@@ -28,7 +36,7 @@ const Subcategories = () => {
             position: "relative",
           }}
         ></ImageBackground>
-      </View>
+      </Pressable>
     );
   };
 

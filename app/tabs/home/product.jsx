@@ -8,38 +8,46 @@ import {
   TouchableOpacity,
   RefreshControl,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import Navbar from "../components/Navbar";
+import Navbar from "../../../components/Navbar";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, updateCartOnServer } from "../redux/CartReducer";
+import {
+  addToCart,
+  setBuyNowCart,
+  updateCartOnServer,
+} from "../../../redux/CartReducer";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import CheckoutModal from "../components/modals/CheckoutModal";
 import axios from "axios";
-import Carousel from "../components/utility/Carousel";
+import Carousel from "../../../components/utility/Carousel";
 import { ScrollView } from "react-native-virtualized-view";
 import { useToast } from "react-native-toast-notifications";
+import { router, useLocalSearchParams } from "expo-router";
 
-const ProductScreen = ({ route }) => {
+const ProductScreen = () => {
+  const params = useLocalSearchParams();
   const toast = useToast();
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const { width, height } = useWindowDimensions();
+
+  const [item, setItem] = useState({});
 
   const user = useSelector((state) => state.user.user);
   const cart = useSelector((state) => state.cart.cart);
 
   const isLoggedIn = Object.keys(user).length ? true : false;
-  // const { item } = route.params;
 
-  const [item, setItem] = useState(route.params?.item || {});
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [storeInfo, setStoreInfo] = useState({});
+  const [storeProducts, setStoreProducts] = useState([]);
 
   const variants = item.variants;
   const variantsInfo = item.variantsInfo;
-
-  const { width, height } = useWindowDimensions();
-  const navigation = useNavigation();
 
   const [addedToCart, setAddedToCart] = useState(false);
   const [itemData, setItemData] = useState({
@@ -62,11 +70,6 @@ const ProductScreen = ({ route }) => {
     }
   }, [item]);
 
-  const [storeInfo, setStoreInfo] = useState({});
-  const [storeProducts, setStoreProducts] = useState([]);
-
-  const dispatch = useDispatch();
-
   const fetchProduct = async (id) => {
     setLoading(true);
     try {
@@ -85,6 +88,12 @@ const ProductScreen = ({ route }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (params.productId) {
+      fetchProduct(params.productId);
+    }
+  }, [params]);
 
   const handleCombinationChange = async (newVarient, index) => {
     let arr = itemData.combinationName.split("-");
@@ -142,9 +151,11 @@ const ProductScreen = ({ route }) => {
   const handleBuyNow = () => {
     if (isLoggedIn) {
       // setCheckoutModalVisible(true);
-      navigation.navigate("Checkout", {
-        cart: [{ _id: item._id, quantity: 1 }],
-      });
+      // navigation.navigate("Checkout", {
+      //   cart: [{ _id: item._id, quantity: 1 }],
+      // });
+      dispatch(setBuyNowCart([{ _id: item._id, quantity: 1 }]));
+      router.push("/checkout");
     } else {
       toast.show("Login Now and Start Placing Orders Now!");
       navigation.navigate("Login");
@@ -152,14 +163,17 @@ const ProductScreen = ({ route }) => {
   };
 
   useEffect(() => {
-    (async () => {
-      const { data } = await axios.post(
-        "https://mazinda.com/api/store/fetch-store",
-        { storeId: item.storeId }
-      );
-      setStoreInfo(data.store);
-    })();
-  }, []);
+    if (Object.keys(item).length) {
+      (async () => {
+        const { data } = await axios.post(
+          "https://mazinda.com/api/store/fetch-store",
+          { storeId: item.storeId }
+        );
+        console.log(data);
+        setStoreInfo(data.store);
+      })();
+    }
+  }, [item]);
 
   useEffect(() => {
     (async () => {
@@ -172,6 +186,21 @@ const ProductScreen = ({ route }) => {
       }
     })();
   }, [storeInfo]);
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <ActivityIndicator size={"small"} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -262,7 +291,7 @@ const ProductScreen = ({ route }) => {
       </View>
       {/* </View> */}
 
-      <Navbar />
+      <Navbar showSearchBar={false} />
 
       <ScrollView
         refreshControl={
@@ -280,12 +309,6 @@ const ProductScreen = ({ route }) => {
           backgroundColor: "#f5f5f5",
         }}
       >
-        {/* <CheckoutModal
-          checkoutModalVisible={checkoutModalVisible}
-          setCheckoutModalVisible={setCheckoutModalVisible}
-          cart={[{ _id: item._id, quantity: 1 }]}
-        /> */}
-
         {/* Image Container View */}
         <View
           style={{
@@ -454,7 +477,7 @@ const ProductScreen = ({ route }) => {
           <View style={styles.mazinda_feature_box}>
             <Image
               style={styles.mazinda_feature_image}
-              source={require("../assets/item_desc_icons/delivery_30_min.png")}
+              source={require("../../../assets/item_desc_icons/delivery_30_min.png")}
             />
             <Text numberOfLines={2} style={styles.mazinda_feature_text}>
               30 Min Delivery
@@ -464,7 +487,7 @@ const ProductScreen = ({ route }) => {
           <View style={styles.mazinda_feature_box}>
             <Image
               style={styles.mazinda_feature_image}
-              source={require("../assets/item_desc_icons/instant_refund.png")}
+              source={require("../../../assets/item_desc_icons/instant_refund.png")}
             />
 
             <Text style={styles.mazinda_feature_text}>Instant Return</Text>
@@ -472,7 +495,7 @@ const ProductScreen = ({ route }) => {
           <View style={styles.mazinda_feature_box}>
             <Image
               style={styles.mazinda_feature_image}
-              source={require("../assets/item_desc_icons/mazinda_delivered.png")}
+              source={require("../../../assets/item_desc_icons/mazinda_delivered.png")}
             />
 
             <Text style={styles.mazinda_feature_text}>Mazinda Delivered</Text>
@@ -481,14 +504,14 @@ const ProductScreen = ({ route }) => {
           <View style={styles.mazinda_feature_box}>
             <Image
               style={styles.mazinda_feature_image}
-              source={require("../assets/item_desc_icons/pay_on_delivery.png")}
+              source={require("../../../assets/item_desc_icons/pay_on_delivery.png")}
             />
             <Text style={styles.mazinda_feature_text}>Pay On Delivery</Text>
           </View>
         </View>
 
         {/* Shop Details */}
-        {Object.keys(storeInfo).length ? (
+        {storeInfo && Object.keys(storeInfo).length ? (
           <View
             style={{
               backgroundColor: "white",

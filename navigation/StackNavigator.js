@@ -26,6 +26,9 @@ import OrderPlacedScreen from "../screens/OrderPlacedScreen";
 import MyOrders from "../screens/Account/MyOrders";
 import CategoryScreen from "../screens/CategoryScreen";
 import ViewOrderScreen from "../screens/ViewOrderScreen";
+import CheckoutScreen from "../screens/CheckoutScreen";
+import FoodAndBakeryScreen from "../screens/food/FoodAndBakeryScreen";
+import MenuScreen from "../screens/food/MenuScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -148,6 +151,16 @@ const StackNavigator = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="Food And Bakery"
+            component={FoodAndBakeryScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Menu"
+            component={MenuScreen}
+            // options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="Search"
             component={SearchScreen}
             options={{ headerShown: false }}
@@ -155,6 +168,11 @@ const StackNavigator = () => {
           <Stack.Screen
             name="Product"
             component={ProductScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Checkout"
+            component={CheckoutScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

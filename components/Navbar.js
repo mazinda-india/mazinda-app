@@ -1,5 +1,5 @@
 import { Image, Pressable, Text, View, Platform } from "react-native";
-import MazindaLogo from "../assets/logo/logo_mazinda.png";
+import MazindaLogo from "../assets/logo/logo_mazinda_full.png";
 
 import {
   EvilIcons,
@@ -14,7 +14,11 @@ import LocationModal from "./modals/LocationModal";
 import SearchModal from "./modals/SearchModal";
 import { useNavigation } from "@react-navigation/native";
 
-const Navbar = ({ searchQuery, showSearchBar = true }) => {
+const Navbar = ({
+  searchQuery,
+  showSearchBar = true,
+  allowLocationChange = true,
+}) => {
   const [locationsModalVisible, setLocationsModalVisible] = useState(false);
   const [searchModalVisible, setSearchModalVisible] = useState(false);
 
@@ -53,7 +57,7 @@ const Navbar = ({ searchQuery, showSearchBar = true }) => {
             <Image
               source={MazindaLogo}
               style={{
-                width: 100,
+                width: 120,
                 height: undefined,
                 aspectRatio: 3 / 1,
               }}
@@ -69,6 +73,7 @@ const Navbar = ({ searchQuery, showSearchBar = true }) => {
             <View>
               <Text style={{ fontSize: 11, color: "#4b5563" }}>Deliver To</Text>
               <TouchableOpacity
+                disabled={!allowLocationChange}
                 onPress={() => setLocationsModalVisible(!locationsModalVisible)}
                 style={{
                   flexDirection: "row",
@@ -78,7 +83,9 @@ const Navbar = ({ searchQuery, showSearchBar = true }) => {
                 }}
               >
                 <Text style={{ fontSize: 16 }}>{selectedLocation.city}</Text>
-                <AntDesign name="down" size={10} color="#4b5563" />
+                {allowLocationChange && (
+                  <AntDesign name="down" size={10} color="#4b5563" />
+                )}
               </TouchableOpacity>
             </View>
           </View>
