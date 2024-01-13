@@ -50,7 +50,7 @@ const Navbar = ({
             flexDirection: "row",
             justifyContent: "space-between",
             paddingHorizontal: 15,
-            paddingBottom: 5,
+            paddingVertical: 5,
           }}
         >
           <Pressable onPress={() => navigation.navigate("Main")}>

@@ -6,6 +6,7 @@ const MyOrders = () => {
     <SafeAreaView
       style={{
         flex: 1,
+        backgroundColor: "white",
       }}
     >
       <OrderList filter={"all"} />

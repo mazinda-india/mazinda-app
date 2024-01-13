@@ -7,8 +7,8 @@ const Subcategories = () => {
   const { width } = useWindowDimensions();
   const navigation = useNavigation();
   const selectedLocation = useLocation();
-  // const foodBakeryVisible = selectedLocation._id === "655f1b9f9f019ff01503fc7b";
-  const foodBakeryVisible = false;
+  const foodBakeryVisible = selectedLocation._id === "655f1b9f9f019ff01503fc7b";
+  // const foodBakeryVisible = false;
 
   const renderSubcategory = ({ item }) => {
     return (

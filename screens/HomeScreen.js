@@ -6,6 +6,7 @@ import {
   Image,
   Linking,
   Pressable,
+  useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
@@ -28,8 +29,9 @@ import CheckInternet from "../components/CheckInternet";
 const HomeScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { width } = useWindowDimensions();
 
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
 
   useEffect(() => {
     dispatch(fetchStoriesData());
@@ -73,6 +75,7 @@ const HomeScreen = () => {
           <View
             style={{
               marginVertical: 20,
+              width,
             }}
           >
             <Image
@@ -80,8 +83,8 @@ const HomeScreen = () => {
                 uri: "https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/banner_one.JPG",
               }}
               style={{
-                width: "100%",
-                height: 50,
+                width,
+                height: 70,
               }}
               resizeMode="contain"
             />

@@ -13,25 +13,28 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 
-const OrderList = ({ filter }) => {
+const FoodOrdersList = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
+  const user = useSelector((state) => state.user.user);
 
   const { width } = useWindowDimensions();
 
   const fetchOrders = async () => {
     try {
-      const userToken = await AsyncStorage.getItem("user_token");
       const { data } = await axios.post(
-        "https://mazinda.com/api/order/fetch-user-orders",
-        { userToken, filter }
+        "https://mazinda.com/api/order/fetch-user-food-orders",
+        { userId: user._id }
       );
 
+      console.log(data);
+
       if (data.success) {
-        setOrders(data.orders.reverse());
+        setOrders(data.foodOrders.reverse());
       } else {
         console.log("An error occurred");
       }
@@ -44,14 +47,13 @@ const OrderList = ({ filter }) => {
 
   useEffect(() => {
     fetchOrders();
-  }, [filter]);
+  }, []);
 
   if (loading) {
     return (
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: "white",
           alignItems: "center",
           justifyContent: "center",
         }}
@@ -77,14 +79,16 @@ const OrderList = ({ filter }) => {
             textAlign: "center",
           }}
         >
-          No {filter === "current" ? "Current" : "Previous"} Orders
+          No Orders Currently
         </Text>
       </SafeAreaView>
     );
   }
 
   const renderItem = ({ item }) => {
-    const order = orders.find((order) => order.cart.includes(item));
+    console.log("item", item);
+    const products = item.products;
+    // console.log("products", orders[0].products);
     return (
       <Pressable
         onPress={() =>
@@ -110,26 +114,10 @@ const OrderList = ({ filter }) => {
       >
         <View
           style={{
-            width: width / 5,
-            paddingLeft: 10,
-          }}
-        >
-          <Image
-            style={{
-              width: 50,
-              height: 50,
-              marginVertical: 5,
-            }}
-            source={{ uri: item.imagePaths[0] }}
-            resizeMode="contain"
-          />
-        </View>
-
-        <View
-          style={{
             flexDirection: "column",
             gap: 5,
-            width: (4 * width) / 5,
+            // width: (4 * width) / 5,
+            width,
             paddingRight: 40,
             overflow: "hidden",
           }}
@@ -141,7 +129,7 @@ const OrderList = ({ filter }) => {
               gap: 3,
             }}
           >
-            {order.status !== "delivered" ? (
+            {item.status !== "delivered" ? (
               <LottieView
                 source={require("../../assets/status-green.json")}
                 style={{
@@ -156,45 +144,93 @@ const OrderList = ({ filter }) => {
 
             <Text
               style={{
-                color: order.status === "delivered" ? "black" : "#83d429",
+                color: item.status === "delivered" ? "black" : "#83d429",
                 fontWeight: 500,
               }}
             >
-              {order.status === "out_for_delivery"
+              {item.status === "out_for_delivery"
                 ? "OUT FOR DELIVERY".toUpperCase()
-                : order.status === "delivered"
+                : item.status === "delivered"
                 ? "DELIVERED"
-                : order.status.toUpperCase()}
+                : item.status.toUpperCase()}
             </Text>
           </View>
 
-          <Text
-            numberOfLines={1}
+          {Object.keys(item.products).map((productName) => (
+            <Text
+              numberOfLines={1}
+              style={{
+                fontSize: 16,
+                color: "#525156",
+              }}
+            >
+              {item.products[productName].quantity} x{" "}
+              <Text
+                style={{
+                  color: "black",
+                }}
+              >
+                {productName}
+              </Text>
+            </Text>
+          ))}
+
+          <View
             style={{
-              fontSize: 16,
-              color: "#525156",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: 12,
             }}
           >
-            {item.productName}
-          </Text>
+            <Text
+              style={{
+                color: "gray",
+              }}
+            >
+              {new Date(item.createdAt).toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })}
+            </Text>
+            <Text
+              style={{
+                fontSize: 17,
+                fontWeight: "bold",
+              }}
+            >
+              ₹{item.amount} /-
+            </Text>
+          </View>
         </View>
       </Pressable>
     );
   };
 
   return (
-    <FlatList
-      data={orders.flatMap((order) => order.cart)}
-      keyExtractor={(item, index) => index}
-      renderItem={renderItem}
-      refreshing={refreshing}
-      onRefresh={async () => {
-        setRefreshing(true);
-        await fetchOrders();
-        setRefreshing(false);
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: "white",
       }}
-    />
+    >
+      <FlatList
+        data={orders}
+        keyExtractor={(item, index) => index}
+        renderItem={renderItem}
+        refreshing={refreshing}
+        onRefresh={async () => {
+          setRefreshing(true);
+          await fetchOrders();
+          setRefreshing(false);
+        }}
+      />
+    </SafeAreaView>
   );
 };
 
-export default OrderList;
+export default FoodOrdersList;
