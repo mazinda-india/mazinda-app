@@ -24,6 +24,8 @@ const FoodAndBakeryScreen = () => {
     useState(false);
   const [loading, setLoading] = useState(true);
 
+  const test_env = false;
+
   useEffect(() => {
     if (!selectedCampus) {
       setFoodLocationModalVisible(true);
@@ -165,6 +167,7 @@ const FoodAndBakeryScreen = () => {
                   borderRadius: 20,
                   borderColor: "lightgray",
                   borderWidth: 1,
+                  // display: vendor.name === "test" ? "none" : "flex",
                 }}
               >
                 <>

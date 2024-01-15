@@ -4,22 +4,17 @@ import {
   Text,
   SafeAreaView,
   ActivityIndicator,
-  Image,
   FlatList,
   useWindowDimensions,
-  Pressable,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import LottieView from "lottie-react-native";
-import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 
 const FoodOrdersList = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation();
   const user = useSelector((state) => state.user.user);
 
   const { width } = useWindowDimensions();
@@ -30,8 +25,6 @@ const FoodOrdersList = () => {
         "https://mazinda.com/api/order/fetch-user-food-orders",
         { userId: user._id }
       );
-
-      console.log(data);
 
       if (data.success) {
         setOrders(data.foodOrders.reverse());

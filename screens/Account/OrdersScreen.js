@@ -9,7 +9,6 @@ const Tab = createMaterialTopTabNavigator();
 
 const OrdersScreen = ({ route }) => {
   const showFoodOrders = route?.params?.showFoodOrders;
-  console.log(showFoodOrders);
   const selectedLocation = useLocation();
   const foodBakeryVisible = selectedLocation._id === "655f1b9f9f019ff01503fc7b";
 

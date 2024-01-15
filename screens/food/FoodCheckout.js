@@ -124,20 +124,16 @@ const FoodCheckout = ({ route }) => {
 
       if (data.success) {
         try {
-          const msg_res = await axios.post(
-            "https://citikartt.com/api/whatsapp/msg-to-group",
-            {
-              group_id: vendor.whatsapp_group_id,
-              order_id: data.order._id,
-              products: cart,
-              user: user.name,
-              address,
-              instructions: address.instructions,
-              amount: total,
-              externalDeliveryRequired,
-            }
-          );
-          console.log("group message", msg_res.data);
+          await axios.post("https://citikartt.com/api/whatsapp/msg-to-group", {
+            group_id: vendor.whatsapp_group_id,
+            order_id: data.order._id,
+            products: cart,
+            user: user.name,
+            address,
+            instructions: address.instructions,
+            amount: total,
+            externalDeliveryRequired,
+          });
         } catch (err) {
           console.log("Error in sending the WhatsApp message", err);
         }
@@ -162,14 +158,13 @@ const FoodCheckout = ({ route }) => {
 
           if (payouts_response.data.success) {
             try {
-              const res = await axios.put(
+              await axios.put(
                 "https://citikartt.com/api/vendor/update-vendor-payouts",
                 {
                   _id: vendor._id,
                   payouts: payouts_response.data.payouts,
                 }
               );
-              console.log(res.data);
             } catch (err) {
               console.log("Error in updating the payouts", err);
             }
