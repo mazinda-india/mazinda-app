@@ -107,134 +107,131 @@ const FoodCheckout = ({ route }) => {
       return;
     }
 
-    const { data } = await axios.post(
-      `https://mazinda.com/api/order/create-food-order`,
-      {
-        userId: user._id,
-        vendorId: vendor._id,
-        products: cart,
-        address,
-        amount: total,
-        externalDeliveryRequired,
-        cutleryQuantity: 0,
-        paymentMethod: "pod",
-      }
-    );
-
-    if (data.success) {
-      console.log("create order res", data);
-
-      console.log("group_id", vendor.whatsapp_group_id);
-      console.log("order_id", data.order._id);
-      console.log("products", cart);
-      console.log("user", user.name);
-      console.log("address", address);
-
-      try {
-        const msg_res = await axios.post(
-          "https://citikartt.com/api/whatsapp/msg-to-group",
-          {
-            group_id: vendor.whatsapp_group_id,
-            order_id: data.order._id,
-            products: cart,
-            user: user.name,
-            address,
-            instructions: address.instructions,
-            amount: total,
-            externalDeliveryRequired,
-          }
-        );
-        console.log("group message", msg_res.data);
-      } catch (err) {
-        console.log("Error in sending the WhatsApp message", err);
-      }
-
-      // Adding this order in the payouts section of the vendor
-      try {
-        const payouts_response = await axios.post(
-          "https://citikartt.com/api/vendor/get-payouts",
-          {
-            orderId: data.order._id,
-            vendorId: vendor._id,
-            totalAmount: parseFloat(total),
-            payPercentage: vendor.payPercentage,
-            handlingCharge: vendor.packingHandlingCharges,
-            serviceCharge: vendor.serviceCharges,
-            externalDeliveryRequired,
-            // cutleryQuantity,
-            deliveryCharge,
-            orderCreatedAt: data.order.createdAt,
-          }
-        );
-
-        if (payouts_response.data.success) {
-          try {
-            const res = await axios.put(
-              "https://citikartt.com/api/vendor/update-vendor-payouts",
-              {
-                _id: vendor._id,
-                payouts: payouts_response.data.payouts,
-              }
-            );
-            console.log(res.data);
-          } catch (err) {
-            console.log("Error in updating the payouts", err);
-          }
+    try {
+      const { data } = await axios.post(
+        `https://mazinda.com/api/order/create-food-order`,
+        {
+          userId: user._id,
+          vendorId: vendor._id,
+          products: cart,
+          address,
+          amount: total,
+          externalDeliveryRequired,
+          cutleryQuantity: 0,
+          paymentMethod: "pod",
         }
-      } catch (err) {
-        console.log("Error in getting the payouts", err);
-      }
+      );
 
-      navigation.navigate("Order Placed");
-
-      setTimeout(async () => {
+      if (data.success) {
         try {
-          await axios.post("https://citikartt.com/api/whatsapp/msg-to-user", {
-            userName: user.name,
-            userNumber: address.phoneNumber,
-            amount: total,
-          });
+          const msg_res = await axios.post(
+            "https://citikartt.com/api/whatsapp/msg-to-group",
+            {
+              group_id: vendor.whatsapp_group_id,
+              order_id: data.order._id,
+              products: cart,
+              user: user.name,
+              address,
+              instructions: address.instructions,
+              amount: total,
+              externalDeliveryRequired,
+            }
+          );
+          console.log("group message", msg_res.data);
         } catch (err) {
           console.log("Error in sending the WhatsApp message", err);
         }
-      }, 2000);
 
-      if (externalDeliveryRequired) {
+        // Adding this order in the payouts section of the vendor
+        try {
+          const payouts_response = await axios.post(
+            "https://citikartt.com/api/vendor/get-payouts",
+            {
+              orderId: data.order._id,
+              vendorId: vendor._id,
+              totalAmount: parseFloat(total),
+              payPercentage: vendor.payPercentage,
+              handlingCharge: vendor.packingHandlingCharges,
+              serviceCharge: vendor.serviceCharges,
+              externalDeliveryRequired,
+              // cutleryQuantity,
+              deliveryCharge,
+              orderCreatedAt: data.order.createdAt,
+            }
+          );
+
+          if (payouts_response.data.success) {
+            try {
+              const res = await axios.put(
+                "https://citikartt.com/api/vendor/update-vendor-payouts",
+                {
+                  _id: vendor._id,
+                  payouts: payouts_response.data.payouts,
+                }
+              );
+              console.log(res.data);
+            } catch (err) {
+              console.log("Error in updating the payouts", err);
+            }
+          }
+        } catch (err) {
+          console.log("Error in getting the payouts", err);
+        }
+
+        navigation.navigate("Order Placed", { showFoodOrders: true });
+
         setTimeout(async () => {
           try {
-            await axios.post(
-              "https://citikartt.com/api/whatsapp/msg-to-delivery",
-              {
-                userName: user.name,
-                order_id: data.order._id,
-                products: cart,
-                address: address,
-                amount: total,
-                vendorName: vendor.name,
-                cutleryQuantity: 0,
-              }
-            );
+            await axios.post("https://citikartt.com/api/whatsapp/msg-to-user", {
+              userName: user.name,
+              userNumber: address.phoneNumber,
+              amount: total,
+            });
           } catch (err) {
             console.log("Error in sending the WhatsApp message", err);
           }
-        }, 4000);
-      }
+        }, 2000);
 
-      // clearCart();
+        if (externalDeliveryRequired) {
+          setTimeout(async () => {
+            try {
+              await axios.post(
+                "https://citikartt.com/api/whatsapp/msg-to-delivery",
+                {
+                  userName: user.name,
+                  order_id: data.order._id,
+                  products: cart,
+                  address: address,
+                  amount: total,
+                  vendorName: vendor.name,
+                  cutleryQuantity: 0,
+                }
+              );
+            } catch (err) {
+              console.log("Error in sending the WhatsApp message", err);
+            }
+          }, 4000);
+        }
 
-      try {
-        await axios.post("https://citikartt.com/api/orderEmail", {
-          vendorName: vendor.name,
+        // clearCart();
+
+        try {
+          await axios.post("https://citikartt.com/api/orderEmail", {
+            vendorName: vendor.name,
+          });
+        } catch (err) {
+          console.log("Error in sending the email", err);
+        }
+      } else {
+        Alert.alert("Failed to place the order. Please try again later.", {
+          autoClose: 3000,
         });
-      } catch (err) {
-        console.log("Error in sending the email", err);
       }
-    } else {
-      Alert.alert("Failed to place the order. Please try again later.", {
-        autoClose: 3000,
-      });
+    } catch (err) {
+      Alert.alert("Oops, something went wrong", "Please try again later");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

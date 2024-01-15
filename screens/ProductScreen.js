@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart, updateCartOnServer } from "../redux/CartReducer";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import CheckoutModal from "../components/modals/CheckoutModal";
 import axios from "axios";
 import Carousel from "../components/utility/Carousel";
 import { ScrollView } from "react-native-virtualized-view";
@@ -180,7 +179,7 @@ const ProductScreen = ({ route }) => {
         backgroundColor: "white",
       }}
     >
-      <View
+      {/* <View
         style={{
           position: "absolute",
           bottom: 0,
@@ -195,70 +194,93 @@ const ProductScreen = ({ route }) => {
           borderTopColor: "lightgray",
           borderTopWidth: 1,
         }}
+      > */}
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          left: 0,
+          paddingBottom: Platform.OS === "ios" ? 30 : 12,
+          backgroundColor: "white",
+          zIndex: 2,
+          borderTopColor: "lightgray",
+          borderTopWidth: 1,
+        }}
       >
-        <TouchableOpacity
+        <View
           style={{
-            borderColor: addedToCart ? "green" : "#2e2f34",
-            borderWidth: 1.2,
-            paddingVertical: 11,
-            borderRadius: 4,
-            paddingHorizontal: 20,
+            marginTop: 12,
             flexDirection: "row",
-            alignItems: "center",
-            gap: 6,
-          }}
-          onPress={() => addItemToCart(item)}
-        >
-          {addedToCart ? (
-            <>
-              <AntDesign name="checkcircle" size={20} color="green" />
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: "green",
-                }}
-              >
-                Added To Cart
-              </Text>
-            </>
-          ) : (
-            <>
-              <AntDesign name="shoppingcart" size={20} color="#2e2f34" />
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: "#2e2f34",
-                }}
-              >
-                Add To Cart
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleBuyNow}
-          style={{
-            backgroundColor: "#2e2f34",
-            paddingVertical: 12,
-            borderRadius: 4,
-            paddingHorizontal: 30,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 5,
+            justifyContent: "center",
+            gap: 12,
+            // justifyContent: "space-evenly",
           }}
         >
-          <AntDesign name="doubleright" size={20} color="white" />
-          <Text
+          <TouchableOpacity
             style={{
-              fontSize: 15,
-              color: "white",
-              fontWeight: 600,
+              borderColor: addedToCart ? "green" : "#2e2f34",
+              borderWidth: 1.2,
+              paddingVertical: 11,
+              borderRadius: 4,
+              paddingHorizontal: 20,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 6,
+            }}
+            onPress={() => addItemToCart(item)}
+          >
+            {addedToCart ? (
+              <>
+                <AntDesign name="checkcircle" size={20} color="green" />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: "green",
+                  }}
+                >
+                  Added To Cart
+                </Text>
+              </>
+            ) : (
+              <>
+                <AntDesign name="shoppingcart" size={20} color="#2e2f34" />
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: "#2e2f34",
+                  }}
+                >
+                  Add To Cart
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleBuyNow}
+            style={{
+              backgroundColor: "#2e2f34",
+              paddingVertical: 12,
+              borderRadius: 4,
+              paddingHorizontal: 30,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
             }}
           >
-            Buy Now
-          </Text>
-        </TouchableOpacity>
+            <AntDesign name="doubleright" size={20} color="white" />
+            <Text
+              style={{
+                fontSize: 15,
+                color: "white",
+                fontWeight: 600,
+              }}
+            >
+              Buy Now
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
       {/* </View> */}
 
@@ -276,7 +298,6 @@ const ProductScreen = ({ route }) => {
           />
         }
         style={{
-          marginBottom: 70,
           backgroundColor: "#f5f5f5",
         }}
       >
@@ -641,6 +662,11 @@ const ProductScreen = ({ route }) => {
             </View>
           ))}
         </View>
+        <View
+          style={{
+            height: 70,
+          }}
+        ></View>
       </ScrollView>
     </SafeAreaView>
   );

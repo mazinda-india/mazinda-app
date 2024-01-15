@@ -2,7 +2,6 @@ import {
   View,
   Text,
   SafeAreaView,
-  TouchableOpacity,
   ActivityIndicator,
   Image,
   useWindowDimensions,
@@ -152,9 +151,13 @@ const FoodAndBakeryScreen = () => {
                 disabled={!vendor.openStatus}
                 underlayColor={"#f7f7f7"}
                 key={index}
-                onPress={() =>
-                  navigation.navigate("Menu", { vendor, selectedCampus })
-                }
+                onPress={() => {
+                  if (selectedCampus) {
+                    navigation.navigate("Menu", { vendor, selectedCampus });
+                  } else {
+                    setFoodLocationModalVisible(true);
+                  }
+                }}
                 style={{
                   flexDirection: "row",
                   marginVertical: 20,

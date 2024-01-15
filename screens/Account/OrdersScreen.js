@@ -7,7 +7,9 @@ import FoodOrdersList from "../../components/utility/FoodOrdersList";
 
 const Tab = createMaterialTopTabNavigator();
 
-const OrdersScreen = () => {
+const OrdersScreen = ({ route }) => {
+  const showFoodOrders = route?.params?.showFoodOrders;
+  console.log(showFoodOrders);
   const selectedLocation = useLocation();
   const foodBakeryVisible = selectedLocation._id === "655f1b9f9f019ff01503fc7b";
 
@@ -20,7 +22,9 @@ const OrdersScreen = () => {
     >
       <Navbar showSearchBar={false} />
       {foodBakeryVisible ? (
-        <Tab.Navigator>
+        <Tab.Navigator
+          initialRouteName={showFoodOrders ? "Food Orders" : "My Orders"}
+        >
           <Tab.Screen name="My Orders" component={MyOrders} />
           <Tab.Screen name="Food Orders" component={FoodOrdersList} />
         </Tab.Navigator>

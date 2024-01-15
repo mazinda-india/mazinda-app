@@ -11,6 +11,7 @@ import {
   Pressable,
   Linking,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import axios from "axios";
 
@@ -437,7 +438,7 @@ const LoginScreen = () => {
                 or
               </Text>
 
-              {!googleLoading && (
+              {Platform.OS === "ios" && !googleLoading && (
                 <TouchableOpacity
                   onPress={() => promptAsync()}
                   style={{

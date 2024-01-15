@@ -43,6 +43,8 @@ const SearchScreen = ({ route }) => {
         }
       );
 
+      console.log(data);
+
       if (data.success) {
         setProducts(data.products);
       }

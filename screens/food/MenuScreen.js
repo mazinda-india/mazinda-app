@@ -7,32 +7,70 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   Platform,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { TouchableHighlight } from "react-native";
+import { useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MenuScreen = ({ route }) => {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
   const { vendor, selectedCampus } = route.params;
+  // const user = useSelector((state) => state.user.user);
   const [cart, setCart] = useState({});
 
   const addToCart = (item) => {
-    const updatedCart = { ...cart };
+    try {
+      // Check if the cart is associated with a vendor
+      if (Object.keys(cart).length > 0) {
+        const vendorNameInCart = Object.values(cart)[0].vendorName;
+        if (vendorNameInCart !== vendor.name) {
+          // Show the custom alert when trying to add items from different vendors
+          Alert.alert(
+            "You can't add items from different vendors. Do you want to clear the cart?",
+            "",
+            [
+              {
+                text: "Clear",
+                onPress: () => {
+                  setCart({});
+                },
+              },
+              {
+                text: "Cancel",
+                style: "cancel",
+                // onPress: () => {
+                //   // Handle cancel action
+                // },
+              },
+            ]
+          );
+          return;
+        }
+      }
 
-    if (updatedCart[item.name]) {
-      // Item already in the cart, update quantity
-      updatedCart[item.name].quantity += 1;
-    } else {
-      // Item not in the cart, add it
-      updatedCart[item.name] = {
-        name: item.name,
-        price: item.price,
-        vendorName: vendor.name,
-        quantity: 1,
-      };
+      // Check if the item is already in the cart
+      if (item.name in cart) {
+        // If the item is already in the cart, update its quantity
+        const updatedCart = { ...cart };
+        updatedCart[item.name].quantity += 1;
+        setCart(updatedCart);
+      } else {
+        // If the item is not in the cart, add it
+        const newItem = {
+          name: item.name,
+          quantity: 1,
+          price: item.price,
+          vendorName: vendor.name,
+        };
+        const newCart = { ...cart, [item.name]: newItem };
+        setCart(newCart);
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
     }
-
-    setCart(updatedCart);
   };
 
   const removeFromCart = (item) => {
@@ -53,6 +91,22 @@ const MenuScreen = ({ route }) => {
       setCart(updatedCart);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      const food_cart = await AsyncStorage.getItem("food_cart");
+      if (food_cart) {
+        console.log(food_cart);
+        setCart(JSON.parse(food_cart));
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      await AsyncStorage.setItem("food_cart", JSON.stringify(cart));
+    })();
+  }, [cart]);
 
   return (
     <SafeAreaView
@@ -173,7 +227,8 @@ const MenuScreen = ({ route }) => {
                         flexDirection: "row",
                       }}
                     >
-                      <TouchableOpacity
+                      <TouchableHighlight
+                        underlayColor={"#ffffff"}
                         style={{
                           paddingVertical: 3,
                           paddingHorizontal: 8,
@@ -188,25 +243,28 @@ const MenuScreen = ({ route }) => {
                         onPress={() => removeFromCart(item)}
                       >
                         <Text style={{ fontSize: 17 }}>-</Text>
-                      </TouchableOpacity>
+                      </TouchableHighlight>
                       <Text
                         style={{
                           fontSize: 17,
                           paddingVertical: 3,
                           paddingHorizontal: 7,
-                          borderColor:
+                          borderTopColor:
+                            cart && cart[item.name] ? "#f17e13" : "lightgray",
+                          borderBottomColor:
                             cart && cart[item.name] ? "#f17e13" : "lightgray",
                           backgroundColor:
                             cart && cart[item.name] ? "#f17e1320" : "white",
-                          borderWidth: 1,
+                          borderTopWidth: 1,
+                          borderBottomWidth: 1,
                         }}
                       >
                         {cart && cart[item.name]
                           ? cart[item.name].quantity
                           : "0"}
                       </Text>
-                      {/* </TouchableOpacity> */}
-                      <TouchableOpacity
+                      <TouchableHighlight
+                        underlayColor={"#ffffff"}
                         onPress={() => addToCart(item)}
                         style={{
                           paddingVertical: 3,
@@ -221,7 +279,7 @@ const MenuScreen = ({ route }) => {
                         }}
                       >
                         <Text style={{ fontSize: 17 }}>+</Text>
-                      </TouchableOpacity>
+                      </TouchableHighlight>
                     </View>
                   </View>
                 </View>

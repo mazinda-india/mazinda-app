@@ -86,18 +86,8 @@ const FoodOrdersList = () => {
   }
 
   const renderItem = ({ item }) => {
-    console.log("item", item);
-    const products = item.products;
-    // console.log("products", orders[0].products);
     return (
-      <Pressable
-        onPress={() =>
-          navigation.navigate("View Order", {
-            item: item,
-            status: order.status,
-            address: order.address,
-          })
-        }
+      <View
         style={{
           backgroundColor: "white",
           flexDirection: "row",
@@ -116,7 +106,6 @@ const FoodOrdersList = () => {
           style={{
             flexDirection: "column",
             gap: 5,
-            // width: (4 * width) / 5,
             width,
             paddingRight: 40,
             overflow: "hidden",
@@ -158,6 +147,7 @@ const FoodOrdersList = () => {
 
           {Object.keys(item.products).map((productName) => (
             <Text
+              key={productName}
               numberOfLines={1}
               style={{
                 fontSize: 16,
@@ -183,20 +173,23 @@ const FoodOrdersList = () => {
               marginTop: 12,
             }}
           >
-            <Text
-              style={{
-                color: "gray",
-              }}
-            >
-              {new Date(item.createdAt).toLocaleString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-              })}
-            </Text>
+            <View>
+              <Text
+                style={{
+                  color: "gray",
+                }}
+              >
+                {new Date(item.createdAt).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </Text>
+            </View>
+
             <Text
               style={{
                 fontSize: 17,
@@ -207,7 +200,7 @@ const FoodOrdersList = () => {
             </Text>
           </View>
         </View>
-      </Pressable>
+      </View>
     );
   };
 
