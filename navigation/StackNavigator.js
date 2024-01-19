@@ -20,10 +20,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import CategoriesScreen from "../screens/CategoriesScreen";
-
-import LocationProvider from "../contexts/LocationContext";
 import OrderPlacedScreen from "../screens/OrderPlacedScreen";
-import MyOrders from "../screens/Account/MyOrders";
 import CategoryScreen from "../screens/CategoryScreen";
 import ViewOrderScreen from "../screens/ViewOrderScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
@@ -32,17 +29,29 @@ import MenuScreen from "../screens/food/MenuScreen";
 import FoodCheckout from "../screens/food/FoodCheckout";
 import OrdersScreen from "../screens/Account/OrdersScreen";
 
+import { useSelector } from "react-redux";
+
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
-
   const Tab = createBottomTabNavigator();
 
+  // const memoizedLocation = useMemo(() => currentLocation, [currentLocation]);
+
   function BottomTabs() {
+    const currentLocation = useSelector((state) => state.location.location);
+    const locationServiceable = useSelector(
+      (state) => state.location.serviceable
+    );
     return (
       <Tab.Navigator
         screenOptions={{
           tabBarStyle: {
             backgroundColor: "#fbe4d0",
+            display:
+              currentLocation && Object.keys(currentLocation).length
+                ? "flex"
+                : "none",
+            paddingTop: 5,
           },
         }}
       >
@@ -144,77 +153,75 @@ const StackNavigator = () => {
   }
 
   return (
-    <LocationProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Main"
-            component={BottomTabs}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Category"
-            component={CategoryScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Food And Bakery"
-            component={FoodAndBakeryScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Menu"
-            component={MenuScreen}
-            // options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Food Checkout"
-            component={FoodCheckout}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Search"
-            component={SearchScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Product"
-            component={ProductScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Checkout"
-            component={CheckoutScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Order Placed"
-            component={OrderPlacedScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Store"
-            component={StoreScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </LocationProvider>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Main"
+          component={BottomTabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Category"
+          component={CategoryScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Food And Bakery"
+          component={FoodAndBakeryScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Menu"
+          component={MenuScreen}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Food Checkout"
+          component={FoodCheckout}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Search"
+          component={SearchScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Product"
+          component={ProductScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Checkout"
+          component={CheckoutScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Order Placed"
+          component={OrderPlacedScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Store"
+          component={StoreScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

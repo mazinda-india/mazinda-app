@@ -5,11 +5,10 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { useLocation } from "../../contexts/LocationContext";
-import { useLocationLoading } from "../../contexts/LocationContext";
 import ProductCard from "../utility/ProductCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const HorizontalProductList = ({ filter }) => {
   const { width } = useWindowDimensions();
@@ -17,11 +16,11 @@ const HorizontalProductList = ({ filter }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const selectedLocation = useLocation();
-  const locationLoading = useLocationLoading();
+  const currentLocation = useSelector((state) => state.location.location);
+  const locationLoading = useSelector((state) => state.location.isLoading);
 
   const fetchData = async () => {
-    const availablePincodes = selectedLocation.pincodes;
+    const availablePincodes = currentLocation.pincodes;
 
     const { data } = await axios.post(
       `https://mazinda.com/api/product/fetch-products?filter=${filter}`,
@@ -36,10 +35,10 @@ const HorizontalProductList = ({ filter }) => {
   };
 
   useEffect(() => {
-    if (Object.keys(selectedLocation).length !== 0) {
+    if (Object.keys(currentLocation).length !== 0) {
       fetchData();
     }
-  }, [selectedLocation, locationLoading]);
+  }, [currentLocation, locationLoading]);
 
   if (loading) {
     return (

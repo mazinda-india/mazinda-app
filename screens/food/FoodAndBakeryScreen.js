@@ -229,6 +229,7 @@ const FoodAndBakeryScreen = () => {
                           color: vendor.openStatus ? "#5bc236" : "#eedb00",
                           fontSize: 12,
                           fontWeight: 600,
+                          textAlign: "center",
                         }}
                       >
                         {vendor.openStatus

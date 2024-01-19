@@ -5,6 +5,8 @@ import { ModalPortal } from "react-native-modals";
 import { ToastProvider } from "react-native-toast-notifications";
 import * as Updates from "expo-updates";
 import { useEffect } from "react";
+import { Alert, Linking } from "react-native";
+import axios from "axios";
 
 export default function App() {
   async function onFetchUpdateAsync() {
@@ -23,6 +25,35 @@ export default function App() {
 
   useEffect(() => {
     onFetchUpdateAsync();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await axios.get(
+          "https://mazinda.com/api/fetch-app-version"
+        );
+
+        if (data.app_version > 1) {
+          Alert.alert(
+            "App Update Available",
+            "A new version of Mazinda is available\nKindly update the app for latest features and bug fixes",
+            [
+              {
+                text: "Update Now",
+                onPress: () =>
+                  Linking.openURL(
+                    "https://play.google.com/store/apps/details?id=com.abhey_gupta.MazindaApp"
+                  ),
+              },
+              { text: "Later", style: "cancel" },
+            ]
+          );
+        }
+      } catch (err) {
+        Alert.alert(`Oops, a network error occurred`);
+      }
+    })();
   }, []);
 
   return (

@@ -1,6 +1,5 @@
 import { Image, Pressable, Text, View, Platform } from "react-native";
 import MazindaLogo from "../assets/logo/logo_mazinda_full.png";
-
 import {
   EvilIcons,
   AntDesign,
@@ -9,10 +8,10 @@ import {
 } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { useState } from "react";
-import { useLocation } from "../contexts/LocationContext";
 import LocationModal from "./modals/LocationModal";
 import SearchModal from "./modals/SearchModal";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 
 const Navbar = ({
   searchQuery,
@@ -22,7 +21,10 @@ const Navbar = ({
   const [locationsModalVisible, setLocationsModalVisible] = useState(false);
   const [searchModalVisible, setSearchModalVisible] = useState(false);
 
-  const selectedLocation = useLocation();
+  const currentLocationLoading = useSelector(
+    (state) => state.location.isLoading
+  );
+  const currentLocation = useSelector((state) => state.location.location);
 
   const navigation = useNavigation();
 
@@ -82,7 +84,13 @@ const Navbar = ({
                   minWidth: 80,
                 }}
               >
-                <Text style={{ fontSize: 16 }}>{selectedLocation.city}</Text>
+                <Text style={{ fontSize: 16 }}>
+                  {currentLocationLoading
+                    ? "Fetching Location"
+                    : currentLocation?.city
+                    ? currentLocation?.city
+                    : "Select Location"}
+                </Text>
                 {allowLocationChange && (
                   <AntDesign name="down" size={10} color="#4b5563" />
                 )}

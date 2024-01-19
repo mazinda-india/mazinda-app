@@ -1,16 +1,16 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import MyOrders from "./MyOrders";
-import { useLocation } from "../../contexts/LocationContext";
 import { SafeAreaView, Text } from "react-native";
 import Navbar from "../../components/Navbar";
 import FoodOrdersList from "../../components/utility/FoodOrdersList";
+import { useSelector } from "react-redux";
 
 const Tab = createMaterialTopTabNavigator();
 
 const OrdersScreen = ({ route }) => {
   const showFoodOrders = route?.params?.showFoodOrders;
-  const selectedLocation = useLocation();
-  const foodBakeryVisible = selectedLocation._id === "655f1b9f9f019ff01503fc7b";
+  const currentLocation = useSelector((state) => state.location.location);
+  const foodBakeryVisible = currentLocation._id === "655f1b9f9f019ff01503fc7b";
 
   return (
     <SafeAreaView

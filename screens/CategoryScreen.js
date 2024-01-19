@@ -8,7 +8,7 @@ import {
 
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { useLocation, useLocationLoading } from "../contexts/LocationContext";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import ProductCard from "../components/utility/ProductCard";
 
@@ -18,11 +18,11 @@ const CategoryScreen = ({ route }) => {
   const [pageLoading, setPageLoading] = useState(true);
   const [products, setProducts] = useState([]);
 
-  const selectedLocation = useLocation();
-  const locationLoading = useLocationLoading();
+  const currentLocation = useSelector((state) => state.location.location);
+  const locationLoading = useSelector((state) => state.location.isLoading);
 
   const fetchData = async () => {
-    const availablePincodes = selectedLocation.pincodes;
+    const availablePincodes = currentLocation.pincodes;
     const { data } = await axios.post(
       `https://mazinda.com/api/product/fetch-products?category=${categoryName}`,
       { availablePincodes }
@@ -32,10 +32,10 @@ const CategoryScreen = ({ route }) => {
   };
 
   useEffect(() => {
-    if (Object.keys(selectedLocation).length !== 0) {
+    if (Object.keys(currentLocation).length !== 0) {
       fetchData();
     }
-  }, [selectedLocation, locationLoading]);
+  }, [currentLocation, locationLoading]);
 
   const renderProductItem = ({ item }) => <ProductCard item={item} />;
 

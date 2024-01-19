@@ -3,22 +3,23 @@ import { EvilIcons, AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BottomModal, SlideAnimation } from "react-native-modals";
-import { useLocation, useUpdateLocation } from "../../contexts/LocationContext";
+import { useSelector, useDispatch } from "react-redux";
+import { updateLocation } from "../../redux/LocationReducer";
 
 const LocationModal = ({ locationsModalVisible, setLocationsModalVisible }) => {
-  const [locations, setLocations] = useState([]);
+  const dispatch = useDispatch();
 
-  const selectedLocation = useLocation();
-  const updateLocation = useUpdateLocation();
+  const [locations, setLocations] = useState([]);
+  const currentLocation = useSelector((state) => state.location.location);
 
   const handleCityClick = (locationInfo) => {
-    updateLocation(locationInfo);
+    dispatch(updateLocation(locationInfo));
     setLocationsModalVisible(false);
   };
 
   const fetchLocations = async () => {
     try {
-      const { data } = await axios.get(
+      const { data } = await axios.post(
         "https://mazinda.com/api/location/fetch-locations"
       );
       if (data.success) {
@@ -82,7 +83,7 @@ const LocationModal = ({ locationsModalVisible, setLocationsModalVisible }) => {
                   paddingVertical: 10,
                   paddingHorizontal: 20,
                   borderColor:
-                    location.city === selectedLocation.city
+                    location.city === currentLocation?.city
                       ? "#fe6321"
                       : "lightgray",
                   borderWidth: 1,
@@ -90,7 +91,7 @@ const LocationModal = ({ locationsModalVisible, setLocationsModalVisible }) => {
                   marginHorizontal: 18,
                   borderRadius: 8,
                   backgroundColor:
-                    location.city === selectedLocation.city
+                    location.city === currentLocation?.city
                       ? "#ffefe8"
                       : "white",
                 }}

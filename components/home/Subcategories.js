@@ -1,17 +1,13 @@
 import { ImageBackground } from "react-native";
 import { FlatList, Text, Pressable, useWindowDimensions } from "react-native";
-import { useLocation } from "../../contexts/LocationContext";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { useToast } from "react-native-toast-notifications";
 
-const Subcategories = () => {
+const Subcategories = ({ foodBakeryVisible }) => {
   const toast = useToast();
   const { width } = useWindowDimensions();
   const navigation = useNavigation();
-  const selectedLocation = useLocation();
-  const foodBakeryVisible = selectedLocation._id === "655f1b9f9f019ff01503fc7b";
-  // const foodBakeryVisible = false;
   const user = useSelector((state) => state.user.user);
   const userLoggedIn = Object.keys(user).length;
 

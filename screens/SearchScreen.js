@@ -11,7 +11,6 @@ import {
 
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { useLocation } from "../contexts/LocationContext";
 import axios from "axios";
 import ProductCard from "../components/utility/ProductCard";
 import { useToast } from "react-native-toast-notifications";
@@ -25,7 +24,7 @@ const SearchScreen = ({ route }) => {
   const userLoggedIn = Object.keys(user).length ? true : false;
 
   const { searchQuery } = route.params;
-  const selectedLocation = useLocation();
+  const currentLocation = useSelector((state) => state.location.location);
   const [loading, setLoading] = useState(true);
   const [querySubmitLoading, setQuerySubmitLoading] = useState(false);
 
@@ -34,7 +33,7 @@ const SearchScreen = ({ route }) => {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const availablePincodes = selectedLocation.pincodes;
+      const availablePincodes = currentLocation.pincodes;
 
       const { data } = await axios.post(
         `https://mazinda.com/api/product/fetch-search-products?searchQuery=${searchQuery}`,
@@ -42,8 +41,6 @@ const SearchScreen = ({ route }) => {
           availablePincodes,
         }
       );
-
-      console.log(data);
 
       if (data.success) {
         setProducts(data.products);

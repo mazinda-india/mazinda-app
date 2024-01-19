@@ -10,15 +10,15 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { useLocation } from "../../contexts/LocationContext";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { addNewAddress } from "../../redux/UserReducer";
+import { useSelector } from "react-redux";
 
 const AddAddress = ({ addAddressVisible, setAddAddressVisible }) => {
   const { width } = useWindowDimensions();
-  const selectedLocation = useLocation();
+  const selectedLocation = useSelector((state) => state.location.location);
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();

@@ -284,7 +284,7 @@ const ProductScreen = ({ route }) => {
       </View>
       {/* </View> */}
 
-      <Navbar />
+      <Navbar allowLocationChange={false} />
 
       <ScrollView
         refreshControl={
