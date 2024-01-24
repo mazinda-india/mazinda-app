@@ -34,7 +34,7 @@ export default function App() {
           "https://mazinda.com/api/fetch-app-version"
         );
 
-        if (data.app_version > 1) {
+        if (data.app_version > 2) {
           Alert.alert(
             "App Update Available",
             "A new version of Mazinda is available\nKindly update the app for latest features and bug fixes",

@@ -1,5 +1,4 @@
 import {
-  Modal,
   SafeAreaView,
   Text,
   View,
@@ -74,8 +73,18 @@ const CheckoutScreen = ({ route }) => {
     if (cart) {
       cart.forEach((item) => {
         total_mrp += parseFloat(item.pricing.mrp) * item.quantity;
-        total_salesPrice += parseFloat(item.pricing.salesPrice) * item.quantity;
-        total_costPrice += parseFloat(item.pricing.costPrice) * item.quantity;
+        total_salesPrice += item.pricing.specialPrice
+          ? parseFloat(
+              parseFloat(item.pricing.salesPrice) -
+                parseFloat(
+                  parseFloat(item.pricing.costPrice) -
+                    parseFloat(item.pricing.specialPrice)
+                )
+            ) * item.quantity
+          : parseFloat(item.pricing.salesPrice) * item.quantity;
+        total_costPrice += item.pricing.specialPrice
+          ? parseFloat(item.pricing.specialPrice) * item.quantity
+          : parseFloat(item.pricing.costPrice) * item.quantity;
       });
     }
 
@@ -484,6 +493,7 @@ const CheckoutScreen = ({ route }) => {
           deliveryAddress={deliveryAddress}
           selectedPaymentMethod={selectedPaymentMethod}
           pricing={pricing}
+          setPricing={setPricing}
         />
       ) : null}
     </SafeAreaView>

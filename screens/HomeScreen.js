@@ -37,7 +37,7 @@ import LocationModal from "../components/modals/LocationModal";
 const HomeScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const currentLocation = useSelector((state) => state.location.location);
   const locationServiceable = useSelector(
     (state) => state.location.serviceable
@@ -74,8 +74,6 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchStoriesData());
-
     (async () => {
       const user_token = await AsyncStorage.getItem("user_token");
       if (user_token) {
@@ -94,6 +92,12 @@ const HomeScreen = () => {
       dispatch(fetchLocationByCity(address[0].city));
     }
   }, [address]);
+
+  useEffect(() => {
+    if (currentLocation.city) {
+      dispatch(fetchStoriesData(currentLocation.city));
+    }
+  }, [currentLocation.city]);
 
   if (!locationServiceable) {
     return (

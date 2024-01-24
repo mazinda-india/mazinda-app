@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { ScrollView } from "react-native-virtualized-view";
-import { useDispatch } from "react-redux";
-import { decrementQuantity, incrementQuantity } from "../../redux/CartReducer";
 
 const Overview = ({
   itemData,
@@ -19,7 +17,6 @@ const Overview = ({
   setPricing,
 }) => {
   const { width } = useWindowDimensions();
-  const dispatch = useDispatch();
 
   const incrementItemQuantity = (id) => {
     setItemData((prevData) =>
@@ -66,164 +63,182 @@ const Overview = ({
       <FlatList
         data={itemData}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <View
-            style={{
-              width: width,
-              backgroundColor: "white",
-              flexDirection: "row",
-              paddingHorizontal: 10,
-              paddingVertical: 20,
-              gap: 8,
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 8,
-            }}
-          >
-            <Image
-              style={{
-                width: width / 6.5,
-                height: 75,
-                marginHorizontal: 12,
-              }}
-              source={{ uri: item.imagePaths[0] }}
-              resizeMode="contain"
-            />
-
+        renderItem={({ item, index }) => {
+          return (
             <View
               style={{
-                flexDirection: "column",
-                gap: 5,
-                width: "100%",
+                width: width,
+                backgroundColor: "white",
+                flexDirection: "row",
+                paddingHorizontal: 10,
+                paddingVertical: 20,
+                gap: 8,
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 8,
               }}
             >
-              <Text
+              <Image
                 style={{
-                  fontSize: 16,
-                  color: "#525252",
+                  width: width / 6.5,
+                  height: 75,
+                  marginHorizontal: 12,
                 }}
-                numberOfLines={1}
-              >
-                {item.productName.slice(0, 27)}...
-              </Text>
+                source={{ uri: item.imagePaths[0] }}
+                resizeMode="contain"
+              />
+
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 8,
+                  flexDirection: "column",
+                  gap: 5,
+                  width: "100%",
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 18,
+                    fontSize: 16,
+                    color: "#525252",
                   }}
+                  numberOfLines={1}
                 >
-                  ₹{item.pricing.salesPrice}
+                  {item.productName.slice(0, 27)}...
                 </Text>
-                <Text
-                  style={{
-                    textDecorationLine: "line-through",
-                    color: "gray",
-                  }}
-                >
-                  ₹{item.pricing.mrp}
-                </Text>
-                <Text
-                  style={{
-                    color: "#22c55e",
-                    fontWeight: 600,
-                  }}
-                >
-                  {String(
-                    ((item.pricing.mrp - item.pricing.salesPrice) /
-                      item.pricing.mrp) *
-                      100
-                  ).slice(0, 4)}
-                  % OFF
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  width: "75%",
-                  alignItems: "center",
-                }}
-              >
-                <Text>Quantity: {item.quantity}</Text>
                 <View
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    borderColor: "#f17e13",
-                    borderWidth: 1,
-                    borderRadius: 10,
+                    gap: 8,
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={() => {
-                      decrementItemQuantity(item._id);
-                    }}
-                    style={{
-                      backgroundColor: "#f17e13",
-                      paddingHorizontal: 8,
-                      paddingVertical: 2,
-                      borderTopLeftRadius: 8,
-                      borderBottomLeftRadius: 8,
-                    }}
-                  >
+                  {item.pricing.specialPrice ? (
                     <Text
                       style={{
-                        color: "white",
                         fontSize: 18,
-                        fontWeight: 700,
                       }}
                     >
-                      -
+                      ₹
+                      {parseFloat(
+                        parseFloat(item.pricing.salesPrice) -
+                          parseFloat(
+                            parseFloat(item.pricing.costPrice) -
+                              parseFloat(item.pricing.specialPrice)
+                          )
+                      )}
                     </Text>
-                  </TouchableOpacity>
+                  ) : (
+                    <Text
+                      style={{
+                        fontSize: 18,
+                      }}
+                    >
+                      ₹{item.pricing.salesPrice}
+                    </Text>
+                  )}
                   <Text
                     style={{
-                      fontSize: 16,
-                      paddingHorizontal: 7,
+                      textDecorationLine: "line-through",
+                      color: "gray",
                     }}
                   >
-                    {item.quantity}
+                    ₹{item.pricing.mrp}
                   </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      // dispatch(
-                      //   incrementQuantity({
-                      //     _id: item._id,
-                      //     quantity: item.quantity,
-                      //   })
-                      // );
-                      // dispatch(updateCartOnServer());
-                      incrementItemQuantity(item._id);
-                    }}
+                  <Text
                     style={{
-                      backgroundColor: "#f17e13",
-                      paddingHorizontal: 8,
-                      paddingVertical: 2,
-                      borderTopRightRadius: 8,
-                      borderBottomRightRadius: 8,
+                      color: "#22c55e",
+                      fontWeight: 600,
                     }}
                   >
-                    <Text
+                    {item.pricing.specialPrice
+                      ? String(
+                          ((item.pricing.mrp - item.pricing.specialPrice) /
+                            item.pricing.mrp) *
+                            100
+                        ).slice(0, 4)
+                      : String(
+                          ((item.pricing.mrp - item.pricing.salesPrice) /
+                            item.pricing.mrp) *
+                            100
+                        ).slice(0, 4)}
+                    % OFF
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "75%",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text>Quantity: {item.quantity}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      borderColor: "#f17e13",
+                      borderWidth: 1,
+                      borderRadius: 10,
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => {
+                        decrementItemQuantity(item._id);
+                      }}
                       style={{
-                        color: "white",
-                        fontSize: 18,
-                        fontWeight: 700,
+                        backgroundColor: "#f17e13",
+                        paddingHorizontal: 8,
+                        paddingVertical: 2,
+                        borderTopLeftRadius: 8,
+                        borderBottomLeftRadius: 8,
                       }}
                     >
-                      +
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 18,
+                          fontWeight: 700,
+                        }}
+                      >
+                        -
+                      </Text>
+                    </TouchableOpacity>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingHorizontal: 7,
+                      }}
+                    >
+                      {item.quantity}
                     </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        incrementItemQuantity(item._id);
+                      }}
+                      style={{
+                        backgroundColor: "#f17e13",
+                        paddingHorizontal: 8,
+                        paddingVertical: 2,
+                        borderTopRightRadius: 8,
+                        borderBottomRightRadius: 8,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 18,
+                          fontWeight: 700,
+                        }}
+                      >
+                        +
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-        )}
+          );
+        }}
       />
 
       <View

@@ -27,9 +27,10 @@ const ProductScreen = ({ route }) => {
   const cart = useSelector((state) => state.cart.cart);
 
   const isLoggedIn = Object.keys(user).length ? true : false;
-  // const { item } = route.params;
 
   const [item, setItem] = useState(route.params?.item || {});
+
+  console.log("item", JSON.stringify(item, undefined, 2));
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -179,22 +180,6 @@ const ProductScreen = ({ route }) => {
         backgroundColor: "white",
       }}
     >
-      {/* <View
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          flexDirection: "row",
-          justifyContent: "center",
-          gap: 12,
-          paddingTop: 15,
-          paddingBottom: 25,
-          backgroundColor: "white",
-          borderTopColor: "lightgray",
-          borderTopWidth: 1,
-        }}
-      > */}
       <View
         style={{
           position: "absolute",
@@ -214,7 +199,6 @@ const ProductScreen = ({ route }) => {
             flexDirection: "row",
             justifyContent: "center",
             gap: 12,
-            // justifyContent: "space-evenly",
           }}
         >
           <TouchableOpacity
@@ -301,12 +285,6 @@ const ProductScreen = ({ route }) => {
           backgroundColor: "#f5f5f5",
         }}
       >
-        {/* <CheckoutModal
-          checkoutModalVisible={checkoutModalVisible}
-          setCheckoutModalVisible={setCheckoutModalVisible}
-          cart={[{ _id: item._id, quantity: 1 }]}
-        /> */}
-
         {/* Image Container View */}
         <View
           style={{
@@ -406,57 +384,90 @@ const ProductScreen = ({ route }) => {
 
           <View
             style={{
-              flexDirection: "row",
-              gap: 10,
               marginVertical: 30,
               marginHorizontal: 5,
-              alignItems: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: 26,
-                fontWeight: 500,
-              }}
-            >
-              ₹{itemData.pricing.salesPrice}
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 18,
-                marginTop: 4,
-                textDecorationLine: "line-through",
-                color: "gray",
-              }}
-            >
-              ₹{itemData.pricing.mrp}
-            </Text>
             <View
               style={{
-                backgroundColor: "#d3ffd8",
+                flexDirection: "row",
+                gap: 10,
                 alignItems: "center",
-                justifyContent: "center",
-                paddingHorizontal: 10,
-                borderRadius: 20,
-                height: 20,
               }}
             >
+              {itemData.pricing.specialPrice ? (
+                <Text
+                  style={{
+                    fontSize: 26,
+                    fontWeight: 500,
+                  }}
+                >
+                  ₹
+                  {parseFloat(
+                    parseFloat(itemData.pricing.salesPrice) -
+                      parseFloat(
+                        parseFloat(itemData.pricing.costPrice) -
+                          parseFloat(itemData.pricing.specialPrice)
+                      )
+                  )}
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 26,
+                    fontWeight: 500,
+                  }}
+                >
+                  ₹{itemData.pricing.salesPrice}
+                </Text>
+              )}
+
               <Text
                 style={{
-                  color: "#57e28d",
-                  fontWeight: 700,
-                  fontSize: 12,
+                  fontSize: 18,
+                  marginTop: 4,
+                  textDecorationLine: "line-through",
+                  color: "gray",
                 }}
               >
-                {String(
-                  ((itemData.pricing.mrp - itemData.pricing.salesPrice) /
-                    itemData.pricing.mrp) *
-                    100
-                ).slice(0, 4)}
-                % OFF
+                ₹{itemData.pricing.mrp}
               </Text>
+              <View
+                style={{
+                  backgroundColor: "#d3ffd8",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 10,
+                  borderRadius: 20,
+                  height: 20,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#57e28d",
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}
+                >
+                  {String(
+                    ((itemData.pricing.mrp - itemData.pricing.salesPrice) /
+                      itemData.pricing.mrp) *
+                      100
+                  ).slice(0, 4)}
+                  % OFF
+                </Text>
+              </View>
             </View>
+            {itemData.pricing.specialPrice ? (
+              <Text
+                style={{
+                  color: "green",
+                  marginTop: 5,
+                }}
+              >
+                Special Price !
+              </Text>
+            ) : null}
           </View>
         </View>
 

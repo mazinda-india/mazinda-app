@@ -103,54 +103,56 @@ const Story = () => {
           </Text>
         </TouchableOpacity> */}
 
-        {uniqueStories.map((story) => (
-          <TouchableOpacity
-            onPress={() => {
-              // Filter stories of the selected vendor
-              const selectedVendorStories = stories.filter(
-                (s) => s.storeDetails._id === story.storeDetails._id
-              );
-              setSelectedVendorStories(selectedVendorStories);
-              setShowStoryModal(true);
-            }}
-            key={story._id}
-            style={{
-              marginHorizontal: 5,
-              alignItems: "center",
-              gap: 10,
-              width: width / 5,
-            }}
-          >
-            <View
+        {uniqueStories.map((story) => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                // Filter stories of the selected vendor
+                const selectedVendorStories = stories.filter(
+                  (s) => s.storeDetails._id === story.storeDetails._id
+                );
+                setSelectedVendorStories(selectedVendorStories);
+                setShowStoryModal(true);
+              }}
+              key={story._id}
               style={{
-                borderColor: "orange",
-                borderWidth: 3,
-                borderRadius: 100,
-                padding: 5,
-                overflow: "hidden",
+                marginHorizontal: 5,
+                alignItems: "center",
+                gap: 10,
+                width: width / 5,
               }}
             >
-              <Image
-                resizeMode="contain"
+              <View
                 style={{
-                  width: 60,
-                  height: 60,
+                  borderColor: "orange",
+                  borderWidth: 3,
+                  borderRadius: 100,
+                  padding: 5,
+                  overflow: "hidden",
                 }}
-                source={{ uri: story.storeDetails.imageURI }}
-              />
-            </View>
-            <Text
-              style={{
-                fontWeight: 600,
-                fontSize: 14,
-                textAlign: "center",
-              }}
-              numberOfLines={1}
-            >
-              {story.storeDetails.storeName}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              >
+                <Image
+                  resizeMode="contain"
+                  style={{
+                    width: 60,
+                    height: 60,
+                  }}
+                  source={{ uri: story.product.imagePaths[0] }}
+                />
+              </View>
+              <Text
+                style={{
+                  fontWeight: 600,
+                  fontSize: 14,
+                  textAlign: "center",
+                }}
+                numberOfLines={1}
+              >
+                {story.storeDetails.storeName}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {showStoryModal && (

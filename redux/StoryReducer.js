@@ -2,12 +2,20 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Action
-export const fetchStoriesData = createAsyncThunk("fetchStories", async () => {
-  const { data } = await axios.post(
-    "https://mazinda.com/api/story/fetch-stories"
-  );
-  return data.stories;
-});
+export const fetchStoriesData = createAsyncThunk(
+  "fetchStories",
+  async (city) => {
+    console.log(city);
+    const { data } = await axios.post(
+      "https://mazinda.com/api/story/fetch-location-stories",
+      {
+        city,
+      }
+    );
+    console.log(data);
+    return data.stories;
+  }
+);
 
 export const StorySlice = createSlice({
   name: "stories",
