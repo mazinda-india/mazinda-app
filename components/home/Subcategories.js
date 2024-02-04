@@ -9,7 +9,7 @@ const Subcategories = ({ foodBakeryVisible }) => {
   const { width } = useWindowDimensions();
   const navigation = useNavigation();
   const user = useSelector((state) => state.user.user);
-  const userLoggedIn = Object.keys(user).length;
+  const userLoggedIn = user && Object.keys(user).length;
 
   const renderSubcategory = ({ item }) => {
     return (

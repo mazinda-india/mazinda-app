@@ -22,7 +22,7 @@ const SearchScreen = ({ route }) => {
   const user = useSelector((state) => state.user.user);
   const userMode = useSelector((state) => state.user.userMode);
 
-  const userLoggedIn = Object.keys(user).length ? true : false;
+  const userLoggedIn = user && Object.keys(user).length;
 
   const { searchQuery } = route.params;
   const currentLocation = useSelector((state) => state.location.location);
