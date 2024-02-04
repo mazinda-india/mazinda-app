@@ -15,6 +15,8 @@ const FoodOrdersList = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [remainingTimes, setRemainingTimes] = useState([]);
+
   const user = useSelector((state) => state.user.user);
 
   const { width } = useWindowDimensions();
@@ -28,6 +30,10 @@ const FoodOrdersList = () => {
 
       if (data.success) {
         setOrders(data.foodOrders.reverse());
+        const times = data.foodOrders.map((item) =>
+          calculateRemainingTime(item.createdAt, item.updatedAt)
+        );
+        setRemainingTimes(times);
       } else {
         console.log("An error occurred");
       }
@@ -38,47 +44,39 @@ const FoodOrdersList = () => {
     }
   };
 
+  const calculateRemainingTime = (createdAtTimestamp, updatedAtTimestamp) => {
+    const currentTime = new Date().getTime();
+    console.log(currentTime);
+    console.log(createdAtTimestamp);
+    const elapsedTime = currentTime - new Date(createdAtTimestamp).getTime();
+    console.log("elapsedTime", elapsedTime);
+    return Math.max(
+      (createdAtTimestamp === updatedAtTimestamp ? 40 : 15) * 60 * 1000 -
+        elapsedTime,
+      0
+    );
+  };
+
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  if (loading) {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <ActivityIndicator />
-      </SafeAreaView>
-    );
-  }
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setRemainingTimes((prevTimes) =>
+        prevTimes.map((time) => Math.max(time - 1000, 0))
+      );
+    }, 1000);
 
-  if (!orders.length) {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            color: "gray",
-            fontSize: 16,
-            textAlign: "center",
-          }}
-        >
-          No Orders Currently
-        </Text>
-      </SafeAreaView>
-    );
-  }
+    return () => clearInterval(intervalId);
+  }, []);
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item, index }) => {
+    const remainingMinutes = Math.floor(remainingTimes[index] / (60 * 1000));
+    const remainingSeconds = Math.floor(
+      (remainingTimes[index] % (60 * 1000)) / 1000
+    );
+
     return (
       <View
         style={{
@@ -111,12 +109,13 @@ const FoodOrdersList = () => {
               gap: 3,
             }}
           >
-            {item.status !== "delivered" ? (
+            {!item.userVerified ? (
               <LottieView
                 source={require("../../assets/status-green.json")}
                 style={{
                   height: 25,
                   width: 25,
+                  marginBottom: 10,
                 }}
                 speed={1}
                 autoPlay
@@ -124,18 +123,40 @@ const FoodOrdersList = () => {
               />
             ) : null}
 
-            <Text
-              style={{
-                color: item.status === "delivered" ? "black" : "#83d429",
-                fontWeight: 500,
-              }}
-            >
-              {item.status === "out_for_delivery"
-                ? "OUT FOR DELIVERY".toUpperCase()
-                : item.status === "delivered"
-                ? "DELIVERED"
-                : item.status.toUpperCase()}
-            </Text>
+            {item.userVerified ? (
+              <Text
+                style={{
+                  fontWeight: 600,
+                  marginBottom: 10,
+                }}
+              >
+                DELIVERED
+              </Text>
+            ) : (
+              <View
+                style={{
+                  marginBottom: 10,
+                }}
+              >
+                {remainingMinutes > 0 && remainingSeconds > 0 ? (
+                  <Text
+                    style={{
+                      fontWeight: 500,
+                    }}
+                  >
+                    {`${remainingMinutes} MIN ${remainingSeconds} SEC`}
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      fontWeight: 500,
+                    }}
+                  >
+                    ARRIVING SOON
+                  </Text>
+                )}
+              </View>
+            )}
           </View>
 
           {Object.keys(item.products).map((productName) => (
@@ -192,10 +213,55 @@ const FoodOrdersList = () => {
               ₹{item.amount} /-
             </Text>
           </View>
+          {!item.userVerified ? (
+            <Text
+              style={{
+                marginTop: 10,
+              }}
+            >
+              OTP: {item.userOTP}
+            </Text>
+          ) : null}
         </View>
       </View>
     );
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <ActivityIndicator />
+      </SafeAreaView>
+    );
+  }
+
+  if (!orders.length) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: "gray",
+            fontSize: 16,
+            textAlign: "center",
+          }}
+        >
+          No Orders Currently
+        </Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -206,7 +272,7 @@ const FoodOrdersList = () => {
     >
       <FlatList
         data={orders}
-        keyExtractor={(item, index) => index}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
         refreshing={refreshing}
         onRefresh={async () => {

@@ -62,6 +62,10 @@ const FoodCheckout = ({ route }) => {
         deliveryCharge
     ).toFixed(2);
 
+  function generateOTP() {
+    return Math.floor(Math.random() * 10000);
+  }
+
   useEffect(() => {
     const newTotal = calculateTotal();
     setTotal(newTotal);
@@ -113,10 +117,14 @@ const FoodCheckout = ({ route }) => {
         {
           userId: user._id,
           vendorId: vendor._id,
+          vendorName: vendor.name,
           products: cart,
           address,
           amount: total,
           externalDeliveryRequired,
+          cutleryQuantity: 0,
+          userOTP: generateOTP(),
+          vendorOTP: generateOTP(),
           cutleryQuantity: 0,
           paymentMethod: "pod",
         }

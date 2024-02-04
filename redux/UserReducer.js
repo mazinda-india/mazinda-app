@@ -21,6 +21,7 @@ export const UserSlice = createSlice({
     isError: false,
     user_token: null,
     user: {},
+    userMode: "consumer",
   },
   prepare: async () => {
     const user_token = await AsyncStorage.getItem("user_token");
@@ -30,6 +31,9 @@ export const UserSlice = createSlice({
     addNewAddress: (state, action) => {
       const { newSavedAddresses } = action.payload;
       state.user.savedAddresses = newSavedAddresses;
+    },
+    toggleUserMode: (state, action) => {
+      state.userMode = state.userMode === "consumer" ? "business" : "consumer";
     },
     logout: (state, action) => {
       state.user = {};
@@ -48,6 +52,6 @@ export const UserSlice = createSlice({
   },
 });
 
-export const { addNewAddress, logout } = UserSlice.actions;
+export const { addNewAddress, logout, toggleUserMode } = UserSlice.actions;
 
 export default UserSlice.reducer;

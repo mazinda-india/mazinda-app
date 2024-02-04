@@ -77,7 +77,7 @@ const MyOrders = () => {
             textAlign: "center",
           }}
         >
-          No {filter === "current" ? "Current" : "Previous"} Orders
+          No Previous Orders
         </Text>
       </SafeAreaView>
     );

@@ -14,11 +14,17 @@ import {
   Ionicons,
   Octicons,
   AntDesign,
+  FontAwesome5,
 } from "@expo/vector-icons";
 import Navbar from "../../components/Navbar";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleUserMode } from "../../redux/UserReducer";
 
 const AccountScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const userMode = useSelector((state) => state.user.userMode);
 
   const OptionItem = ({ icon, text, onPress }) => (
     <TouchableOpacity
@@ -121,31 +127,6 @@ const AccountScreen = () => {
                 My Orders
               </Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity
-              onPress={() => navigation.navigate("Order History")}
-              style={{
-                backgroundColor: "#f5f5f5",
-                flexDirection: "row",
-                width: "48%",
-                padding: 10,
-                alignItems: "center",
-                gap: 10,
-                borderRadius: 10,
-              }}
-            >
-              <MaterialIcons
-                name="playlist-add-check"
-                size={20}
-                color="black"
-              />
-              <Text
-                style={{
-                  fontSize: 15,
-                }}
-              >
-                Order History
-              </Text>
-            </TouchableOpacity> */}
 
             <TouchableOpacity
               onPress={() => navigation.navigate("Followed Shops")}
@@ -211,6 +192,17 @@ const AccountScreen = () => {
             {/* <OptionItem
               icon={<FontAwesome name="thumbs-o-up" size={24} color="black" />}
               text="Rate Mazinda"
+            /> */}
+            {/* <OptionItem
+              icon={<AntDesign name="team" size={24} color="black" />}
+              text={
+                userMode === "business"
+                  ? "Switch to Mazinda"
+                  : "Mazinda For Business"
+              }
+              onPress={() => {
+                dispatch(toggleUserMode());
+              }}
             /> */}
             <OptionItem
               icon={

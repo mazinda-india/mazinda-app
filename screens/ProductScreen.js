@@ -25,6 +25,7 @@ const ProductScreen = ({ route }) => {
 
   const user = useSelector((state) => state.user.user);
   const cart = useSelector((state) => state.cart.cart);
+  const userMode = useSelector((state) => state.user.userMode);
 
   const isLoggedIn = Object.keys(user).length ? true : false;
 
@@ -48,6 +49,10 @@ const ProductScreen = ({ route }) => {
     imagePaths: item.imagePaths,
     pricing: item.pricing,
     productName: item.productName,
+    // minQuantity:
+    //   userMode === "business"
+    //     ? item.variants[item.combinationName]["minQuantity"]
+    //     : 1,
   });
 
   useEffect(() => {
@@ -58,6 +63,7 @@ const ProductScreen = ({ route }) => {
         imagePaths: item.imagePaths,
         pricing: item.pricing,
         productName: item.productName,
+        // minQuantity: item.variants[item.combinationName]["minQuantity"],
       });
     }
   }, [item]);
@@ -116,7 +122,7 @@ const ProductScreen = ({ route }) => {
   useEffect(() => {
     if (variants && Object.keys(variants).length) {
       if (Object.keys(variants).includes(itemData.combinationName)) {
-        const { productName, pricing, imagePaths, description } =
+        const { productName, pricing, imagePaths, description, minQuantity } =
           variants[itemData.combinationName];
 
         setItemData((prevData) => ({
@@ -125,13 +131,37 @@ const ProductScreen = ({ route }) => {
           imagePaths,
           pricing,
           productName,
+          minQuantity,
         }));
       }
     }
   }, [itemData.combinationName]);
 
   const addItemToCart = (item) => {
-    dispatch(addToCart({ _id: item._id, quantity: item.quantity }));
+    const quantity =
+      userMode === "business"
+        ? Object.keys(storeInfo).length &&
+          storeInfo.businessType.includes("b2b")
+          ? parseFloat(item.variants[item.combinationName]["minQuantity"])
+          : 1
+        : 1;
+
+    const minQuantity =
+      userMode === "business"
+        ? Object.keys(storeInfo).length &&
+          storeInfo.businessType.includes("b2b")
+          ? parseFloat(item.variants[item.combinationName]["minQuantity"])
+          : 0
+        : 0;
+
+    dispatch(
+      addToCart({
+        _id: item._id,
+        quantity: quantity,
+        minQuantity: minQuantity,
+      })
+    );
+
     dispatch(updateCartOnServer(cart));
     setAddedToCart(true);
     setTimeout(() => {
@@ -157,6 +187,7 @@ const ProductScreen = ({ route }) => {
         "https://mazinda.com/api/store/fetch-store",
         { storeId: item.storeId }
       );
+      console.log(data.store);
       setStoreInfo(data.store);
     })();
   }, []);
@@ -374,100 +405,128 @@ const ProductScreen = ({ route }) => {
             padding: 10,
           }}
         >
-          <Text
-            style={{
-              fontSize: 20,
-            }}
-          >
-            {itemData.productName}
-          </Text>
-
-          <View
-            style={{
-              marginVertical: 30,
-              marginHorizontal: 5,
-            }}
-          >
-            <View
+          <View>
+            <Text
               style={{
-                flexDirection: "row",
-                gap: 10,
-                alignItems: "center",
+                fontSize: 20,
               }}
             >
+              {itemData.productName}
+            </Text>
+
+            <View
+              style={{
+                marginVertical: 30,
+                marginHorizontal: 5,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  alignItems: "center",
+                }}
+              >
+                {itemData.pricing.specialPrice ? (
+                  <Text
+                    style={{
+                      fontSize: 26,
+                      fontWeight: 500,
+                    }}
+                  >
+                    ₹
+                    {parseFloat(
+                      parseFloat(itemData.pricing.salesPrice) -
+                        parseFloat(
+                          parseFloat(itemData.pricing.costPrice) -
+                            parseFloat(itemData.pricing.specialPrice)
+                        )
+                    )}
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 26,
+                      fontWeight: 500,
+                    }}
+                  >
+                    ₹{itemData.pricing.salesPrice}
+                  </Text>
+                )}
+
+                <Text
+                  style={{
+                    fontSize: 18,
+                    marginTop: 4,
+                    textDecorationLine: "line-through",
+                    color: "gray",
+                  }}
+                >
+                  ₹{itemData.pricing.mrp}
+                </Text>
+                <View
+                  style={{
+                    backgroundColor: "#d3ffd8",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 10,
+                    borderRadius: 20,
+                    height: 20,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#57e28d",
+                      fontWeight: 700,
+                      fontSize: 12,
+                    }}
+                  >
+                    {String(
+                      ((itemData.pricing.mrp - itemData.pricing.salesPrice) /
+                        itemData.pricing.mrp) *
+                        100
+                    ).slice(0, 4)}
+                    % OFF
+                  </Text>
+                </View>
+              </View>
               {itemData.pricing.specialPrice ? (
                 <Text
                   style={{
-                    fontSize: 26,
-                    fontWeight: 500,
+                    color: "green",
+                    marginTop: 5,
                   }}
                 >
-                  ₹
-                  {parseFloat(
-                    parseFloat(itemData.pricing.salesPrice) -
-                      parseFloat(
-                        parseFloat(itemData.pricing.costPrice) -
-                          parseFloat(itemData.pricing.specialPrice)
-                      )
-                  )}
+                  Special Price !
                 </Text>
-              ) : (
-                <Text
-                  style={{
-                    fontSize: 26,
-                    fontWeight: 500,
-                  }}
-                >
-                  ₹{itemData.pricing.salesPrice}
-                </Text>
-              )}
+              ) : null}
 
-              <Text
-                style={{
-                  fontSize: 18,
-                  marginTop: 4,
-                  textDecorationLine: "line-through",
-                  color: "gray",
-                }}
-              >
-                ₹{itemData.pricing.mrp}
-              </Text>
-              <View
-                style={{
-                  backgroundColor: "#d3ffd8",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingHorizontal: 10,
-                  borderRadius: 20,
-                  height: 20,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#57e28d",
-                    fontWeight: 700,
-                    fontSize: 12,
-                  }}
-                >
-                  {String(
-                    ((itemData.pricing.mrp - itemData.pricing.salesPrice) /
-                      itemData.pricing.mrp) *
-                      100
-                  ).slice(0, 4)}
-                  % OFF
-                </Text>
-              </View>
+              {userMode === "business" ? (
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                    }}
+                  >
+                    Min Quantity:{" "}
+                    <Text
+                      style={{
+                        fontWeight: 500,
+                        fontSize: 16,
+                      }}
+                    >
+                      {Object.keys(storeInfo).length &&
+                      storeInfo.businessType.includes("b2b")
+                        ? item.variants[item.combinationName]["minQuantity"]
+                        : 1}
+                    </Text>
+                  </Text>
+                </View>
+              ) : null}
             </View>
-            {itemData.pricing.specialPrice ? (
-              <Text
-                style={{
-                  color: "green",
-                  marginTop: 5,
-                }}
-              >
-                Special Price !
-              </Text>
-            ) : null}
           </View>
         </View>
 

@@ -25,6 +25,7 @@ const Navbar = ({
     (state) => state.location.isLoading
   );
   const currentLocation = useSelector((state) => state.location.location);
+  const userMode = useSelector((state) => state.user.userMode);
 
   const navigation = useNavigation();
 
@@ -56,15 +57,21 @@ const Navbar = ({
           }}
         >
           <Pressable onPress={() => navigation.navigate("Main")}>
-            <Image
-              source={MazindaLogo}
-              style={{
-                width: 120,
-                height: undefined,
-                aspectRatio: 3 / 1,
-              }}
-              resizeMode="contain"
-            />
+            {userMode === "business" ? (
+              <View>
+                <Text>Mazinda For Business</Text>
+              </View>
+            ) : (
+              <Image
+                source={MazindaLogo}
+                style={{
+                  width: 120,
+                  height: undefined,
+                  aspectRatio: 3 / 1,
+                }}
+                resizeMode="contain"
+              />
+            )}
           </Pressable>
 
           <View style={{ flexDirection: "row" }}>

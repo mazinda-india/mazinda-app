@@ -20,6 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const SearchScreen = ({ route }) => {
   const toast = useToast();
   const user = useSelector((state) => state.user.user);
+  const userMode = useSelector((state) => state.user.userMode);
 
   const userLoggedIn = Object.keys(user).length ? true : false;
 
@@ -36,14 +37,40 @@ const SearchScreen = ({ route }) => {
       const availablePincodes = currentLocation.pincodes;
 
       const { data } = await axios.post(
-        `https://mazinda.com/api/product/fetch-search-products?searchQuery=${searchQuery}`,
+        `https://mazinda.com/api/product/fetch-search-products?searchQuery=${searchQuery}&type=${
+          userMode === "business" ? "b2b" : "b2c"
+        }`,
         {
           availablePincodes,
         }
       );
 
+      console.log("data", data);
+
       if (data.success) {
+        // if (userMode === "business") {
+        //   const filterPromises = data.products.map(async (item) => {
+        //     const { data: storeData } = await axios.post(
+        //       "https://mazinda.com/api/store/fetch-store",
+        //       { storeId: item.storeId }
+        //     );
+
+        //     if (storeData.success) {
+        //       return storeData.store.businessType.includes("b2b");
+        //     } else {
+        //       return false;
+        //     }
+        //   });
+
+        //   const filterResults = await Promise.all(filterPromises);
+        //   const filteredProducts = data.products.filter(
+        //     (item, index) => filterResults[index]
+        //   );
+
+        // setProducts(filteredProducts);
+        // } else {
         setProducts(data.products);
+        // }
       }
       setLoading(false);
 

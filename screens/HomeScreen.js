@@ -26,10 +26,7 @@ import { fetchCart } from "../redux/CartReducer";
 import Carousel from "../components/utility/Carousel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CheckInternet from "../components/CheckInternet";
-import {
-  fetchLocationByCity,
-  updateServicability,
-} from "../redux/LocationReducer";
+import { fetchLocationByCity } from "../redux/LocationReducer";
 import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
 import LocationModal from "../components/modals/LocationModal";
@@ -42,8 +39,11 @@ const HomeScreen = () => {
   const locationServiceable = useSelector(
     (state) => state.location.serviceable
   );
+  const userMode = useSelector((state) => state.user.userMode);
   const foodBakeryVisible =
-    currentLocation && currentLocation._id === "655f1b9f9f019ff01503fc7b";
+    currentLocation &&
+    currentLocation._id === "655f1b9f9f019ff01503fc7b" &&
+    userMode !== "business";
 
   const [permissionStatus, setPermissionStatus] = useState();
   const [isConnected, setIsConnected] = useState(true);
@@ -204,6 +204,10 @@ const HomeScreen = () => {
           justifyContent: "center",
         }}
       >
+        <LocationModal
+          locationsModalVisible={locationsModalVisible}
+          setLocationsModalVisible={setLocationsModalVisible}
+        />
         <View
           style={{
             width: "100%",
@@ -234,6 +238,28 @@ const HomeScreen = () => {
         >
           Fetching Your Location ...
         </Text>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: "black",
+            marginHorizontal: 15,
+            padding: 10,
+            borderRadius: 6,
+            marginTop: 50,
+          }}
+          onPress={() => setLocationsModalVisible(true)}
+        >
+          <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              fontWeight: 600,
+              fontSize: 17,
+            }}
+          >
+            Or, Choose Manually
+          </Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
@@ -360,7 +386,7 @@ const HomeScreen = () => {
                 <HorizontalProductList filter={"trending"} />
               </View>
 
-              <Pressable
+              {/* <Pressable
                 onPress={() => Linking.openURL("https://store.mazinda.com")}
                 style={{
                   marginVertical: 20,
@@ -376,7 +402,7 @@ const HomeScreen = () => {
                   }}
                   resizeMode="contain"
                 />
-              </Pressable>
+              </Pressable> */}
             </ScrollView>
           ) : null}
 
