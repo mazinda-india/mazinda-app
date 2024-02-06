@@ -438,7 +438,7 @@ const LoginScreen = () => {
                 or
               </Text>
 
-              {Platform.OS === "ios" && !googleLoading && (
+              {!googleLoading && (
                 <TouchableOpacity
                   onPress={() => promptAsync()}
                   style={{

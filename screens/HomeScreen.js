@@ -30,15 +30,20 @@ import { fetchLocationByCity } from "../redux/LocationReducer";
 import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
 import LocationModal from "../components/modals/LocationModal";
+import { useToast } from "react-native-toast-notifications";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const toast = useToast();
   const { width } = useWindowDimensions();
   const currentLocation = useSelector((state) => state.location.location);
   const locationServiceable = useSelector(
     (state) => state.location.serviceable
   );
+  const user = useSelector((state) => state.user.user);
+  const isLoggedIn = Object.keys(user).length;
+
   const userMode = useSelector((state) => state.user.userMode);
   const foodBakeryVisible =
     currentLocation &&
@@ -257,7 +262,7 @@ const HomeScreen = () => {
               fontSize: 17,
             }}
           >
-            Or, Choose Manually
+            Or Choose Manually
           </Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -275,7 +280,14 @@ const HomeScreen = () => {
 
               {foodBakeryVisible ? (
                 <Pressable
-                  onPress={() => navigation.navigate("Food And Bakery")}
+                  onPress={() => {
+                    if (isLoggedIn) {
+                      navigation.navigate("Food And Bakery");
+                    } else {
+                      toast.show("Login to Place your order");
+                      navigation.navigate("Login");
+                    }
+                  }}
                 >
                   <Image
                     source={{

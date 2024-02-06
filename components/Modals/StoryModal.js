@@ -174,7 +174,9 @@ const StoryModal = ({ showStoryModal, setShowStoryModal, vendorStories }) => {
               }}
             >
               {String(
-                ((item.product.pricing.mrp - item.specialPrice) /
+                ((item.product.pricing.mrp -
+                  (item.product.pricing.salesPrice -
+                    (item.product.pricing.costPrice - item.specialPrice))) /
                   item.product.pricing.mrp) *
                   100
               ).slice(0, 4)}

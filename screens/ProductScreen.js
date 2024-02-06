@@ -31,8 +31,6 @@ const ProductScreen = ({ route }) => {
 
   const [item, setItem] = useState(route.params?.item || {});
 
-  console.log("item", JSON.stringify(item, undefined, 2));
-
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
