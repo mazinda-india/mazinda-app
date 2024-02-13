@@ -169,9 +169,25 @@ const ProductScreen = ({ route }) => {
 
   const handleBuyNow = () => {
     if (isLoggedIn) {
+      const quantity =
+        userMode === "business"
+          ? Object.keys(storeInfo).length &&
+            storeInfo.businessType.includes("b2b")
+            ? parseFloat(item.variants[item.combinationName]["minQuantity"])
+            : 1
+          : 1;
+
+      const minQuantity =
+        userMode === "business"
+          ? Object.keys(storeInfo).length &&
+            storeInfo.businessType.includes("b2b")
+            ? parseFloat(item.variants[item.combinationName]["minQuantity"])
+            : 0
+          : 0;
+
       // setCheckoutModalVisible(true);
       navigation.navigate("Checkout", {
-        cart: [{ _id: item._id, quantity: 1 }],
+        cart: [{ _id: item._id, quantity: quantity, minQuantity: minQuantity }],
       });
     } else {
       toast.show("Login Now and Start Placing Orders Now!");

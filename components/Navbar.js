@@ -1,5 +1,6 @@
 import { Image, Pressable, Text, View, Platform } from "react-native";
 import MazindaLogo from "../assets/logo/logo_mazinda_full.png";
+import BusinessLogo from "../assets/logo/business_logo.png";
 import {
   EvilIcons,
   AntDesign,
@@ -58,9 +59,15 @@ const Navbar = ({
         >
           <Pressable onPress={() => navigation.navigate("Main")}>
             {userMode === "business" ? (
-              <View>
-                <Text>Mazinda For Business</Text>
-              </View>
+              <Image
+                source={BusinessLogo}
+                style={{
+                  width: 120,
+                  height: undefined,
+                  aspectRatio: 3 / 1,
+                }}
+                resizeMode="contain"
+              />
             ) : (
               <Image
                 source={MazindaLogo}

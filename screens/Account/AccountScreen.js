@@ -14,15 +14,16 @@ import {
   Ionicons,
   Octicons,
   AntDesign,
-  FontAwesome5,
 } from "@expo/vector-icons";
 import Navbar from "../../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleUserMode } from "../../redux/UserReducer";
+import { useToast } from "react-native-toast-notifications";
 
 const AccountScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const toast = useToast();
 
   const userMode = useSelector((state) => state.user.userMode);
 
@@ -57,6 +58,12 @@ const AccountScreen = () => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    userMode === "business"
+      ? toast.show("Switched to Mazinda for Business")
+      : toast.show("Switched to Mazinda");
+  }, [userMode]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -193,7 +200,7 @@ const AccountScreen = () => {
               icon={<FontAwesome name="thumbs-o-up" size={24} color="black" />}
               text="Rate Mazinda"
             /> */}
-            {/* <OptionItem
+            <OptionItem
               icon={<AntDesign name="team" size={24} color="black" />}
               text={
                 userMode === "business"
@@ -203,7 +210,7 @@ const AccountScreen = () => {
               onPress={() => {
                 dispatch(toggleUserMode());
               }}
-            /> */}
+            />
             <OptionItem
               icon={
                 <Ionicons name="settings-outline" size={24} color="black" />

@@ -25,17 +25,41 @@ const Overview = ({
       )
     );
   };
+
   const decrementItemQuantity = (id) => {
-    setItemData((prevData) =>
-      prevData.map((item) =>
-        item._id === id
-          ? {
-              ...item,
-              quantity: item.quantity > 1 ? item.quantity - 1 : item.quantity,
-            }
-          : item
-      )
+    const updatedItemData = itemData.map((item) => {
+      if (item._id === id) {
+        const newItem = { ...item }; // Create a copy of the item object
+        // Update the quantity
+        if (Object.keys(newItem.variants).length) {
+          const minQuantity = parseFloat(
+            newItem.variants[newItem.combinationName].minQuantity
+          );
+          if (newItem.quantity > minQuantity) {
+            newItem.quantity--;
+          }
+          // else if (newItem.quantity === minQuantity) {
+          //   // If quantity is equal to minQuantity, remove the item from the cart
+          //   return null; // Returning null will remove the item from the array
+          // }
+        } else {
+          if (newItem.quantity > newItem.minQuantity) {
+            newItem.quantity--;
+          } else if (newItem.quantity === newItem.minQuantity) {
+            // If quantity is equal to minQuantity, remove the item from the cart
+            return null; // Returning null will remove the item from the array
+          }
+        }
+        return newItem;
+      }
+      return item; // For other items, return them unchanged
+    });
+
+    // Filter out any null values (items to be removed) and update the state
+    const updatedItemDataWithoutNull = updatedItemData.filter(
+      (item) => item !== null
     );
+    setItemData(updatedItemDataWithoutNull);
   };
 
   if (itemDataLoading) {
