@@ -99,10 +99,10 @@ const HomeScreen = () => {
   }, [address]);
 
   useEffect(() => {
-    if (currentLocation.city) {
+    if (currentLocation && currentLocation.city) {
       dispatch(fetchStoriesData(currentLocation.city));
     }
-  }, [currentLocation.city]);
+  }, [currentLocation]);
 
   if (!locationServiceable) {
     return (
