@@ -150,11 +150,14 @@ const CartScreen = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white", position: "relative" }}
+    >
       <Navbar />
       <ScrollView
         style={{
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#b7c9e230",
+          // backgroundColor: "#f5f5f5",
         }}
       >
         <Text
@@ -178,7 +181,7 @@ const CartScreen = () => {
                 backgroundColor: "white",
                 flexDirection: "row",
                 paddingHorizontal: 10,
-                paddingVertical: 20,
+                paddingVertical: 15,
                 gap: 8,
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -335,221 +338,58 @@ const CartScreen = () => {
             </View>
           )}
         />
-
         <View
           style={{
+            height: 80,
+          }}
+        ></View>
+      </ScrollView>
+      <View
+        style={{
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop: 15,
+          backgroundColor: "white",
+          position: "absolute",
+          bottom: 0,
+          shadowColor: "#000000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
+          elevation: 10,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            if (isLoggedIn) {
+              navigation.navigate("Checkout", { cart });
+            } else {
+              toast.show("Login Now and Start Placing Orders Now!");
+              navigation.navigate("Login");
+            }
+          }}
+          style={{
+            backgroundColor: "#28282B",
+            paddingVertical: 10,
             paddingHorizontal: 20,
-            backgroundColor: "white",
-            paddingVertical: 15,
+            borderRadius: 7,
+            marginBottom: 20,
+            width: "90%",
           }}
         >
           <Text
             style={{
-              fontSize: 18,
-              fontWeight: 500,
-              marginBottom: 12,
+              color: "white",
+              fontWeight: 600,
+              fontSize: 17,
+              textAlign: "center",
             }}
           >
-            Billing Details
+            Continue to Checkout
           </Text>
-
-          <View
-            style={{
-              justifyContent: "space-between",
-              flexDirection: "row",
-              marginVertical: 8,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#535353",
-              }}
-            >
-              Subtotal
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#535353",
-              }}
-            >
-              ₹{pricing.total_mrp}
-            </Text>
-          </View>
-          <View
-            style={{
-              justifyContent: "space-between",
-              flexDirection: "row",
-              marginVertical: 8,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#22c55e",
-                fontWeight: 500,
-              }}
-            >
-              Discount
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#22c55e",
-                fontWeight: 500,
-              }}
-            >
-              - ₹{pricing.total_mrp - pricing.total_salesPrice}
-            </Text>
-          </View>
-          <View
-            style={{
-              justifyContent: "space-between",
-              flexDirection: "row",
-              marginVertical: 8,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#535353",
-              }}
-            >
-              Service Charge
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#535353",
-              }}
-            >
-              ₹{pricing.service_charge}
-            </Text>
-          </View>
-          <View
-            style={{
-              justifyContent: "space-between",
-              flexDirection: "row",
-              marginVertical: 8,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#535353",
-              }}
-            >
-              Delivery Fees
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#535353",
-              }}
-            >
-              ₹{pricing.delivery_fees}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              justifyContent: "space-between",
-              flexDirection: "row",
-              marginVertical: 8,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#535353",
-              }}
-            >
-              Additional Discount
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#535353",
-              }}
-            >
-              ₹{pricing.additional_discount}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              justifyContent: "space-between",
-              flexDirection: "row",
-              marginVertical: 8,
-              borderTopColor: "lightgray",
-              borderTopWidth: 1,
-              paddingTop: 15,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 600,
-              }}
-            >
-              Total
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 600,
-              }}
-            >
-              ₹{pricing.total_salesPrice}
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-            paddingTop: 15,
-            backgroundColor: "white",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              if (isLoggedIn) {
-                navigation.navigate("Checkout", { cart });
-              } else {
-                toast.show("Login Now and Start Placing Orders Now!");
-                navigation.navigate("Login");
-              }
-            }}
-            style={{
-              backgroundColor: "#212121",
-              paddingVertical: 10,
-              paddingHorizontal: 20,
-              borderRadius: 7,
-              marginBottom: 20,
-            }}
-          >
-            <Text
-              style={{
-                color: "white",
-                fontWeight: 600,
-                fontSize: 17,
-              }}
-            >
-              Continue to Checkout
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };

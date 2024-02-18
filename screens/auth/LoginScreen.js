@@ -32,12 +32,19 @@ const LoginScreen = () => {
   const toast = useToast();
   const navigation = useNavigation();
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId:
-      "872492645215-a9jkn8vhig4b57uidk63ns5dljhbb65g.apps.googleusercontent.com",
-    iosClientId:
-      "872492645215-vjq8n4427v4vfmqele54k6b7nu7v61kk.apps.googleusercontent.com",
-  });
+  const [request, response, promptAsync] = Google.useAuthRequest(
+    {
+      androidClientId:
+        "872492645215-a9jkn8vhig4b57uidk63ns5dljhbb65g.apps.googleusercontent.com",
+      iosClientId:
+        "872492645215-vjq8n4427v4vfmqele54k6b7nu7v61kk.apps.googleusercontent.com",
+      expoClientId:
+        "872492645215-hjkf8n52cesfliqn8d6pgq7i050qpdbd.apps.googleusercontent.com",
+    },
+    {
+      projectNameForProxy: "@abhey_gupta/HelloWorld",
+    }
+  );
 
   const [verificationCode, setVerificationCode] = useState(
     Math.floor(1000 + Math.random() * 9000).toString()
@@ -440,7 +447,11 @@ const LoginScreen = () => {
 
               {!googleLoading && (
                 <TouchableOpacity
-                  onPress={() => promptAsync()}
+                  onPress={() =>
+                    promptAsync({
+                      projectNameForProxy: "@abhey_gupta/HelloWorld",
+                    })
+                  }
                   style={{
                     paddingVertical: 10,
                     paddingHorizontal: 20,

@@ -51,7 +51,7 @@ const Address = ({ user, deliveryAddress, setDeliveryAddress }) => {
               paddingHorizontal: 20,
               paddingVertical: 15,
               backgroundColor:
-                address.id === deliveryAddress?.id ? "#80808015" : "white",
+                address.id === deliveryAddress?.id ? "#b7c9e230" : "white",
             }}
           >
             <View

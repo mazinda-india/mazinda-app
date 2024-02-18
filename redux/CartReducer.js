@@ -69,6 +69,13 @@ export const CartSlice = createSlice({
       if (itemPresent) {
         if (itemPresent.quantity >= itemPresent.minQuantity + 1) {
           itemPresent.quantity--;
+
+          if (itemPresent.quantity === 0) {
+            const cart_with_item_removed = state.cart.filter(
+              (item) => item._id !== action.payload._id
+            );
+            state.cart = cart_with_item_removed;
+          }
         } else if (itemPresent.quantity == itemPresent.minQuantity) {
           // If quantity is equal to minQuantity, remove the item from the cart
           const cart_with_item_removed = state.cart.filter(

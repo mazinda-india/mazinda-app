@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { Alert, Linking } from "react-native";
 import axios from "axios";
 
+//       light blue gray : "#b7c9e230",
+
 export default function App() {
   async function onFetchUpdateAsync() {
     try {

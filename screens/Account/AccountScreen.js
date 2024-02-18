@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   MaterialCommunityIcons,
   Ionicons,
@@ -26,6 +26,7 @@ const AccountScreen = () => {
   const toast = useToast();
 
   const userMode = useSelector((state) => state.user.userMode);
+  const initialRender = useRef(true); // Ref to track initial render
 
   const OptionItem = ({ icon, text, onPress }) => (
     <TouchableOpacity
@@ -60,9 +61,15 @@ const AccountScreen = () => {
   }, []);
 
   useEffect(() => {
-    userMode === "business"
-      ? toast.show("Switched to Mazinda for Business")
-      : toast.show("Switched to Mazinda");
+    // Check if it's not the initial render
+    if (!initialRender.current) {
+      userMode === "business"
+        ? toast.show("Switched to Mazinda for Business")
+        : toast.show("Switched to Mazinda");
+    } else {
+      // If it's the initial render, set the ref to false
+      initialRender.current = false;
+    }
   }, [userMode]);
 
   return (

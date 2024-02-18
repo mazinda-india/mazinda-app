@@ -5,14 +5,12 @@ import axios from "axios";
 export const fetchStoriesData = createAsyncThunk(
   "fetchStories",
   async (city) => {
-    console.log(city);
     const { data } = await axios.post(
       "https://mazinda.com/api/story/fetch-location-stories",
       {
         city,
       }
     );
-    console.log(data);
     return data.stories;
   }
 );

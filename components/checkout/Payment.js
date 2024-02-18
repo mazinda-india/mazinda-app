@@ -1,16 +1,10 @@
-import {
-  ScrollView,
-  Text,
-  View,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
+import { ScrollView, Text, View, Pressable } from "react-native";
 
 const Payment = ({ selectedPaymentMethod, setSelectedPaymentMethod }) => {
   return (
     <ScrollView
       style={{
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#b7c9e230",
       }}
     >
       <Text

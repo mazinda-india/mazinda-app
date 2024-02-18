@@ -6,8 +6,12 @@ import {
   FlatList,
   useWindowDimensions,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { ScrollView } from "react-native-virtualized-view";
+import { useSelector } from "react-redux";
+import PricingBox from "./PricingBox";
+import ItemList from "./ItemList";
 
 const Overview = ({
   itemData,
@@ -17,6 +21,7 @@ const Overview = ({
   setPricing,
 }) => {
   const { width } = useWindowDimensions();
+  const userMode = useSelector((state) => state.user.userMode);
 
   const incrementItemQuantity = (id) => {
     setItemData((prevData) =>
@@ -31,23 +36,32 @@ const Overview = ({
       if (item._id === id) {
         const newItem = { ...item }; // Create a copy of the item object
         // Update the quantity
-        if (Object.keys(newItem.variants).length) {
+        console.log("new item", newItem);
+        if (newItem.variants && Object.keys(newItem.variants).length) {
           const minQuantity = parseFloat(
             newItem.variants[newItem.combinationName].minQuantity
           );
           if (newItem.quantity > minQuantity) {
             newItem.quantity--;
-          }
-          // else if (newItem.quantity === minQuantity) {
-          //   // If quantity is equal to minQuantity, remove the item from the cart
-          //   return null; // Returning null will remove the item from the array
-          // }
-        } else {
-          if (newItem.quantity > newItem.minQuantity) {
-            newItem.quantity--;
-          } else if (newItem.quantity === newItem.minQuantity) {
-            // If quantity is equal to minQuantity, remove the item from the cart
+          } else if (newItem.quantity === minQuantity && minQuantity !== 0) {
+            // If quantity is equal to minQuantity and minQuantity is not zero, remove the item from the cart
             return null; // Returning null will remove the item from the array
+          }
+        } else {
+          if (newItem.minQuantity) {
+            if (newItem.quantity > newItem.minQuantity) {
+              newItem.quantity--;
+            } else if (
+              newItem.quantity === newItem.minQuantity &&
+              newItem.minQuantity !== 0
+            ) {
+              // If quantity is equal to minQuantity and minQuantity is not zero, remove the item from the cart
+              return null; // Returning null will remove the item from the array
+            }
+          } else {
+            if (newItem.quantity > 1) {
+              newItem.quantity--;
+            }
           }
         }
         return newItem;
@@ -69,7 +83,7 @@ const Overview = ({
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#ecf0ef",
+          backgroundColor: "#b7c9e230",
         }}
       >
         <ActivityIndicator size="small" />
@@ -80,10 +94,16 @@ const Overview = ({
   return (
     <ScrollView
       style={{
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#b7c9e230",
         marginBottom: 60,
       }}
     >
+      {/* <ItemList itemData={itemData} /> */}
+      <View
+        style={{
+          height: 5,
+        }}
+      ></View>
       <FlatList
         data={itemData}
         keyExtractor={(item, index) => index.toString()}
@@ -95,11 +115,11 @@ const Overview = ({
                 backgroundColor: "white",
                 flexDirection: "row",
                 paddingHorizontal: 10,
-                paddingVertical: 20,
+                paddingVertical: 15,
                 gap: 8,
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginBottom: 8,
+                marginBottom: 5,
               }}
             >
               <Image
@@ -265,181 +285,15 @@ const Overview = ({
         }}
       />
 
-      <View
-        style={{
-          paddingHorizontal: 20,
-          backgroundColor: "white",
-          paddingVertical: 15,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 500,
-            marginBottom: 12,
-          }}
-        >
-          Billing Details
-        </Text>
+      <PricingBox pricing={pricing} />
 
+      {Platform.OS === "android" ? (
         <View
           style={{
-            justifyContent: "space-between",
-            flexDirection: "row",
-            marginVertical: 8,
+            height: 40,
           }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#535353",
-            }}
-          >
-            Subtotal
-          </Text>
-
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#535353",
-            }}
-          >
-            ₹{pricing.total_mrp}
-          </Text>
-        </View>
-        <View
-          style={{
-            justifyContent: "space-between",
-            flexDirection: "row",
-            marginVertical: 8,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#57e28d",
-              fontWeight: 500,
-            }}
-          >
-            Discount
-          </Text>
-
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#57e28d",
-              fontWeight: 500,
-            }}
-          >
-            - ₹{pricing.total_mrp - pricing.total_salesPrice}
-          </Text>
-        </View>
-        <View
-          style={{
-            justifyContent: "space-between",
-            flexDirection: "row",
-            marginVertical: 8,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#535353",
-            }}
-          >
-            Service Charge
-          </Text>
-
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#535353",
-            }}
-          >
-            ₹{pricing.service_charge}
-          </Text>
-        </View>
-        <View
-          style={{
-            justifyContent: "space-between",
-            flexDirection: "row",
-            marginVertical: 8,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#535353",
-            }}
-          >
-            Delivery Fees
-          </Text>
-
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#535353",
-            }}
-          >
-            ₹{pricing.delivery_fees}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            justifyContent: "space-between",
-            flexDirection: "row",
-            marginVertical: 8,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#535353",
-            }}
-          >
-            Additional Discount
-          </Text>
-
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#535353",
-            }}
-          >
-            ₹{pricing.additional_discount}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            justifyContent: "space-between",
-            flexDirection: "row",
-            marginVertical: 8,
-            borderTopColor: "lightgray",
-            borderTopWidth: 1,
-            paddingTop: 15,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 600,
-            }}
-          >
-            Total
-          </Text>
-
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 600,
-            }}
-          >
-            ₹{pricing.total_salesPrice}
-          </Text>
-        </View>
-      </View>
+        ></View>
+      ) : null}
     </ScrollView>
   );
 };

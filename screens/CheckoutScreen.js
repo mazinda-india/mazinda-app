@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -55,10 +56,11 @@ const CheckoutScreen = ({ route }) => {
   const [itemDataLoading, setItemDataLoading] = useState(true);
   const [orderPlacing, setOrderPlacing] = useState(false);
   const [pricing, setPricing] = useState({
+    final_price: 0,
     total_mrp: 0,
     total_salesPrice: 0,
     total_costPrice: 0,
-    service_charge: 0,
+    service_charge: 3,
     delivery_fees: 0,
     additional_discount: 0,
   });
@@ -75,13 +77,15 @@ const CheckoutScreen = ({ route }) => {
         total_mrp += parseFloat(item.pricing.mrp) * item.quantity;
         total_salesPrice += item.pricing.specialPrice
           ? parseFloat(
-              parseFloat(item.pricing.salesPrice) -
-                parseFloat(
-                  parseFloat(item.pricing.costPrice) -
-                    parseFloat(item.pricing.specialPrice)
-                )
-            ) * item.quantity
-          : parseFloat(item.pricing.salesPrice) * item.quantity;
+              parseFloat(
+                parseFloat(item.pricing.salesPrice) -
+                  parseFloat(
+                    parseFloat(item.pricing.costPrice) -
+                      parseFloat(item.pricing.specialPrice)
+                  )
+              ) * item.quantity
+            )
+          : parseFloat(parseFloat(item.pricing.salesPrice) * item.quantity);
         total_costPrice += item.pricing.specialPrice
           ? parseFloat(item.pricing.specialPrice) * item.quantity
           : parseFloat(item.pricing.costPrice) * item.quantity;
@@ -93,6 +97,12 @@ const CheckoutScreen = ({ route }) => {
       total_mrp,
       total_salesPrice,
       total_costPrice,
+      final_price: pricing.coupon_discount
+        ? total_salesPrice +
+          pricing.service_charge +
+          pricing.delivery_fees -
+          pricing.coupon_discount
+        : total_salesPrice + pricing.service_charge + pricing.delivery_fees,
     });
   };
 
@@ -107,6 +117,7 @@ const CheckoutScreen = ({ route }) => {
 
       const fetchedItemData = await Promise.all(itemDataPromises);
       setItemData(fetchedItemData);
+      console.log(JSON.parse(JSON.stringify(fetchedItemData, null, 2)));
     })();
   }, [cart]);
 
@@ -203,7 +214,6 @@ const CheckoutScreen = ({ route }) => {
     <SafeAreaView
       style={{
         flex: 1,
-        // backgroundColor: "#f5f5f5",
         backgroundColor: "white",
         position: "relative",
       }}
@@ -314,7 +324,7 @@ const CheckoutScreen = ({ route }) => {
           position: "absolute",
           bottom: 0,
           width: "100%",
-          height: 100,
+          height: Platform.OS === "ios" ? 100 : 80,
           backgroundColor: "white",
           justifyContent: "center",
           alignItems: "center",
@@ -325,7 +335,7 @@ const CheckoutScreen = ({ route }) => {
           !Object.keys(deliveryAddress).length ? (
             <View
               style={{
-                marginBottom: 10,
+                marginBottom: Platform.OS === "ios" ? 10 : 0,
                 backgroundColor: "lightgray",
                 paddingVertical: 12,
                 paddingHorizontal: 20,
@@ -345,7 +355,7 @@ const CheckoutScreen = ({ route }) => {
           ) : (
             <TouchableOpacity
               style={{
-                marginBottom: 10,
+                marginBottom: Platform.OS === "ios" ? 10 : 0,
                 backgroundColor: "black",
                 paddingVertical: 12,
                 paddingHorizontal: 20,
@@ -370,7 +380,7 @@ const CheckoutScreen = ({ route }) => {
           selectedPaymentMethod === "" ? (
             <View
               style={{
-                marginBottom: 10,
+                marginBottom: Platform.OS === "ios" ? 10 : 0,
                 backgroundColor: "lightgray",
                 paddingVertical: 12,
                 paddingHorizontal: 20,
@@ -390,7 +400,7 @@ const CheckoutScreen = ({ route }) => {
           ) : (
             <TouchableOpacity
               style={{
-                marginBottom: 10,
+                marginBottom: Platform.OS === "ios" ? 10 : 0,
                 backgroundColor: "black",
                 paddingVertical: 12,
                 paddingHorizontal: 20,
@@ -416,7 +426,7 @@ const CheckoutScreen = ({ route }) => {
         ) : currentStep === 3 ? (
           <TouchableOpacity
             style={{
-              marginBottom: 10,
+              marginBottom: Platform.OS === "ios" ? 10 : 0,
               backgroundColor: orderPlacing ? "lightgray" : "black",
               paddingVertical: 12,
               paddingHorizontal: 20,
@@ -444,7 +454,7 @@ const CheckoutScreen = ({ route }) => {
         ) : (
           <TouchableOpacity
             style={{
-              marginBottom: 10,
+              marginBottom: Platform.OS === "ios" ? 10 : 0,
               backgroundColor: "black",
               paddingVertical: 12,
               paddingHorizontal: 20,
