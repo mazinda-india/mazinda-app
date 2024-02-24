@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   FlatList,
+  Platform,
 } from "react-native";
 import { ScrollView } from "react-native-virtualized-view";
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -382,7 +383,7 @@ const CartScreen = () => {
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: 15,
+          paddingTop: Platform.OS === "ios" ? 15 : 10,
           backgroundColor: "white",
           position: "absolute",
           bottom: 0,

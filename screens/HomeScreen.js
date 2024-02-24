@@ -42,7 +42,8 @@ const HomeScreen = () => {
     (state) => state.location.serviceable
   );
   const user = useSelector((state) => state.user.user);
-  const isLoggedIn = Object.keys(user).length;
+  console.log("the user is", user);
+  const isLoggedIn = user && Object.keys(user).length;
 
   const userMode = useSelector((state) => state.user.userMode);
   const foodBakeryVisible =

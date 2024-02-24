@@ -121,6 +121,7 @@ const AuthModal = ({ bottomSheetModalRef }) => {
         );
 
         if (data.success) {
+          console.log(data);
           await AsyncStorage.setItem("user_token", data.user_token);
           dispatch(setUser(data.user));
           handleDismissModalPress();
@@ -157,8 +158,6 @@ const AuthModal = ({ bottomSheetModalRef }) => {
             shadowRadius: 16.0,
 
             elevation: 24,
-
-            // padding: 20,
           }}
         >
           <View
