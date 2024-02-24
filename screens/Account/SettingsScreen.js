@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { clearCart } from "../../redux/CartReducer";
 import { logout } from "../../redux/UserReducer";
 
-const AccountScreen = () => {
+const SettingsScreen = () => {
   const navigation = useNavigation();
   const toast = useToast();
   const dispatch = useDispatch();
@@ -42,7 +42,7 @@ const AccountScreen = () => {
               dispatch(clearCart());
               dispatch(logout());
               toast.show("Logged out Successfully");
-              navigation.replace("Main");
+              navigation.navigate("Account");
             }}
             style={{
               flexDirection: "row",
@@ -69,4 +69,4 @@ const AccountScreen = () => {
   );
 };
 
-export default AccountScreen;
+export default SettingsScreen;

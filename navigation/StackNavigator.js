@@ -2,8 +2,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import LoginScreen from "../screens/auth/LoginScreen";
-import RegisterScreen from "../screens/auth/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
 import CartScreen from "../screens/CartScreen";
 import SearchScreen from "../screens/SearchScreen";
@@ -35,13 +33,8 @@ const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
 
-  // const memoizedLocation = useMemo(() => currentLocation, [currentLocation]);
-
   function BottomTabs() {
     const currentLocation = useSelector((state) => state.location.location);
-    const locationServiceable = useSelector(
-      (state) => state.location.serviceable
-    );
     return (
       <Tab.Navigator
         screenOptions={{
@@ -135,7 +128,6 @@ const StackNavigator = () => {
           component={AccountScreen}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen name="My Orders" component={MyOrders} /> */}
         <Stack.Screen
           name="My Orders"
           component={OrdersScreen}
@@ -203,16 +195,6 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Store"
           component={StoreScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Register"
-          component={RegisterScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

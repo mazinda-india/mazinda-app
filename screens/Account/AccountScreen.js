@@ -6,9 +6,8 @@ import {
   Linking,
   ScrollView,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import {
   MaterialCommunityIcons,
   Ionicons,
@@ -19,6 +18,7 @@ import Navbar from "../../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleUserMode } from "../../redux/UserReducer";
 import { useToast } from "react-native-toast-notifications";
+import AuthModal from "../../components/modals/auth/AuthModal";
 
 const AccountScreen = () => {
   const navigation = useNavigation();
@@ -27,6 +27,19 @@ const AccountScreen = () => {
 
   const userMode = useSelector((state) => state.user.userMode);
   const initialRender = useRef(true); // Ref to track initial render
+
+  const user = useSelector((state) => state.user.user);
+  console.log("account screeen user", user);
+  const userLoggedIn = user && Object.keys(user).length;
+
+  // ref and functions for Bottom Sheet Modal
+  const bottomSheetModalRef = useRef(null);
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  // const handleDismissModalPress = useCallback(() => {
+  //   bottomSheetModalRef.current?.dismiss();
+  // }, []);
 
   const OptionItem = ({ icon, text, onPress }) => (
     <TouchableOpacity
@@ -42,23 +55,11 @@ const AccountScreen = () => {
       }}
     >
       {icon}
-      <Text style={{ fontSize: 15 }}>{text}</Text>
+      <Text style={{ fontSize: 14, fontWeight: 700, color: "gray" }}>
+        {text}
+      </Text>
     </TouchableOpacity>
   );
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const user_token = await AsyncStorage.getItem("user_token");
-
-        if (!user_token) {
-          navigation.replace("Login");
-        }
-      } catch (err) {
-        console.log("error", err);
-      }
-    })();
-  }, []);
 
   useEffect(() => {
     // Check if it's not the initial render
@@ -80,116 +81,181 @@ const AccountScreen = () => {
           marginBottom: 25,
         }}
       >
-        <View>
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 26,
-            }}
-          >
-            My Account
-          </Text>
-        </View>
-
         <View
           style={{
             paddingHorizontal: 18,
             marginTop: 18,
           }}
         >
-          <Text
-            style={{
-              fontSize: 12,
-              marginBottom: 20,
-              color: "gray",
-            }}
-          >
-            MY ACTIVITY
-          </Text>
-
-          <View
-            style={{
-              marginTop: 10,
-              flexWrap: "wrap",
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-              gap: 12,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => navigation.navigate("My Orders")}
+          {userLoggedIn ? null : (
+            // <View
+            //   style={{
+            //     elevation: 3,
+            //     shadowColor: "gray",
+            //     shadowOffset: { width: 0, height: 1 },
+            //     shadowOpacity: 0.25,
+            //     shadowRadius: 3,
+            //     backgroundColor: "white",
+            //     padding: 13,
+            //     borderRadius: 10,
+            //     marginBottom: 20,
+            //   }}
+            // >
+            //   <Text
+            //     style={{
+            //       fontSize: 20,
+            //       fontWeight: 700,
+            //       marginBottom: 5,
+            //       // color: "gray",
+            //     }}
+            //   >
+            //     <Text
+            //       style={{
+            //         fontSize: 17,
+            //         fontWeight: 700,
+            //         // color: "gray",
+            //       }}
+            //     >
+            //       WELCOME
+            //     </Text>
+            //     , +91 {user.phoneNumber}
+            //   </Text>
+            // </View>
+            <View
               style={{
-                backgroundColor: "#f5f5f5",
-                flexDirection: "row",
-                width: "48%",
-                padding: 10,
-                alignItems: "center",
-                gap: 10,
+                elevation: 3,
+                shadowColor: "gray",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3,
+                backgroundColor: "white",
+                padding: 13,
                 borderRadius: 10,
               }}
             >
-              <MaterialCommunityIcons
-                name="cart-check"
-                size={20}
-                color="black"
-              />
               <Text
                 style={{
-                  fontSize: 15,
+                  fontSize: 20,
+                  fontWeight: 500,
+                  marginBottom: 5,
                 }}
               >
-                My Orders
+                Welcome to Mazinda
               </Text>
-            </TouchableOpacity>
+              <Text
+                style={{
+                  color: "gray",
+                }}
+              >
+                Login or Signup to start placing your orders and get them
+                delivered in no time
+              </Text>
 
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Followed Shops")}
+              <View
+                style={{
+                  alignItems: "center",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={handlePresentModalPress}
+                  style={{
+                    padding: 11,
+                    backgroundColor: "#f17e13",
+                    // backgroundColor: "black",
+                    width: "100%",
+                    borderRadius: 10,
+                    marginTop: 15,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: 700,
+                      fontSize: 17,
+                      textAlign: "center",
+                    }}
+                  >
+                    Login or Signup
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          {userLoggedIn ? (
+            <Text
               style={{
-                backgroundColor: "#f5f5f5",
-                flexDirection: "row",
-                width: "48%",
-                padding: 10,
-                alignItems: "center",
-                gap: 10,
-                borderRadius: 10,
+                fontSize: 12,
+                marginBottom: 10,
+                color: "gray",
               }}
             >
-              <MaterialCommunityIcons
-                name="store-check"
-                size={20}
-                color="black"
-              />
-              <Text
-                style={{
-                  fontSize: 15,
-                }}
-              >
-                Followed Shops
-              </Text>
-            </TouchableOpacity>
+              MY ACTIVITY
+            </Text>
+          ) : null}
 
-            {/* <View
+          {userLoggedIn ? (
+            <View
               style={{
-                backgroundColor: "#f5f5f5",
+                marginTop: 10,
+                flexWrap: "wrap",
                 flexDirection: "row",
-                width: "48%",
-                paddingVertical: 10,
-                paddingHorizontal: 8,
-                alignItems: "center",
-                gap: 8,
-                borderRadius: 10,
+                justifyContent: "space-evenly",
+                gap: 12,
               }}
             >
-              <Foundation name="page-search" size={20} color="black" />
-              <Text
+              <TouchableOpacity
+                onPress={() => navigation.navigate("My Orders")}
                 style={{
-                  fontSize: 15,
+                  backgroundColor: "#f5f5f5",
+                  flexDirection: "row",
+                  width: "48%",
+                  padding: 10,
+                  alignItems: "center",
+                  gap: 10,
+                  borderRadius: 10,
                 }}
               >
-                Review Purchases
-              </Text>
-            </View> */}
-          </View>
+                <MaterialCommunityIcons
+                  name="cart-check"
+                  size={20}
+                  color="black"
+                />
+                <Text
+                  style={{
+                    fontSize: 15,
+                  }}
+                >
+                  My Orders
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Followed Shops")}
+                style={{
+                  backgroundColor: "#f5f5f5",
+                  flexDirection: "row",
+                  width: "48%",
+                  padding: 10,
+                  alignItems: "center",
+                  gap: 10,
+                  borderRadius: 10,
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="store-check"
+                  size={20}
+                  color="black"
+                />
+                <Text
+                  style={{
+                    fontSize: 15,
+                  }}
+                >
+                  Followed Shops
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
 
           <Text
             style={{
@@ -204,11 +270,11 @@ const AccountScreen = () => {
 
           <View style={{ gap: 18 }}>
             {/* <OptionItem
-              icon={<FontAwesome name="thumbs-o-up" size={24} color="black" />}
+              icon={<FontAwesome name="thumbs-o-up" size={22} color="black" />}
               text="Rate Mazinda"
             /> */}
             <OptionItem
-              icon={<AntDesign name="team" size={24} color="black" />}
+              icon={<AntDesign name="team" size={22} color="black" />}
               text={
                 userMode === "business"
                   ? "Switch to Mazinda"
@@ -220,7 +286,7 @@ const AccountScreen = () => {
             />
             <OptionItem
               icon={
-                <Ionicons name="settings-outline" size={24} color="black" />
+                <Ionicons name="settings-outline" size={22} color="black" />
               }
               text="Settings"
               onPress={() => navigation.navigate("Settings")}
@@ -229,7 +295,7 @@ const AccountScreen = () => {
               icon={
                 <MaterialCommunityIcons
                   name="format-list-bulleted"
-                  size={24}
+                  size={22}
                   color="black"
                 />
               }
@@ -239,24 +305,14 @@ const AccountScreen = () => {
               }
             />
             <OptionItem
-              icon={<AntDesign name="Safety" size={24} color="black" />}
+              icon={<AntDesign name="Safety" size={22} color="black" />}
               text="Privacy Policy"
               onPress={() =>
                 Linking.openURL("https://www.mazinda.com/privacy-policy")
               }
             />
-            {/* <OptionItem
-              icon={
-                <MaterialCommunityIcons
-                  name="comment-question-outline"
-                  size={24}
-                  color="black"
-                />
-              }
-              text="FAQs"
-            /> */}
             <OptionItem
-              icon={<Ionicons name="call-outline" size={24} color="black" />}
+              icon={<Ionicons name="call-outline" size={22} color="black" />}
               text="Contact Us"
               onPress={() =>
                 Linking.openURL(
@@ -265,13 +321,32 @@ const AccountScreen = () => {
               }
             />
             <OptionItem
-              icon={<Octicons name="graph" size={24} color="black" />}
+              icon={<Octicons name="graph" size={22} color="black" />}
               text="Become a Seller"
               onPress={() => Linking.openURL("https://store.mazinda.com/")}
             />
           </View>
         </View>
+        <View
+          style={{
+            marginTop: 60,
+            marginBottom: 15,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              color: "lightgray",
+              fontWeight: 800,
+              fontSize: 14,
+            }}
+          >
+            MAZINDA COMMERCE PRIVATE LIMITED
+          </Text>
+        </View>
       </ScrollView>
+
+      <AuthModal bottomSheetModalRef={bottomSheetModalRef} />
     </SafeAreaView>
   );
 };

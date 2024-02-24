@@ -327,7 +327,7 @@ const ProductScreen = ({ route }) => {
           />
         }
         style={{
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#b7c9e230",
         }}
       >
         {/* Image Container View */}

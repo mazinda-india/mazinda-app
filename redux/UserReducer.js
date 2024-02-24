@@ -28,6 +28,9 @@ export const UserSlice = createSlice({
     return { payload: user_token || null };
   },
   reducers: {
+    setUser: (state, action) => {
+      state.user.user = action.payload;
+    },
     addNewAddress: (state, action) => {
       const { newSavedAddresses } = action.payload;
       state.user.savedAddresses = newSavedAddresses;
@@ -52,6 +55,7 @@ export const UserSlice = createSlice({
   },
 });
 
-export const { addNewAddress, logout, toggleUserMode } = UserSlice.actions;
+export const { addNewAddress, logout, toggleUserMode, setUser } =
+  UserSlice.actions;
 
 export default UserSlice.reducer;

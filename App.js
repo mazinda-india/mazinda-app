@@ -7,6 +7,7 @@ import * as Updates from "expo-updates";
 import { useEffect } from "react";
 import { Alert, Linking } from "react-native";
 import axios from "axios";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 //       light blue gray : "#b7c9e230",
 
@@ -60,12 +61,14 @@ export default function App() {
 
   return (
     <>
-      <ToastProvider>
-        <Provider store={store}>
-          <StackNavigator />
-          <ModalPortal />
-        </Provider>
-      </ToastProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ToastProvider>
+          <Provider store={store}>
+            <StackNavigator />
+            <ModalPortal />
+          </Provider>
+        </ToastProvider>
+      </GestureHandlerRootView>
     </>
   );
 }
