@@ -36,12 +36,21 @@ const ProductCard = ({ item }) => {
       }}
       style={{
         flex: 1,
-        borderColor: "#e2e8f0",
-        borderWidth: 0.7,
         padding: 10,
         position: "relative",
         backgroundColor: "white",
         borderRadius: 5,
+
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+
+        elevation: 3,
+        marginVertical: 2,
       }}
     >
       {!(item.pricing.mrp === item.pricing.salesPrice) ? (

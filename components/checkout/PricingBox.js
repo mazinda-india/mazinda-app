@@ -7,13 +7,25 @@ const PricingBox = ({ pricing }) => {
         paddingHorizontal: 20,
         backgroundColor: "white",
         paddingVertical: 15,
+        borderRadius: 10,
+
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 1.41,
+
+        elevation: 2,
       }}
     >
       <Text
         style={{
           fontSize: 18,
-          fontWeight: 500,
+          fontWeight: 800,
           marginBottom: 12,
+          color: "gray",
         }}
       >
         Billing Details
@@ -28,7 +40,7 @@ const PricingBox = ({ pricing }) => {
       >
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 12,
             color: "#535353",
           }}
         >
@@ -37,7 +49,7 @@ const PricingBox = ({ pricing }) => {
 
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 12,
             color: "#535353",
           }}
         >
@@ -53,7 +65,7 @@ const PricingBox = ({ pricing }) => {
       >
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 12,
             color: "#0BDA51",
             fontWeight: 500,
           }}
@@ -63,7 +75,7 @@ const PricingBox = ({ pricing }) => {
 
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 12,
             color: "#0BDA51",
             fontWeight: 500,
           }}
@@ -81,7 +93,7 @@ const PricingBox = ({ pricing }) => {
         >
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 12,
               color: "#0BDA51",
               fontWeight: 500,
             }}
@@ -91,7 +103,7 @@ const PricingBox = ({ pricing }) => {
 
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 12,
               color: "#0BDA51",
               fontWeight: 500,
             }}
@@ -109,7 +121,7 @@ const PricingBox = ({ pricing }) => {
       >
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 12,
             color: "#535353",
           }}
         >
@@ -118,7 +130,7 @@ const PricingBox = ({ pricing }) => {
 
         <View
           style={{
-            fontSize: 15,
+            fontSize: 12,
 
             flexDirection: "row",
             gap: 4,
@@ -150,7 +162,7 @@ const PricingBox = ({ pricing }) => {
       >
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 12,
             color: "#535353",
           }}
         >
@@ -159,7 +171,7 @@ const PricingBox = ({ pricing }) => {
 
         <View
           style={{
-            fontSize: 15,
+            fontSize: 12,
 
             flexDirection: "row",
             gap: 4,
@@ -192,7 +204,7 @@ const PricingBox = ({ pricing }) => {
       >
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 12,
             color: "#535353",
           }}
         >
@@ -201,7 +213,7 @@ const PricingBox = ({ pricing }) => {
 
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 12,
             color: "#535353",
           }}
         >

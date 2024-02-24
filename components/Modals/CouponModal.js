@@ -65,6 +65,12 @@ const CouponModal = ({
     calculateCategoryPricing();
   }, [itemData, pricing]);
 
+  useEffect(() => {
+    if (appliedCoupon) {
+      setAppliedCoupon(appliedCoupon.toUpperCase());
+    }
+  }, [appliedCoupon]);
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -234,9 +240,9 @@ const CouponModal = ({
           <View>
             <TextInput
               value={appliedCoupon}
-              onChangeText={(text) => {
+              onChangeText={(value) => {
                 setError("");
-                setAppliedCoupon(text.toUpperCase());
+                setAppliedCoupon(value);
               }}
               placeholder="ENTER CODE"
               style={{

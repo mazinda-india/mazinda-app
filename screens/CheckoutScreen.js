@@ -263,8 +263,6 @@ const CheckoutScreen = ({ route }) => {
         style={{
           flexDirection: "row",
           justifyContent: "space-evenly",
-          borderBottomColor: "lightgray",
-          borderBottomWidth: 1,
           paddingVertical: 10,
         }}
       >
@@ -329,6 +327,16 @@ const CheckoutScreen = ({ route }) => {
           justifyContent: "center",
           alignItems: "center",
           zIndex: 2,
+
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 4,
+          },
+          shadowOpacity: 0.3,
+          shadowRadius: 4.65,
+
+          elevation: 8,
         }}
       >
         {currentStep === 1 ? (
@@ -340,6 +348,7 @@ const CheckoutScreen = ({ route }) => {
                 paddingVertical: 12,
                 paddingHorizontal: 20,
                 borderRadius: 5,
+                width: "90%",
               }}
             >
               <Text
@@ -347,6 +356,7 @@ const CheckoutScreen = ({ route }) => {
                   fontSize: 16,
                   color: "white",
                   fontWeight: 600,
+                  textAlign: "center",
                 }}
               >
                 Select a delivery address

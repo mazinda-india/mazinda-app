@@ -116,7 +116,11 @@ const Navbar = ({
 
       {showSearchBar ? (
         <View
-          style={{ marginTop: 5, flexDirection: "row", alignItems: "center" }}
+          style={{
+            marginTop: 5,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
         >
           {!searchQuery ? null : (
             <TouchableOpacity
@@ -133,8 +137,17 @@ const Navbar = ({
           <Pressable
             onPress={() => setSearchModalVisible(true)}
             style={{
-              borderColor: "lightgray",
-              borderWidth: 1,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 1,
+              },
+              shadowOpacity: 0.15,
+              shadowRadius: 3,
+
+              elevation: 2,
+              backgroundColor: "white",
+
               padding: 12,
               marginHorizontal: 10,
               borderRadius: 5,

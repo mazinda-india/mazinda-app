@@ -106,8 +106,10 @@ const PlaceOrder = ({
   return (
     <ScrollView
       style={{
+        flex: 1,
         marginBottom: 100,
         backgroundColor: "#b7c9e230",
+        padding: 10,
       }}
     >
       <CouponModal
@@ -128,6 +130,17 @@ const PlaceOrder = ({
           gap: 8,
           alignItems: "center",
           justifyContent: "space-between",
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 1,
+          },
+          shadowOpacity: 0.2,
+          shadowRadius: 1.41,
+          elevation: 2,
+
+          borderRadius: 10,
+          marginVertical: 10,
         }}
       >
         <View
@@ -188,14 +201,24 @@ const PlaceOrder = ({
           paddingHorizontal: 20,
           paddingVertical: 15,
           backgroundColor: "white",
-          marginVertical: 8,
+          marginBottom: 10,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 1,
+          },
+          shadowOpacity: 0.2,
+          shadowRadius: 1.41,
+          elevation: 2,
+          borderRadius: 10,
         }}
       >
         <Text
           style={{
-            fontWeight: 500,
+            fontWeight: 800,
             fontSize: 18,
             marginBottom: 10,
+            color: "gray",
           }}
         >
           Payment Method
@@ -211,7 +234,7 @@ const PlaceOrder = ({
         >
           <Text
             style={{
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
             {selectedPaymentMethod === "pod"
@@ -232,10 +255,19 @@ const PlaceOrder = ({
           paddingVertical: 15,
           paddingHorizontal: 20,
           backgroundColor: "white",
-          marginBottom: 8,
+          marginBottom: 10,
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 1,
+          },
+          shadowOpacity: 0.2,
+          shadowRadius: 1.41,
+          elevation: 2,
+          borderRadius: 10,
         }}
       >
         <>
@@ -293,8 +325,9 @@ const PlaceOrder = ({
             >
               <Text
                 style={{
-                  fontWeight: 500,
+                  fontWeight: 800,
                   fontSize: 18,
+                  color: "gray",
                 }}
               >
                 Apply a coupon
@@ -315,6 +348,11 @@ const PlaceOrder = ({
       </TouchableHighlight>
 
       <PricingBox pricing={pricing} />
+      <View
+        style={{
+          height: 40,
+        }}
+      ></View>
     </ScrollView>
   );
 };

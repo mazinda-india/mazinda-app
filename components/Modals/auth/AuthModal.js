@@ -142,12 +142,11 @@ const AuthModal = ({ bottomSheetModalRef }) => {
 
   return (
     <BottomSheetModalProvider>
-      <View style={{ flex: 1 }}>
+      <View>
         <BottomSheetModal
           ref={bottomSheetModalRef}
           index={0}
           snapPoints={snapPoints}
-          //   onChange={handleSheetChanges}
           style={{
             shadowColor: "#000",
             shadowOffset: {

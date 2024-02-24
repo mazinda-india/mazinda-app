@@ -13,21 +13,19 @@ import Navbar from "../components/Navbar";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, updateCartOnServer } from "../redux/CartReducer";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Carousel from "../components/utility/Carousel";
 import { ScrollView } from "react-native-virtualized-view";
-import { useToast } from "react-native-toast-notifications";
+import AuthModal from "../components/modals/auth/AuthModal";
 
 const ProductScreen = ({ route }) => {
-  const toast = useToast();
-
   const user = useSelector((state) => state.user.user);
   const cart = useSelector((state) => state.cart.cart);
   const userMode = useSelector((state) => state.user.userMode);
 
-  const isLoggedIn = Object.keys(user).length ? true : false;
+  const isLoggedIn = Object.keys(user).length;
 
   const [item, setItem] = useState(route.params?.item || {});
 
@@ -47,11 +45,15 @@ const ProductScreen = ({ route }) => {
     imagePaths: item.imagePaths,
     pricing: item.pricing,
     productName: item.productName,
-    // minQuantity:
-    //   userMode === "business"
-    //     ? item.variants[item.combinationName]["minQuantity"]
-    //     : 1,
   });
+
+  const bottomSheetModalRef = useRef(null);
+
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const [buyNowClicked, setBuyNowClicked] = useState(false);
 
   useEffect(() => {
     if (Object.keys(item).length) {
@@ -135,6 +137,12 @@ const ProductScreen = ({ route }) => {
     }
   }, [itemData.combinationName]);
 
+  useEffect(() => {
+    if (buyNowClicked && isLoggedIn) {
+      handleBuyNow();
+    }
+  }, [buyNowClicked, isLoggedIn]);
+
   const addItemToCart = (item) => {
     const quantity =
       userMode === "business"
@@ -190,8 +198,8 @@ const ProductScreen = ({ route }) => {
         cart: [{ _id: item._id, quantity: quantity, minQuantity: minQuantity }],
       });
     } else {
-      toast.show("Login Now and Start Placing Orders Now!");
-      navigation.navigate("Login");
+      setBuyNowClicked(true);
+      handlePresentModalPress();
     }
   };
 
@@ -234,8 +242,15 @@ const ProductScreen = ({ route }) => {
           paddingBottom: Platform.OS === "ios" ? 30 : 12,
           backgroundColor: "white",
           zIndex: 2,
-          borderTopColor: "lightgray",
-          borderTopWidth: 1,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 6,
+          },
+          shadowOpacity: 0.37,
+          shadowRadius: 7.49,
+
+          elevation: 12,
         }}
       >
         <View
@@ -248,8 +263,9 @@ const ProductScreen = ({ route }) => {
         >
           <TouchableOpacity
             style={{
-              borderColor: addedToCart ? "green" : "#2e2f34",
+              borderColor: addedToCart ? "green" : "gray",
               borderWidth: 1.2,
+              backgroundColor: "white",
               paddingVertical: 11,
               borderRadius: 4,
               paddingHorizontal: 20,
@@ -752,6 +768,8 @@ const ProductScreen = ({ route }) => {
           }}
         ></View>
       </ScrollView>
+
+      <AuthModal bottomSheetModalRef={bottomSheetModalRef} />
     </SafeAreaView>
   );
 };

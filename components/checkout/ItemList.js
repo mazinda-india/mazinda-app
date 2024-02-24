@@ -13,20 +13,41 @@ const ItemList = ({ itemData, allowQuantityChange = true }) => {
     <FlatList
       data={itemData}
       keyExtractor={(item, index) => index.toString()}
+      style={{
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 1.41,
+
+        elevation: 2,
+      }}
       renderItem={({ item, index }) => {
         return (
           <View
-            style={{
-              width: width,
-              backgroundColor: "white",
-              flexDirection: "row",
-              paddingHorizontal: 10,
-              paddingVertical: 15,
-              gap: 8,
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 5,
-            }}
+            style={[
+              {
+                width: width * 0.955,
+                backgroundColor: "white",
+                flexDirection: "row",
+                paddingHorizontal: 10,
+                paddingVertical: 15,
+                gap: 8,
+                alignItems: "center",
+                justifyContent: "space-between",
+              },
+              // Apply border radius based on index
+              index === 0 && {
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+              },
+              index === itemData.length - 1 && {
+                borderBottomLeftRadius: 10,
+                borderBottomRightRadius: 10,
+              },
+            ]}
           >
             <Image
               style={{
