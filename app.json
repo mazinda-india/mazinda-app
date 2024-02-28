@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mazinda",
     "slug": "HelloWorld",
-    "version": "1.3.3",
+    "version": "1.4.0",
     "scheme": "mazinda",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,7 +19,7 @@
       "infoPlist": {
         "UIBackgroundModes": ["location", "fetch", "remote-notification"]
       },
-      "buildNumber": "3"
+      "buildNumber": "4"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +27,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.abhey_gupta.MazindaApp",
-      "versionCode": 7
+      "versionCode": 8
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -46,7 +46,7 @@
         }
       ]
     ],
-    "runtimeVersion": "1.3.3",
+    "runtimeVersion": "1.4.0",
     "updates": {
       "url": "https://u.expo.dev/ab9c3df0-4476-4644-9699-4b8133795b5f"
     }
