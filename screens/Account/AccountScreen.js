@@ -284,13 +284,15 @@ const AccountScreen = () => {
                 dispatch(toggleUserMode());
               }}
             />
-            <OptionItem
-              icon={
-                <Ionicons name="settings-outline" size={22} color="black" />
-              }
-              text="Settings"
-              onPress={() => navigation.navigate("Settings")}
-            />
+            {userLoggedIn ? (
+              <OptionItem
+                icon={
+                  <Ionicons name="settings-outline" size={22} color="black" />
+                }
+                text="Settings"
+                onPress={() => navigation.navigate("Settings")}
+              />
+            ) : null}
             <OptionItem
               icon={
                 <MaterialCommunityIcons
