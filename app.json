@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mazinda",
     "slug": "HelloWorld",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "scheme": "mazinda",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -46,7 +46,7 @@
         }
       ]
     ],
-    "runtimeVersion": "1.4.1",
+    "runtimeVersion": "1.4.2",
     "updates": {
       "url": "https://u.expo.dev/ab9c3df0-4476-4644-9699-4b8133795b5f"
     }
