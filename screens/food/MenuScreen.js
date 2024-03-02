@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
   Platform,
   Alert,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableHighlight } from "react-native";
@@ -20,6 +21,7 @@ const MenuScreen = ({ route }) => {
   const { vendor, selectedCampus } = route.params;
   // const user = useSelector((state) => state.user.user);
   const [cart, setCart] = useState({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   const addToCart = (item) => {
     try {
@@ -92,6 +94,18 @@ const MenuScreen = ({ route }) => {
     }
   };
 
+  // Filter menu based on the search query
+  const filteredMenu = Object.fromEntries(
+    Object.entries(vendor.menu).map(([category, products]) => [
+      category,
+      products.filter(
+        (product) =>
+          product !== null &&
+          product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    ])
+  );
+
   useEffect(() => {
     (async () => {
       const food_cart = await AsyncStorage.getItem("food_cart");
@@ -157,135 +171,156 @@ const MenuScreen = ({ route }) => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <View>
+        <TextInput
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+          // className="p-2 border border-gray-300 rounded-md w-full bg-gray-100 z-50"
+          style={{
+            borderColor: "gray",
+            borderWidth: 1,
+            margin: 8,
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 8,
+            fontSize: 15,
+          }}
+          placeholder={`Explore ${vendor.name}'s Menu`}
+        />
+      </View>
+
       <ScrollView
         style={{
           padding: 15,
         }}
       >
         <View>
-          {Object.keys(vendor.menu).map((category, index) => (
-            <View
-              key={index}
-              style={{
-                borderBottomColor: "lightgray",
-                borderBottomWidth: 1,
-                borderRadius: 10,
-                padding: 8,
-                marginVertical: 8,
-                gap: 10,
-              }}
-            >
-              <Text
+          {Object.keys(filteredMenu).map((category, index) =>
+            filteredMenu[category].length ? (
+              <View
+                key={index}
                 style={{
-                  fontSize: 18,
-                  fontWeight: 600,
-                  textAlign: "center",
+                  borderBottomColor: "lightgray",
+                  borderBottomWidth: 1,
+                  borderRadius: 10,
+                  padding: 8,
+                  marginVertical: 8,
+                  gap: 10,
                 }}
               >
-                {category}
-              </Text>
-
-              {vendor.menu[category].map((item, index) => (
-                <View
-                  key={index}
+                <Text
                   style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingVertical: 10,
-                    paddingRight: 10,
-                    // paddingLeft: 5,
-                    alignItems: "center",
-                    gap: 10,
+                    fontSize: 18,
+                    fontWeight: 600,
+                    textAlign: "center",
                   }}
                 >
-                  <Text
-                    numberOfLines={5}
-                    style={{
-                      width: width / 2,
-                      fontSize: 17,
-                    }}
-                  >
-                    {item.name}
-                  </Text>
+                  {category}
+                </Text>
 
+                {filteredMenu[category].map((item, index) => (
                   <View
+                    key={index}
                     style={{
                       flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingVertical: 10,
+                      paddingRight: 10,
+                      // paddingLeft: 5,
                       alignItems: "center",
                       gap: 10,
                     }}
                   >
                     <Text
+                      numberOfLines={5}
                       style={{
+                        width: width / 2,
                         fontSize: 17,
                       }}
                     >
-                      ₹{item.price} /-
+                      {item.name}
                     </Text>
+
                     <View
                       style={{
                         flexDirection: "row",
+                        alignItems: "center",
+                        gap: 10,
                       }}
                     >
-                      <TouchableHighlight
-                        underlayColor={"#ffffff"}
-                        style={{
-                          paddingVertical: 3,
-                          paddingHorizontal: 8,
-                          borderColor:
-                            cart && cart[item.name] ? "#f17e13" : "lightgray",
-                          backgroundColor:
-                            cart && cart[item.name] ? "#f17e1320" : "white",
-                          borderWidth: 1,
-                          borderTopLeftRadius: 8,
-                          borderBottomLeftRadius: 8,
-                        }}
-                        onPress={() => removeFromCart(item)}
-                      >
-                        <Text style={{ fontSize: 17 }}>-</Text>
-                      </TouchableHighlight>
                       <Text
                         style={{
                           fontSize: 17,
-                          paddingVertical: 3,
-                          paddingHorizontal: 7,
-                          borderTopColor:
-                            cart && cart[item.name] ? "#f17e13" : "lightgray",
-                          borderBottomColor:
-                            cart && cart[item.name] ? "#f17e13" : "lightgray",
-                          backgroundColor:
-                            cart && cart[item.name] ? "#f17e1320" : "white",
-                          borderTopWidth: 1,
-                          borderBottomWidth: 1,
                         }}
                       >
-                        {cart && cart[item.name]
-                          ? cart[item.name].quantity
-                          : "0"}
+                        ₹{item.price} /-
                       </Text>
-                      <TouchableHighlight
-                        underlayColor={"#ffffff"}
-                        onPress={() => addToCart(item)}
+                      <View
                         style={{
-                          paddingVertical: 3,
-                          paddingHorizontal: 7,
-                          borderColor:
-                            cart && cart[item.name] ? "#f17e13" : "lightgray",
-                          borderWidth: 1,
-                          backgroundColor:
-                            cart && cart[item.name] ? "#f17e1320" : "white",
-                          borderTopRightRadius: 8,
-                          borderBottomRightRadius: 8,
+                          flexDirection: "row",
                         }}
                       >
-                        <Text style={{ fontSize: 17 }}>+</Text>
-                      </TouchableHighlight>
+                        <TouchableHighlight
+                          underlayColor={"#ffffff"}
+                          style={{
+                            paddingVertical: 3,
+                            paddingHorizontal: 8,
+                            borderColor:
+                              cart && cart[item.name] ? "#f17e13" : "lightgray",
+                            backgroundColor:
+                              cart && cart[item.name] ? "#f17e1320" : "white",
+                            borderWidth: 1,
+                            borderTopLeftRadius: 8,
+                            borderBottomLeftRadius: 8,
+                          }}
+                          onPress={() => removeFromCart(item)}
+                        >
+                          <Text style={{ fontSize: 17 }}>-</Text>
+                        </TouchableHighlight>
+                        <Text
+                          style={{
+                            fontSize: 17,
+                            paddingVertical: 3,
+                            paddingHorizontal: 7,
+                            borderTopColor:
+                              cart && cart[item.name] ? "#f17e13" : "lightgray",
+                            borderBottomColor:
+                              cart && cart[item.name] ? "#f17e13" : "lightgray",
+                            backgroundColor:
+                              cart && cart[item.name] ? "#f17e1320" : "white",
+                            borderTopWidth: 1,
+                            borderBottomWidth: 1,
+                          }}
+                        >
+                          {cart && cart[item.name]
+                            ? cart[item.name].quantity
+                            : "0"}
+                        </Text>
+                        <TouchableHighlight
+                          underlayColor={"#ffffff"}
+                          onPress={() => addToCart(item)}
+                          style={{
+                            paddingVertical: 3,
+                            paddingHorizontal: 7,
+                            borderColor:
+                              cart && cart[item.name] ? "#f17e13" : "lightgray",
+                            borderWidth: 1,
+                            backgroundColor:
+                              cart && cart[item.name] ? "#f17e1320" : "white",
+                            borderTopRightRadius: 8,
+                            borderBottomRightRadius: 8,
+                          }}
+                        >
+                          <Text style={{ fontSize: 17 }}>+</Text>
+                        </TouchableHighlight>
+                      </View>
                     </View>
                   </View>
-                </View>
-              ))}
-            </View>
-          ))}
+                ))}
+              </View>
+            ) : null
+          )}
         </View>
         <View
           style={{

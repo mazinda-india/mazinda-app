@@ -29,7 +29,7 @@ export const UserSlice = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
-      state.user.user = action.payload;
+      state.user = action.payload;
     },
     addNewAddress: (state, action) => {
       const { newSavedAddresses } = action.payload;

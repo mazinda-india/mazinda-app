@@ -3,6 +3,7 @@ import CartReducer from "./redux/CartReducer";
 import UserReducer from "./redux/UserReducer";
 import StoryReducer from "./redux/StoryReducer";
 import LocationReducer from "./redux/LocationReducer";
+import BottomModalsReducer from "./redux/BottomModalsReducer";
 
 export default configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export default configureStore({
     user: UserReducer,
     location: LocationReducer,
     stories: StoryReducer,
+    bottomSheetModal: BottomModalsReducer,
   },
 });

@@ -8,6 +8,7 @@ import { ToastProvider } from "react-native-toast-notifications";
 // import { Alert, Linking } from "react-native";
 // import axios from "axios";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import AuthModal from "./components/modals/auth/AuthModal";
 
 //       light blue gray : "#b7c9e230",
 
@@ -66,6 +67,7 @@ export default function App() {
           <Provider store={store}>
             <StackNavigator />
             <ModalPortal />
+            <AuthModal />
           </Provider>
         </ToastProvider>
       </GestureHandlerRootView>

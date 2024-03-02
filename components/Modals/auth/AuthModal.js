@@ -7,29 +7,44 @@ import {
   ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../../redux/UserReducer";
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetTextInput,
+  BottomSheetBackdrop,
 } from "@gorhom/bottom-sheet";
 import axios from "axios";
+import { setAuthModal } from "../../../redux/BottomModalsReducer";
 
-const AuthModal = ({ bottomSheetModalRef }) => {
+const AuthModal = () => {
   const dispatch = useDispatch();
+
+  const showAuthModal = useSelector(
+    (state) => state.bottomSheetModal.showAuthModal
+  );
 
   const snapPoints = useMemo(() => ["50%"], []);
 
+  const bottomSheetModalRef = useRef(null);
+
   // callbacks
-  //   const handlePresentModalPress = useCallback(() => {
-  //     bottomSheetModalRef.current?.present();
-  //   }, []);
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
   const handleDismissModalPress = useCallback(() => {
+    dispatch(setAuthModal(false));
     bottomSheetModalRef.current?.dismiss();
   }, []);
+
+  useEffect(() => {
+    if (showAuthModal) {
+      handlePresentModalPress();
+    }
+  }, [showAuthModal]);
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otpSubmitting, setOtpSubmitting] = useState({
@@ -150,13 +165,14 @@ const AuthModal = ({ bottomSheetModalRef }) => {
           index={0}
           snapPoints={snapPoints}
           style={{
+            backgroundColor: "white",
             shadowColor: "#000",
             shadowOffset: {
               width: 0,
               height: 12,
             },
             shadowOpacity: 0.58,
-            shadowRadius: 16.0,
+            shadowRadius: 25,
 
             elevation: 24,
           }}

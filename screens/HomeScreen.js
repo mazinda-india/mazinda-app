@@ -31,6 +31,7 @@ import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
 import LocationModal from "../components/modals/LocationModal";
 import { useToast } from "react-native-toast-notifications";
+import { setAuthModal } from "../redux/BottomModalsReducer";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -285,8 +286,8 @@ const HomeScreen = () => {
                     if (isLoggedIn) {
                       navigation.navigate("Food And Bakery");
                     } else {
-                      toast.show("Login to Place your order");
-                      navigation.navigate("Login");
+                      console.log("here");
+                      dispatch(setAuthModal(true));
                     }
                   }}
                 >

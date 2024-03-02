@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import {
   MaterialCommunityIcons,
   Ionicons,
@@ -18,7 +18,7 @@ import Navbar from "../../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleUserMode } from "../../redux/UserReducer";
 import { useToast } from "react-native-toast-notifications";
-import AuthModal from "../../components/modals/auth/AuthModal";
+import { setAuthModal } from "../../redux/BottomModalsReducer";
 
 const AccountScreen = () => {
   const navigation = useNavigation();
@@ -29,17 +29,7 @@ const AccountScreen = () => {
   const initialRender = useRef(true); // Ref to track initial render
 
   const user = useSelector((state) => state.user.user);
-  console.log("account screeen user", user);
   const userLoggedIn = user && Object.keys(user).length;
-
-  // ref and functions for Bottom Sheet Modal
-  const bottomSheetModalRef = useRef(null);
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-  // const handleDismissModalPress = useCallback(() => {
-  //   bottomSheetModalRef.current?.dismiss();
-  // }, []);
 
   const OptionItem = ({ icon, text, onPress }) => (
     <TouchableOpacity
@@ -157,7 +147,7 @@ const AccountScreen = () => {
                 }}
               >
                 <TouchableOpacity
-                  onPress={handlePresentModalPress}
+                  onPress={() => dispatch(setAuthModal(true))}
                   style={{
                     padding: 11,
                     backgroundColor: "#f17e13",
@@ -347,8 +337,6 @@ const AccountScreen = () => {
           </Text>
         </View>
       </ScrollView>
-
-      <AuthModal bottomSheetModalRef={bottomSheetModalRef} />
     </SafeAreaView>
   );
 };

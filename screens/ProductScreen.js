@@ -18,7 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Carousel from "../components/utility/Carousel";
 import { ScrollView } from "react-native-virtualized-view";
-import AuthModal from "../components/modals/auth/AuthModal";
+import { setAuthModal } from "../redux/BottomModalsReducer";
 
 const ProductScreen = ({ route }) => {
   const user = useSelector((state) => state.user.user);
@@ -46,12 +46,6 @@ const ProductScreen = ({ route }) => {
     pricing: item.pricing,
     productName: item.productName,
   });
-
-  const bottomSheetModalRef = useRef(null);
-
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
 
   const [buyNowClicked, setBuyNowClicked] = useState(false);
 
@@ -199,7 +193,7 @@ const ProductScreen = ({ route }) => {
       });
     } else {
       setBuyNowClicked(true);
-      handlePresentModalPress();
+      dispatch(setAuthModal(true));
     }
   };
 
@@ -768,8 +762,6 @@ const ProductScreen = ({ route }) => {
           }}
         ></View>
       </ScrollView>
-
-      <AuthModal bottomSheetModalRef={bottomSheetModalRef} />
     </SafeAreaView>
   );
 };

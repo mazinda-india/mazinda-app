@@ -27,6 +27,8 @@ const FoodCheckout = ({ route }) => {
   const [deliveryCharge, setDeliveryCharge] = useState(0.0);
   const [total, setTotal] = useState(0.0);
 
+  const [cutleryQuantity, setCutleryQuantity] = useState(0);
+
   const [loading, setLoading] = useState(false);
 
   const [address, setAddress] = useState({
@@ -56,9 +58,7 @@ const FoodCheckout = ({ route }) => {
       parseFloat(calculateSubtotal()) +
         parseFloat(vendor.packingHandlingCharges) +
         parseFloat(vendor.serviceCharges) +
-        // parseFloat(externalDeliveryRequired
-        //   ? 5 * cutleryQuantity
-        //   : 0) +
+        parseFloat(10 * cutleryQuantity) +
         deliveryCharge
     ).toFixed(2);
 
@@ -67,9 +67,8 @@ const FoodCheckout = ({ route }) => {
   }
 
   useEffect(() => {
-    const newTotal = calculateTotal();
-    setTotal(newTotal);
-  }, [cart, vendor, externalDeliveryRequired, deliveryCharge]);
+    setTotal(calculateTotal());
+  }, [cart, vendor, externalDeliveryRequired, deliveryCharge, cutleryQuantity]);
 
   useEffect(() => {
     if (
@@ -86,6 +85,7 @@ const FoodCheckout = ({ route }) => {
           parseFloat(vendor.deliveryRequirements[selectedCampus].charge)
         );
         setExternalDeliveryRequired(true);
+        setCutleryQuantity(1);
       } else {
         setDeliveryCharge(parseFloat(vendor.deliveryCharges[selectedCampus]));
       }
@@ -125,7 +125,6 @@ const FoodCheckout = ({ route }) => {
           cutleryQuantity: 0,
           userOTP: generateOTP(),
           vendorOTP: generateOTP(),
-          cutleryQuantity: 0,
           paymentMethod: "pod",
         }
       );
@@ -158,7 +157,7 @@ const FoodCheckout = ({ route }) => {
               handlingCharge: vendor.packingHandlingCharges,
               serviceCharge: vendor.serviceCharges,
               externalDeliveryRequired,
-              // cutleryQuantity,
+              cutleryQuantity,
               deliveryCharge,
               orderCreatedAt: data.order.createdAt,
             }
@@ -207,7 +206,7 @@ const FoodCheckout = ({ route }) => {
                   address: address,
                   amount: total,
                   vendorName: vendor.name,
-                  cutleryQuantity: 0,
+                  cutleryQuantity,
                 }
               );
             } catch (err) {
@@ -287,7 +286,11 @@ const FoodCheckout = ({ route }) => {
           )}
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      <ScrollView
+        style={{
+          paddingHorizontal: 20,
+        }}
+      >
         <Text
           style={{
             fontSize: 23,
@@ -305,14 +308,12 @@ const FoodCheckout = ({ route }) => {
             style={{
               backgroundColor: "white",
               flexDirection: "row",
-              paddingHorizontal: 10,
               paddingVertical: 20,
               gap: 8,
               alignItems: "center",
               justifyContent: "space-between",
               borderBottomColor: "lightgray",
               borderBottomWidth: 1,
-              marginHorizontal: 20,
             }}
           >
             <View
@@ -350,14 +351,78 @@ const FoodCheckout = ({ route }) => {
           </View>
         ))}
 
+        {externalDeliveryRequired && (
+          <View style={{ marginVertical: 15 }}>
+            <Text style={{ fontSize: 17, fontWeight: 500, marginBottom: 5 }}>
+              Cutlery Requirement
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: "#ccc",
+                paddingVertical: 10,
+              }}
+            >
+              <Text>1 Plate + Spoon + Napkin</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <TouchableOpacity
+                  disabled={cutleryQuantity === 0}
+                  onPress={() => {
+                    setCutleryQuantity((prev) => (prev > 0 ? prev - 1 : prev));
+                  }}
+                  style={{
+                    paddingHorizontal: 10,
+                    paddingVertical: 3,
+                    borderWidth: 1,
+                    borderColor: "#eee",
+                    borderTopLeftRadius: 7,
+                    borderBottomLeftRadius: 7,
+                  }}
+                >
+                  <Text>-</Text>
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderWidth: 1,
+                    borderColor: "#eee",
+                    backgroundColor:
+                      cutleryQuantity > 0 ? "#eee" : "transparent",
+                  }}
+                >
+                  {cutleryQuantity}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setCutleryQuantity((prev) => prev + 1)}
+                  style={{
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderWidth: 1,
+                    borderColor: "#eee",
+                    borderTopRightRadius: 7,
+                    borderBottomRightRadius: 7,
+                  }}
+                >
+                  <Text>+</Text>
+                </TouchableOpacity>
+                <Text style={{ paddingHorizontal: 10, fontWeight: "600" }}>
+                  ₹ 10
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         <Pressable
           style={{
-            marginHorizontal: 20,
-            marginVertical: 20,
+            marginVertical: 10,
             borderBottomColor: "lightgray",
             borderBottomWidth: 1,
-            paddingBottom: 20,
-            paddingHorizontal: 10,
+            paddingBottom: 10,
           }}
         >
           <Text
@@ -396,8 +461,6 @@ const FoodCheckout = ({ route }) => {
 
         <View
           style={{
-            paddingHorizontal: 10,
-            marginHorizontal: 20,
             backgroundColor: "white",
             paddingVertical: 15,
             borderBottomColor: "lightgray",
@@ -491,8 +554,6 @@ const FoodCheckout = ({ route }) => {
 
         <View
           style={{
-            paddingHorizontal: 10,
-            marginHorizontal: 20,
             backgroundColor: "white",
             paddingVertical: 15,
           }}
@@ -555,7 +616,8 @@ const FoodCheckout = ({ route }) => {
                 color: "#535353",
               }}
             >
-              ₹{vendor.packingHandlingCharges}
+              ₹
+              {parseFloat(vendor.packingHandlingCharges) + cutleryQuantity * 10}
             </Text>
           </View>
 
