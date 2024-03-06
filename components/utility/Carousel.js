@@ -1,9 +1,19 @@
 import { useState } from "react";
-import { FlatList, Image, Text, View, useWindowDimensions } from "react-native";
+import {
+  FlatList,
+  Image,
+  Linking,
+  Pressable,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
-const Carousel = ({ image_paths, showDotsIndicator = true }) => {
+const Carousel = ({ banners, image_paths, showDotsIndicator = true }) => {
   const { width } = useWindowDimensions();
   const [activeIndex, setActiveIndex] = useState(0);
+  const navigation = useNavigation();
 
   const handleScroll = (event) => {
     // Get the scroll position
@@ -23,7 +33,7 @@ const Carousel = ({ image_paths, showDotsIndicator = true }) => {
           alignItems: "center",
         }}
       >
-        {image_paths.map((dot, index) => {
+        {banners.map((dot, index) => {
           if (activeIndex === index) {
             return (
               <View
@@ -57,26 +67,39 @@ const Carousel = ({ image_paths, showDotsIndicator = true }) => {
   };
 
   const renderItem = ({ item }) => (
-    <View
+    <Pressable
+      onPress={() => {
+        if (item.link_type === "category") {
+          navigation.navigate("Category", {
+            category_id: item.category_id,
+          });
+        } else if (item.link_type === "product") {
+          navigation.navigate("Product", {
+            category_id: item.category_id,
+          });
+        } else if (item.link_type === "external_link") {
+          Linking.openURL(item.external_link);
+        }
+      }}
       style={{
         paddingHorizontal: 10,
       }}
     >
       <Image
         resizeMode="contain"
-        source={{ uri: item }}
+        source={{ uri: item.image }}
         style={{
           height: "100%",
           width: width - 20,
         }}
       />
-    </View>
+    </Pressable>
   );
   return (
     <View>
       <FlatList
-        data={image_paths}
-        keyExtractor={(item) => item}
+        data={banners}
+        keyExtractor={(item) => item._id}
         renderItem={renderItem}
         onScroll={handleScroll}
         horizontal
@@ -84,7 +107,7 @@ const Carousel = ({ image_paths, showDotsIndicator = true }) => {
         showsHorizontalScrollIndicator={false}
       />
 
-      {showDotsIndicator && image_paths.length > 1 ? (
+      {showDotsIndicator && banners.length > 1 ? (
         <View
           style={{
             flexDirection: "row",

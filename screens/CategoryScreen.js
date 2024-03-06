@@ -13,7 +13,7 @@ import axios from "axios";
 import ProductCard from "../components/utility/ProductCard";
 
 const CategoryScreen = ({ route }) => {
-  const { categoryName } = route.params;
+  const { category_id } = route.params;
 
   const [pageLoading, setPageLoading] = useState(true);
   const [products, setProducts] = useState([]);
@@ -25,7 +25,7 @@ const CategoryScreen = ({ route }) => {
   const fetchData = async () => {
     const availablePincodes = currentLocation.pincodes;
     const { data } = await axios.post(
-      `https://mazinda.com/api/product/fetch-products?category=${categoryName}`,
+      `https://mazinda.com/api/product/fetch-products?category_id=${category_id}`,
       { availablePincodes }
     );
     if (data.success) {
@@ -63,7 +63,9 @@ const CategoryScreen = ({ route }) => {
     }
   }, [currentLocation, locationLoading]);
 
-  const renderProductItem = ({ item }) => <ProductCard item={item} />;
+  const renderProductItem = ({ item }) => (
+    <ProductCard item={item} showShadows={false} />
+  );
 
   if (pageLoading) {
     return (
@@ -95,14 +97,15 @@ const CategoryScreen = ({ route }) => {
       <Text
         style={{
           textAlign: "center",
-          fontSize: 22,
+          fontSize: 19,
           marginVertical: 10,
-          fontWeight: 500,
+          fontWeight: 600,
+          color: "gray",
         }}
       >
-        Browsing "{categoryName}"
+        Browsing '{products[0].category}'
       </Text>
-      {products.length ? (
+      {products && products.length ? (
         <FlatList
           data={products}
           renderItem={renderProductItem}

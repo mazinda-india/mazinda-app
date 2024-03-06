@@ -28,6 +28,7 @@ const ProductScreen = ({ route }) => {
   const isLoggedIn = Object.keys(user).length;
 
   const [item, setItem] = useState(route.params?.item || {});
+  const [productId, setProductId] = useState(route.params?.productId);
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -219,6 +220,16 @@ const ProductScreen = ({ route }) => {
       }
     })();
   }, [storeInfo]);
+
+  useEffect(() => {
+    if (productId) {
+      (async () => {
+        setLoading(true);
+        await fetchProduct(productId);
+        setLoading(false);
+      })();
+    }
+  }, [productId]);
 
   return (
     <SafeAreaView

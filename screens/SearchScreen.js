@@ -103,7 +103,9 @@ const SearchScreen = ({ route }) => {
     setQuerySubmitLoading(false);
   };
 
-  const renderProductItem = ({ item }) => <ProductCard item={item} />;
+  const renderProductItem = ({ item }) => (
+    <ProductCard item={item} showShadows={false} />
+  );
 
   if (loading) {
     return (

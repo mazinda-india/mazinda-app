@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Navbar from "../components/Navbar";
 import Story from "../components/home/Story";
-import Subcategories from "../components/home/Subcategories";
+import LookingFor from "../components/home/LookingFor";
 import Categories from "../components/home/Categories";
 
 import { ScrollView } from "react-native-virtualized-view";
@@ -23,7 +23,6 @@ import HorizontalProductList from "../components/utility/HorizontalProductList";
 import { fetchUserData } from "../redux/UserReducer";
 import { fetchStoriesData } from "../redux/StoryReducer";
 import { fetchCart } from "../redux/CartReducer";
-import Carousel from "../components/utility/Carousel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CheckInternet from "../components/CheckInternet";
 import { fetchLocationByCity } from "../redux/LocationReducer";
@@ -32,6 +31,7 @@ import LottieView from "lottie-react-native";
 import LocationModal from "../components/modals/LocationModal";
 import { useToast } from "react-native-toast-notifications";
 import { setAuthModal } from "../redux/BottomModalsReducer";
+import TopCarousel from "../components/home/TopCarousel";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -280,46 +280,10 @@ const HomeScreen = () => {
             <ScrollView>
               <Story />
 
-              {foodBakeryVisible ? (
-                <Pressable
-                  onPress={() => {
-                    if (isLoggedIn) {
-                      navigation.navigate("Food And Bakery");
-                    } else {
-                      console.log("here");
-                      dispatch(setAuthModal(true));
-                    }
-                  }}
-                >
-                  <Image
-                    source={{
-                      uri: "https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/top-carousel/mandi_banner.png",
-                    }}
-                    style={{
-                      width: width - 10,
-                      aspectRatio: 16 / 7,
-                    }}
-                    resizeMode="contain"
-                  />
-                </Pressable>
-              ) : (
-                <View
-                  style={{
-                    height: 120,
-                  }}
-                >
-                  <Carousel
-                    image_paths={[1, 2, 3, 4].map(
-                      (counter) =>
-                        `https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/top-carousel/${counter}.jpeg`
-                    )}
-                    showDotsIndicator={false}
-                  />
-                </View>
-              )}
+              <TopCarousel />
 
               <View style={{ padding: 10 }}>
-                <Subcategories foodBakeryVisible={foodBakeryVisible} />
+                <LookingFor foodBakeryVisible={foodBakeryVisible} />
               </View>
 
               <View
@@ -374,7 +338,7 @@ const HomeScreen = () => {
                 <Categories />
               </View>
 
-              <View style={{ padding: 10, marginBottom: 10 }}>
+              <View style={{ padding: 10 }}>
                 <Text
                   style={{
                     fontSize: 18,

@@ -60,7 +60,8 @@ const Categories = () => {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("Category", {
-                categoryName: item.categoryName,
+                // categoryName: item.categoryName,
+                category_id: item._id,
               })
             }
             key={item._id}

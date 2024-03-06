@@ -1,4 +1,4 @@
-import { ActivityIndicator, ImageBackground } from "react-native";
+import { ActivityIndicator, ImageBackground, Linking } from "react-native";
 import { FlatList, Text, Pressable, useWindowDimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
@@ -6,7 +6,7 @@ import { useToast } from "react-native-toast-notifications";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const Subcategories = ({ foodBakeryVisible }) => {
+const LookingFor = ({ foodBakeryVisible }) => {
   const toast = useToast();
   const { width } = useWindowDimensions();
   const navigation = useNavigation();
@@ -15,41 +15,62 @@ const Subcategories = ({ foodBakeryVisible }) => {
   const userLoggedIn = user && Object.keys(user).length;
   const selectedLocation = useSelector((state) => state.location.location);
 
-  const [subcategories, setSubcategories] = useState([]);
+  const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchSubcategories = async () => {
-    setLoading(true);
-    console.log(selectedLocation._id);
-    try {
-      if (selectedLocation && selectedLocation._id) {
-        const { data } = await axios.post(
-          `https://mazinda.com/api/fetch-looking-for`,
-          {
-            id: selectedLocation._id,
-          }
-        );
-        console.log(data);
-        if (data.success) {
-          setSubcategories(data.sections);
-        }
-      } else {
-        // console.error("Selected location or _id is undefined");
-      }
-    } catch (error) {
-      // console.error("Error fetching subcategories:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchSubcategories = async () => {
+  //   setLoading(true);
+  //   console.log(selectedLocation._id);
+  //   try {
+  //     if (selectedLocation && selectedLocation._id) {
+  //       const { data } = await axios.post(
+  //         `https://mazinda.com/api/fetch-looking-for`,
+  //         {
+  //           id: selectedLocation._id,
+  //         }
+  //       );
+  //       console.log(data);
+  //       if (data.success) {
+  //         setSubcategories(data.sections);
+  //       }
+  //     } else {
+  //       // console.error("Selected location or _id is undefined");
+  //     }
+  //   } catch (error) {
+  //     // console.error("Error fetching subcategories:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    if (Object.keys(selectedLocation).length) {
-      fetchSubcategories();
-    }
-  }, [selectedLocation]);
+    setLoading(true);
+    (async () => {
+      try {
+        const { data } = await axios.post(
+          "https://mazinda.com/api/banner/fetch",
+          {
+            banner_type: "looking-for",
+          }
+        );
+        if (data.success) {
+          setBanners(data.banners);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-  const renderSubcategory = ({ item, index }) => {
+  // useEffect(() => {
+  //   if (Object.keys(selectedLocation).length) {
+  //     fetchSubcategories();
+  //   }
+  // }, [selectedLocation]);
+
+  const renderBanner = ({ item, index }) => {
     return (
       <Pressable
         onPress={() => {
@@ -63,8 +84,14 @@ const Subcategories = ({ foodBakeryVisible }) => {
           } else {
             if (item.link_type === "category") {
               navigation.navigate("Category", {
-                categoryName: item.category_id.categoryName,
+                category_id: item.category_id,
               });
+            } else if (item.link_type === "product") {
+              navigation.navigate("Product", {
+                category_id: item.category_id,
+              });
+            } else if (item.link_type === "external-link") {
+              Linking.openURL(item.external_link);
             }
           }
         }}
@@ -90,23 +117,6 @@ const Subcategories = ({ foodBakeryVisible }) => {
     );
   };
 
-  if (loading) {
-    return (
-      <>
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 600,
-            marginBottom: 10,
-          }}
-        >
-          What are you looking for?
-        </Text>
-        <ActivityIndicator size={"small"} />
-      </>
-    );
-  }
-
   return (
     <>
       <Text
@@ -118,15 +128,19 @@ const Subcategories = ({ foodBakeryVisible }) => {
       >
         What are you looking for?
       </Text>
-      <FlatList
-        data={subcategories}
-        renderItem={renderSubcategory}
-        keyExtractor={(item, index) => index}
-        numColumns={2}
-        gap={20}
-      />
+      {!loading ? (
+        <FlatList
+          data={banners}
+          renderItem={renderBanner}
+          keyExtractor={(item, index) => index}
+          numColumns={2}
+          gap={20}
+        />
+      ) : (
+        <ActivityIndicator />
+      )}
     </>
   );
 };
 
-export default Subcategories;
+export default LookingFor;
