@@ -37,7 +37,6 @@ const CategoryScreen = ({ route }) => {
           );
 
           if (storeData.success) {
-            console.log(storeData);
             return storeData.store.businessType.includes("b2b");
           } else {
             return false;
@@ -94,25 +93,27 @@ const CategoryScreen = ({ route }) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Navbar />
 
-      <Text
-        style={{
-          textAlign: "center",
-          fontSize: 19,
-          marginVertical: 10,
-          fontWeight: 600,
-          color: "gray",
-        }}
-      >
-        Browsing '{products[0].category}'
-      </Text>
       {products && products.length ? (
-        <FlatList
-          data={products}
-          renderItem={renderProductItem}
-          keyExtractor={(item) => item._id}
-          numColumns={2}
-          style={{ marginTop: 10 }}
-        />
+        <>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 19,
+              marginVertical: 10,
+              fontWeight: "600", // fontWeight should be a string
+              color: "gray",
+            }}
+          >
+            Browsing '{products[0].category}'
+          </Text>
+          <FlatList
+            data={products}
+            renderItem={renderProductItem}
+            keyExtractor={(item) => item._id}
+            numColumns={2}
+            style={{ marginTop: 10 }}
+          />
+        </>
       ) : (
         <View
           style={{

@@ -16,8 +16,12 @@ import ProductCard from "../components/utility/ProductCard";
 import { useToast } from "react-native-toast-notifications";
 import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const SearchScreen = ({ route }) => {
+  const navigation = useNavigation();
   const toast = useToast();
   const user = useSelector((state) => state.user.user);
   const userMode = useSelector((state) => state.user.userMode);
@@ -45,7 +49,7 @@ const SearchScreen = ({ route }) => {
         }
       );
 
-      console.log("data", data);
+      // console.log("data", data);
 
       if (data.success) {
         // if (userMode === "business") {
@@ -133,6 +137,53 @@ const SearchScreen = ({ route }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Navbar searchQuery={searchQuery} />
+
+      {currentLocation._id === "655f1b9f9f019ff01503fc7b" ? (
+        <Pressable
+          onPress={() => navigation.navigate("Food And Bakery")}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 5,
+            borderColor: "#fe6321",
+            // borderColor: "lightgray",
+            // backgroundColor: "#e8e9eb90",
+            backgroundColor: "#ffefe8",
+            marginHorizontal: 10,
+            marginVertical: 7,
+            borderWidth: 1,
+            padding: 10,
+            borderRadius: 10,
+          }}
+        >
+          <MaterialCommunityIcons
+            name="food-fork-drink"
+            size={24}
+            color="#fe6321"
+          />
+          <View>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: "#fe6321",
+              }}
+            >
+              LOOKING FOR FOOD?
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: 400,
+                color: "black",
+              }}
+            >
+              Click to order from favorite restaurants!
+            </Text>
+          </View>
+        </Pressable>
+      ) : null}
+
       {products.length ? (
         <FlatList
           data={products}

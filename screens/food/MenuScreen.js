@@ -12,14 +12,12 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableHighlight } from "react-native";
-import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MenuScreen = ({ route }) => {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
   const { vendor, selectedCampus } = route.params;
-  // const user = useSelector((state) => state.user.user);
   const [cart, setCart] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -31,8 +29,8 @@ const MenuScreen = ({ route }) => {
         if (vendorNameInCart !== vendor.name) {
           // Show the custom alert when trying to add items from different vendors
           Alert.alert(
-            "You can't add items from different vendors. Do you want to clear the cart?",
-            "",
+            "You can't add items from different restaurants",
+            "Do you want to clear the cart before proceeding?",
             [
               {
                 text: "Clear",
@@ -110,7 +108,6 @@ const MenuScreen = ({ route }) => {
     (async () => {
       const food_cart = await AsyncStorage.getItem("food_cart");
       if (food_cart) {
-        console.log(food_cart);
         setCart(JSON.parse(food_cart));
       }
     })();

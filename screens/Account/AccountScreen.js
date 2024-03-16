@@ -45,9 +45,7 @@ const AccountScreen = () => {
       }}
     >
       {icon}
-      <Text style={{ fontSize: 14, fontWeight: 700, color: "gray" }}>
-        {text}
-      </Text>
+      <Text style={{ fontSize: 14 }}>{text}</Text>
     </TouchableOpacity>
   );
 

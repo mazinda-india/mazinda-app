@@ -9,10 +9,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { addToCart, updateCartOnServer } from "../../redux/CartReducer";
-import { Link, useRouter } from "expo-router";
 
 const ProductCard = ({ item, showShadows = true }) => {
-  const router = useRouter();
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cart);

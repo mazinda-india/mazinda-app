@@ -44,65 +44,71 @@ const SettingsScreen = () => {
 
         <View
           style={{
-            gap: 18,
+            gap: 5,
           }}
         >
-          <TouchableOpacity
-            onPress={async () => {
-              await AsyncStorage.removeItem("user_token");
-              dispatch(clearCart());
-              dispatch(logout());
-              toast.show("Logged out Successfully");
-              navigation.navigate("Account");
-            }}
+          <View
             style={{
-              flexDirection: "row",
-              width: "100%",
-              paddingHorizontal: 10,
-              paddingVertical: 5,
-              alignItems: "center",
-              gap: 10,
-              borderRadius: 10,
+              gap: 18,
             }}
           >
-            <MaterialIcons name="logout" size={24} color="black" />
-            <Text
+            <TouchableOpacity
+              onPress={async () => {
+                await AsyncStorage.removeItem("user_token");
+                dispatch(clearCart());
+                dispatch(logout());
+                toast.show("Logged out Successfully");
+                navigation.navigate("Account");
+              }}
               style={{
-                fontSize: 15,
+                flexDirection: "row",
+                width: "100%",
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                alignItems: "center",
+                gap: 10,
+                borderRadius: 10,
               }}
             >
-              Logout
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <MaterialIcons name="logout" size={24} color="black" />
+              <Text
+                style={{
+                  fontSize: 15,
+                }}
+              >
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-        <View
-          style={{
-            gap: 18,
-          }}
-        >
-          <TouchableOpacity
-            onPress={async () => setDeleteAccountModalVisible(true)}
+          <View
             style={{
-              flexDirection: "row",
-              width: "100%",
-              paddingHorizontal: 10,
-              paddingVertical: 5,
-              alignItems: "center",
-              gap: 13,
-              borderRadius: 10,
+              gap: 18,
             }}
           >
-            <FontAwesome name="trash-o" size={25} color="red" />
-            <Text
+            <TouchableOpacity
+              onPress={async () => setDeleteAccountModalVisible(true)}
               style={{
-                fontSize: 15,
-                color: "red",
+                flexDirection: "row",
+                width: "100%",
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                alignItems: "center",
+                gap: 13,
+                borderRadius: 10,
               }}
             >
-              Delete Account
-            </Text>
-          </TouchableOpacity>
+              <FontAwesome name="trash-o" size={25} color="red" />
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: "red",
+                }}
+              >
+                Delete Account
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </SafeAreaView>

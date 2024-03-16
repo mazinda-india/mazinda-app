@@ -16,7 +16,7 @@ import { addToCart, updateCartOnServer } from "../redux/CartReducer";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import Carousel from "../components/utility/Carousel";
+import CarouselProduct from "../components/utility/CarouselProduct";
 import { ScrollView } from "react-native-virtualized-view";
 import { setAuthModal } from "../redux/BottomModalsReducer";
 
@@ -204,7 +204,6 @@ const ProductScreen = ({ route }) => {
         "https://mazinda.com/api/store/fetch-store",
         { storeId: item.storeId }
       );
-      console.log(data.store);
       setStoreInfo(data.store);
     })();
   }, []);
@@ -360,7 +359,7 @@ const ProductScreen = ({ route }) => {
             backgroundColor: "white",
           }}
         >
-          <Carousel image_paths={itemData.imagePaths} />
+          <CarouselProduct image_paths={itemData.imagePaths} />
         </View>
 
         <View
@@ -371,7 +370,8 @@ const ProductScreen = ({ route }) => {
         >
           {variantsInfo &&
             Object.keys(variantsInfo).map((variantCategory, index) => (
-              <View
+              <ScrollView
+                horizontal
                 key={index}
                 style={{
                   borderBottomColor: "lightgray",
@@ -383,6 +383,7 @@ const ProductScreen = ({ route }) => {
                 <View
                   style={{
                     flexDirection: "row",
+                    paddingVertical: 12,
                   }}
                 >
                   <Text
@@ -429,7 +430,7 @@ const ProductScreen = ({ route }) => {
                     </TouchableOpacity>
                   ))}
                 </View>
-              </View>
+              </ScrollView>
             ))}
         </View>
 

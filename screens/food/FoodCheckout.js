@@ -27,6 +27,7 @@ const FoodCheckout = ({ route }) => {
   const [deliveryCharge, setDeliveryCharge] = useState(0.0);
   const [total, setTotal] = useState(0.0);
 
+  const [showCutlery, setShowCutlery] = useState(false);
   const [cutleryQuantity, setCutleryQuantity] = useState(0);
 
   const [loading, setLoading] = useState(false);
@@ -235,6 +236,19 @@ const FoodCheckout = ({ route }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await axios.get("https://mazinda.com/api/mode");
+        console.log(data);
+        if (data.mode === "manual") {
+        }
+      } catch (err) {
+        console.log("Network Error");
+      }
+    })();
+  }, []);
 
   return (
     <SafeAreaView

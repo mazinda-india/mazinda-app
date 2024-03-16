@@ -5,9 +5,9 @@ import {
   View,
   Image,
   Linking,
-  Pressable,
   useWindowDimensions,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
@@ -29,22 +29,20 @@ import { fetchLocationByCity } from "../redux/LocationReducer";
 import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
 import LocationModal from "../components/modals/LocationModal";
-import { useToast } from "react-native-toast-notifications";
-import { setAuthModal } from "../redux/BottomModalsReducer";
 import TopCarousel from "../components/home/TopCarousel";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const toast = useToast();
   const { width } = useWindowDimensions();
   const currentLocation = useSelector((state) => state.location.location);
+  const currentLocationLoading = useSelector(
+    (state) => state.location.isLoading
+  );
+
   const locationServiceable = useSelector(
     (state) => state.location.serviceable
   );
-  const user = useSelector((state) => state.user.user);
-  console.log("the user is", user);
-  const isLoggedIn = user && Object.keys(user).length;
 
   const userMode = useSelector((state) => state.user.userMode);
   const foodBakeryVisible =
@@ -62,18 +60,24 @@ const HomeScreen = () => {
       longitude: currentLocation.coords.longitude,
       latitude: currentLocation.coords.latitude,
     });
-    // console.log(reverseGeocodedAddress);
+    console.log("reverse geocoded address", reverseGeocodedAddress);
+    await AsyncStorage.setItem(
+      "savedReverseGeocodedAddress",
+      JSON.stringify(reverseGeocodedAddress)
+    );
     setAddress(reverseGeocodedAddress);
   };
 
   const getPermissions = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    let { status } = await Location.requestForegroundPermissionsAsync(); // fill fetch the location permission status
     setPermissionStatus(status);
+
     if (status !== "granted") {
       console.log("Please grant location permissions");
       return;
     }
 
+    // if status is granted, it will fetch the current location
     let currentLocation = await Location.getCurrentPositionAsync({});
     if (currentLocation) {
       reverseGeocode(currentLocation);
@@ -90,8 +94,19 @@ const HomeScreen = () => {
     })();
   }, []);
 
+  // Initially this useEffect will run to get the location permission and fetch the location if not present in the async storage
   useEffect(() => {
-    getPermissions();
+    (async () => {
+      const savedReverseGeocodedAddress = await AsyncStorage.getItem(
+        "savedReverseGeocodedAddress"
+      );
+
+      if (!savedReverseGeocodedAddress) {
+        getPermissions();
+      } else {
+        setAddress(JSON.parse(savedReverseGeocodedAddress));
+      }
+    })();
   }, []);
 
   useEffect(() => {
@@ -271,100 +286,234 @@ const HomeScreen = () => {
     );
   }
 
+  if (currentLocationLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+        <>
+          <Navbar showSearchBar={false} />
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        </>
+      </SafeAreaView>
+    );
+  }
+
+  if (currentLocation && !Object.keys(currentLocation).length) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+          justifyContent: "center",
+          alignItems: "center",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <LocationModal
+          locationsModalVisible={locationsModalVisible}
+          setLocationsModalVisible={setLocationsModalVisible}
+        />
+        <Text
+          style={{
+            fontSize: 18,
+            textAlign: "center",
+            fontWeight: 600,
+            marginHorizontal: 30,
+          }}
+        >
+          Set your location and start exploring your city
+        </Text>
+        <View
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <LottieView
+            source={require("../assets/lottie/select_location.json")}
+            style={{
+              height: 350,
+              width: width,
+              alignSelf: "center",
+              justifyContent: "center",
+            }}
+            autoPlay
+            loop={true}
+            speed={0.7}
+          />
+        </View>
+
+        <View
+          style={{
+            width: "100%",
+            gap: 10,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#f97316",
+              marginHorizontal: 15,
+              padding: 10,
+              borderRadius: 6,
+            }}
+            onPress={() => {
+              if (permissionStatus === "denied") {
+                Alert.alert(
+                  "Location Not Detected",
+                  "Currently, we don't have access to location services on your device. Please go to settings and enable location services to use this feature",
+                  [
+                    {
+                      text: "Settings",
+                      style: "default",
+                      onPress: () => Linking.openSettings(),
+                    },
+                    { text: "Cancel", style: "cancel" },
+                  ]
+                );
+              } else {
+                getPermissions();
+              }
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                textAlign: "center",
+                fontWeight: 600,
+                fontSize: 17,
+              }}
+            >
+              Enable Device Location
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setLocationsModalVisible(true)}
+            style={{
+              borderColor: "#f97316",
+              borderWidth: 1,
+              marginHorizontal: 15,
+              padding: 10,
+              borderRadius: 6,
+            }}
+          >
+            <Text
+              style={{
+                color: "#f97316",
+                textAlign: "center",
+                fontWeight: 600,
+                fontSize: 17,
+              }}
+            >
+              Select Manually
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      {currentLocation && Object.keys(currentLocation).length ? (
-        <>
-          <Navbar showSearchBar={isConnected} />
-          {isConnected ? (
-            <ScrollView>
-              <Story />
+      <>
+        <Navbar showSearchBar={isConnected} />
+        {isConnected ? (
+          <ScrollView>
+            <Story />
 
-              <TopCarousel />
+            <TopCarousel />
 
-              <View style={{ padding: 10 }}>
-                <LookingFor foodBakeryVisible={foodBakeryVisible} />
-              </View>
+            <View style={{ padding: 10 }}>
+              <LookingFor foodBakeryVisible={foodBakeryVisible} />
+            </View>
 
+            <View
+              style={{
+                marginVertical: 20,
+                width,
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/banner_one.JPG",
+                }}
+                style={{
+                  width,
+                  height: 70,
+                }}
+                resizeMode="contain"
+              />
+            </View>
+
+            <View style={{ padding: 10 }}>
               <View
                 style={{
-                  marginVertical: 20,
-                  width,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                <Image
-                  source={{
-                    uri: "https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/banner_one.JPG",
-                  }}
+                <Text
                   style={{
-                    width,
-                    height: 70,
+                    fontSize: 18,
+                    fontWeight: 600,
                   }}
-                  resizeMode="contain"
-                />
-              </View>
-
-              <View style={{ padding: 10 }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
+                >
+                  Categories
+                </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Categories")}
                 >
                   <Text
                     style={{
-                      fontSize: 18,
-                      fontWeight: 600,
+                      fontSize: 16,
+                      textDecorationLine: "underline",
+                      marginRight: 10,
                     }}
                   >
-                    Categories
+                    View All
                   </Text>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("Categories")}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        textDecorationLine: "underline",
-                        marginRight: 10,
-                      }}
-                    >
-                      View All
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                <Categories />
+                </TouchableOpacity>
               </View>
 
-              <View style={{ padding: 10 }}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 600,
-                    marginBottom: 15,
-                  }}
-                >
-                  Mazinda Top Deals
-                </Text>
-                <HorizontalProductList filter={"top-deal"} />
-              </View>
+              <Categories />
+            </View>
 
-              <View style={{ padding: 10 }}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 600,
-                    marginBottom: 15,
-                  }}
-                >
-                  Trending Products
-                </Text>
-                <HorizontalProductList filter={"trending"} />
-              </View>
+            <View style={{ padding: 10 }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  marginBottom: 15,
+                }}
+              >
+                Mazinda Top Deals
+              </Text>
+              <HorizontalProductList filter={"top-deal"} />
+            </View>
 
-              {/* <Pressable
+            <View style={{ padding: 10 }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  marginBottom: 15,
+                }}
+              >
+                Trending Products
+              </Text>
+              <HorizontalProductList filter={"trending"} />
+            </View>
+
+            {/* <Pressable
                 onPress={() => Linking.openURL("https://store.mazinda.com")}
                 style={{
                   marginVertical: 20,
@@ -381,127 +530,14 @@ const HomeScreen = () => {
                   resizeMode="contain"
                 />
               </Pressable> */}
-            </ScrollView>
-          ) : null}
+          </ScrollView>
+        ) : null}
 
-          <CheckInternet
-            isConnected={isConnected}
-            setIsConnected={setIsConnected}
-          />
-        </>
-      ) : (
-        <SafeAreaView
-          style={{
-            flex: 1,
-            backgroundColor: "white",
-            justifyContent: "center",
-            alignItems: "center",
-            justifyContent: "space-evenly",
-          }}
-        >
-          <LocationModal
-            locationsModalVisible={locationsModalVisible}
-            setLocationsModalVisible={setLocationsModalVisible}
-          />
-          <Text
-            style={{
-              fontSize: 18,
-              textAlign: "center",
-              fontWeight: 600,
-              marginHorizontal: 30,
-            }}
-          >
-            Set your location and start exploring your city
-          </Text>
-          <View
-            style={{
-              width: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <LottieView
-              source={require("../assets/lottie/select_location.json")}
-              style={{
-                height: 350,
-                width: width,
-                alignSelf: "center",
-                justifyContent: "center",
-              }}
-              autoPlay
-              loop={true}
-              speed={0.7}
-            />
-          </View>
-
-          <View
-            style={{
-              width: "100%",
-              gap: 10,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#f97316",
-                marginHorizontal: 15,
-                padding: 10,
-                borderRadius: 6,
-              }}
-              onPress={() => {
-                if (permissionStatus === "denied") {
-                  Alert.alert(
-                    "Location Not Detected",
-                    "Currently, we don't have access to location services on your device. Please go to settings and enable location services to use this feature",
-                    [
-                      {
-                        text: "Settings",
-                        style: "default",
-                        onPress: () => Linking.openSettings(),
-                      },
-                      { text: "Cancel", style: "cancel" },
-                    ]
-                  );
-                } else {
-                  getPermissions();
-                }
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  textAlign: "center",
-                  fontWeight: 600,
-                  fontSize: 17,
-                }}
-              >
-                Enable Device Location
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setLocationsModalVisible(true)}
-              style={{
-                borderColor: "#f97316",
-                borderWidth: 1,
-                marginHorizontal: 15,
-                padding: 10,
-                borderRadius: 6,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#f97316",
-                  textAlign: "center",
-                  fontWeight: 600,
-                  fontSize: 17,
-                }}
-              >
-                Select Manually
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      )}
+        <CheckInternet
+          isConnected={isConnected}
+          setIsConnected={setIsConnected}
+        />
+      </>
     </SafeAreaView>
   );
 };

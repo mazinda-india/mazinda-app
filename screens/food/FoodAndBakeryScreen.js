@@ -36,7 +36,7 @@ const FoodAndBakeryScreen = () => {
     setCategorisedVendors({});
     (async () => {
       const { data } = await axios.post(
-        "https://citikartt.com/api/vendor/fetch-all-vendors"
+        "https://mazinda.com/api/vendor/fetch-all-vendors"
       );
 
       setLoading(false);
@@ -136,113 +136,121 @@ const FoodAndBakeryScreen = () => {
           marginTop: 15,
         }}
       >
-        {Object.keys(categorisedVendors).map((category, index) => (
-          <React.Fragment key={index}>
-            <Text
-              style={{
-                textAlign: "center",
-                fontWeight: 600,
-                fontSize: 22,
-              }}
-            >
-              {category[0].toUpperCase() + category.slice(1)}
-            </Text>
+        {Object.keys(categorisedVendors).map((category, index) => {
+          const vendorsWithPriority = categorisedVendors[category]
+            .filter((vendor) => vendor.priority !== "")
+            .sort((a, b) => a.priority - b.priority);
 
-            {categorisedVendors[category].map((vendor, index) => (
-              <TouchableHighlight
-                disabled={!vendor.openStatus}
-                underlayColor={"#f7f7f7"}
-                key={index}
-                onPress={() => {
-                  if (selectedCampus) {
-                    navigation.navigate("Menu", { vendor, selectedCampus });
-                  } else {
-                    setFoodLocationModalVisible(true);
-                  }
-                }}
+          return (
+            <React.Fragment key={index}>
+              <Text
                 style={{
-                  flexDirection: "row",
-                  marginVertical: 20,
-                  marginHorizontal: 30,
-                  borderRadius: 20,
-                  borderColor: "lightgray",
-                  borderWidth: 1,
-                  // display: vendor.name === "test" ? "none" : "flex",
+                  textAlign: "center",
+                  fontWeight: 600,
+                  fontSize: 22,
                 }}
               >
-                <>
-                  <Image
-                    source={{ uri: vendor.imageURI }}
-                    style={{
-                      width: width / 3,
-                      height: width / 3,
-                      borderTopLeftRadius: 20,
-                      borderBottomLeftRadius: 20,
-                    }}
-                    resizeMode="cover"
-                  />
+                {category[0].toUpperCase() + category.slice(1)}
+              </Text>
 
-                  <View
+              {vendorsWithPriority.map((vendor, index) =>
+                !vendor.disabled ? (
+                  <TouchableHighlight
+                    disabled={!vendor.openStatus}
+                    underlayColor={"#f7f7f7"}
+                    key={index}
+                    onPress={() => {
+                      if (selectedCampus) {
+                        navigation.navigate("Menu", { vendor, selectedCampus });
+                      } else {
+                        setFoodLocationModalVisible(true);
+                      }
+                    }}
                     style={{
-                      padding: 10,
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      width: (2 * width) / 4,
+                      flexDirection: "row",
+                      marginVertical: 20,
+                      marginHorizontal: 30,
+                      borderRadius: 20,
+                      borderColor: "lightgray",
+                      borderWidth: 1,
+                      // display: vendor.name === "test" ? "none" : "flex",
                     }}
                   >
-                    <View>
-                      <Text
-                        numberOfLines={2}
+                    <>
+                      <Image
+                        source={{ uri: vendor.imageURI }}
                         style={{
-                          fontSize: 18,
-                          fontWeight: 600,
+                          width: width / 3,
+                          height: width / 3,
+                          borderTopLeftRadius: 20,
+                          borderBottomLeftRadius: 20,
                         }}
-                      >
-                        {vendor.name}
-                      </Text>
-                      <Text
-                        numberOfLines={1}
-                        style={{
-                          fontSize: 12,
-                          color: "gray",
-                          marginVertical: 5,
-                        }}
-                      >
-                        {vendor.category[0].toUpperCase() +
-                          vendor.category.slice(1)}
-                      </Text>
-                    </View>
+                        resizeMode="cover"
+                      />
 
-                    <View
-                      style={{
-                        backgroundColor: vendor.openStatus
-                          ? "#00ff0020"
-                          : "#ffff0020",
-                        paddingHorizontal: 8,
-                        paddingVertical: 3,
-                        borderRadius: 10,
-                        alignSelf: "flex-start",
-                      }}
-                    >
-                      <Text
+                      <View
                         style={{
-                          color: vendor.openStatus ? "#5bc236" : "#eedb00",
-                          fontSize: 12,
-                          fontWeight: 600,
-                          textAlign: "center",
+                          padding: 10,
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          width: (2 * width) / 4,
                         }}
                       >
-                        {vendor.openStatus
-                          ? "ORDER NOW"
-                          : "CURRENTLY UNAVAILABLE"}
-                      </Text>
-                    </View>
-                  </View>
-                </>
-              </TouchableHighlight>
-            ))}
-          </React.Fragment>
-        ))}
+                        <View>
+                          <Text
+                            numberOfLines={2}
+                            style={{
+                              fontSize: 18,
+                              fontWeight: 600,
+                            }}
+                          >
+                            {vendor.name}
+                          </Text>
+                          <Text
+                            numberOfLines={1}
+                            style={{
+                              fontSize: 12,
+                              color: "gray",
+                              marginVertical: 5,
+                            }}
+                          >
+                            {vendor.category[0].toUpperCase() +
+                              vendor.category.slice(1)}
+                          </Text>
+                        </View>
+
+                        <View
+                          style={{
+                            backgroundColor: vendor.openStatus
+                              ? "#00ff0020"
+                              : "#ffff0020",
+                            paddingHorizontal: 8,
+                            paddingVertical: 3,
+                            borderRadius: 10,
+                            alignSelf: "flex-start",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: vendor.openStatus ? "#5bc236" : "#eedb00",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              textAlign: "center",
+                            }}
+                          >
+                            {vendor.openStatus
+                              ? "ORDER NOW"
+                              : "CURRENTLY UNAVAILABLE"}
+                          </Text>
+                        </View>
+                      </View>
+                    </>
+                  </TouchableHighlight>
+                ) : null
+              )}
+            </React.Fragment>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );

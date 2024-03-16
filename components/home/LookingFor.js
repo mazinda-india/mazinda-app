@@ -1,13 +1,13 @@
 import { ActivityIndicator, ImageBackground, Linking } from "react-native";
 import { FlatList, Text, Pressable, useWindowDimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { useToast } from "react-native-toast-notifications";
+import { useSelector, useDispatch } from "react-redux";
+import { setAuthModal } from "../../redux/BottomModalsReducer";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
 const LookingFor = ({ foodBakeryVisible }) => {
-  const toast = useToast();
+  const dispatch = useDispatch();
   const { width } = useWindowDimensions();
   const navigation = useNavigation();
 
@@ -17,31 +17,6 @@ const LookingFor = ({ foodBakeryVisible }) => {
 
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  // const fetchSubcategories = async () => {
-  //   setLoading(true);
-  //   console.log(selectedLocation._id);
-  //   try {
-  //     if (selectedLocation && selectedLocation._id) {
-  //       const { data } = await axios.post(
-  //         `https://mazinda.com/api/fetch-looking-for`,
-  //         {
-  //           id: selectedLocation._id,
-  //         }
-  //       );
-  //       console.log(data);
-  //       if (data.success) {
-  //         setSubcategories(data.sections);
-  //       }
-  //     } else {
-  //       // console.error("Selected location or _id is undefined");
-  //     }
-  //   } catch (error) {
-  //     // console.error("Error fetching subcategories:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   useEffect(() => {
     setLoading(true);
@@ -64,12 +39,6 @@ const LookingFor = ({ foodBakeryVisible }) => {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   if (Object.keys(selectedLocation).length) {
-  //     fetchSubcategories();
-  //   }
-  // }, [selectedLocation]);
-
   const renderBanner = ({ item, index }) => {
     return (
       <Pressable
@@ -78,8 +47,7 @@ const LookingFor = ({ foodBakeryVisible }) => {
             if (userLoggedIn) {
               navigation.navigate("Food And Bakery");
             } else {
-              toast.show("Login now to order your favourite meal");
-              navigation.navigate("Login");
+              dispatch(setAuthModal(true));
             }
           } else {
             if (item.link_type === "category") {
