@@ -463,11 +463,11 @@ const HomeScreen = () => {
               >
                 <Text
                   style={{
-                    fontSize: 18,
-                    fontWeight: 600,
+                    fontSize: 16,
+                    fontWeight: 800,
                   }}
                 >
-                  Categories
+                  CATEGORIES
                 </Text>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Categories")}
@@ -490,12 +490,12 @@ const HomeScreen = () => {
             <View style={{ padding: 10 }}>
               <Text
                 style={{
-                  fontSize: 18,
-                  fontWeight: 600,
+                  fontSize: 16,
+                  fontWeight: 800,
                   marginBottom: 15,
                 }}
               >
-                Mazinda Top Deals
+                TOP DEALS
               </Text>
               <HorizontalProductList filter={"top-deal"} />
             </View>
@@ -503,12 +503,12 @@ const HomeScreen = () => {
             <View style={{ padding: 10 }}>
               <Text
                 style={{
-                  fontSize: 18,
-                  fontWeight: 600,
+                  fontSize: 16,
+                  fontWeight: 800,
                   marginBottom: 15,
                 }}
               >
-                Trending Products
+                TRENDING PRODUCTS
               </Text>
               <HorizontalProductList filter={"trending"} />
             </View>

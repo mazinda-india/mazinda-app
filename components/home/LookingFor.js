@@ -89,12 +89,12 @@ const LookingFor = ({ foodBakeryVisible }) => {
     <>
       <Text
         style={{
-          fontSize: 18,
-          fontWeight: 600,
+          fontSize: 16,
+          fontWeight: 800,
           marginBottom: 10,
         }}
       >
-        What are you looking for?
+        WHAT ARE YOU LOOKING FOR?
       </Text>
       {!loading ? (
         <FlatList

@@ -30,6 +30,9 @@ const FoodCheckout = ({ route }) => {
   const [showCutlery, setShowCutlery] = useState(false);
   const [cutleryQuantity, setCutleryQuantity] = useState(0);
 
+  const [mode, setMode] = useState("");
+  const [deliveryPersons, setDeliveryPersons] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
   const [address, setAddress] = useState({
@@ -86,7 +89,7 @@ const FoodCheckout = ({ route }) => {
           parseFloat(vendor.deliveryRequirements[selectedCampus].charge)
         );
         setExternalDeliveryRequired(true);
-        setCutleryQuantity(1);
+        // setCutleryQuantity(1);
       } else {
         setDeliveryCharge(parseFloat(vendor.deliveryCharges[selectedCampus]));
       }
@@ -132,11 +135,11 @@ const FoodCheckout = ({ route }) => {
 
       if (data.success) {
         try {
-          await axios.post("https://citikartt.com/api/whatsapp/msg-to-group", {
+          await axios.post("https://mazinda.com/api/whatsapp/msg-to-group", {
             group_id: vendor.whatsapp_group_id,
             order_id: data.order._id,
             products: cart,
-            user: user.name,
+            // user: user.name,
             address,
             instructions: address.instructions,
             amount: total,
@@ -149,7 +152,7 @@ const FoodCheckout = ({ route }) => {
         // Adding this order in the payouts section of the vendor
         try {
           const payouts_response = await axios.post(
-            "https://citikartt.com/api/vendor/get-payouts",
+            "https://mazinda.com/api/vendor/get-payouts",
             {
               orderId: data.order._id,
               vendorId: vendor._id,
@@ -167,7 +170,7 @@ const FoodCheckout = ({ route }) => {
           if (payouts_response.data.success) {
             try {
               await axios.put(
-                "https://citikartt.com/api/vendor/update-vendor-payouts",
+                "https://mazinda.com/api/vendor/update-vendor-payouts",
                 {
                   _id: vendor._id,
                   payouts: payouts_response.data.payouts,
@@ -185,8 +188,8 @@ const FoodCheckout = ({ route }) => {
 
         setTimeout(async () => {
           try {
-            await axios.post("https://citikartt.com/api/whatsapp/msg-to-user", {
-              userName: user.name,
+            await axios.post("https://mazinda.com/api/whatsapp/msg-to-user", {
+              // userName: user.name,
               userNumber: address.phoneNumber,
               amount: total,
             });
@@ -197,34 +200,57 @@ const FoodCheckout = ({ route }) => {
 
         if (externalDeliveryRequired) {
           setTimeout(async () => {
-            try {
-              await axios.post(
-                "https://citikartt.com/api/whatsapp/msg-to-delivery",
-                {
-                  userName: user.name,
-                  order_id: data.order._id,
-                  products: cart,
-                  address: address,
-                  amount: total,
+            if (mode === "automatic") {
+              const randomAvailableDeliveryPerson = deliveryPersons.filter(
+                (deliveryBoy) => deliveryBoy.isAvailable
+              )[
+                Math.floor(
+                  Math.random() *
+                    deliveryPersons.filter(
+                      (deliveryBoy) => deliveryBoy.isAvailable
+                    ).length
+                )
+              ];
+
+              try {
+                // await axios.post(
+                //   "https://mazinda.com/api/whatsapp/msg-to-delivery",
+                //   {
+                //     userName: user.name,
+                //     order_id: data.order._id,
+                //     products: cart,
+                //     address: address,
+                //     amount: total,
+                //     vendorName: vendor.name,
+                //     group_id: randomAvailableDeliveryPerson.groupid,
+                //     cutleryQuantity,
+                //   }
+                // );
+                axios.put(`https://mazinda.com/api/delivery-boy`, {
+                  deliveryBoyId: randomAvailableDeliveryPerson._id,
+                  groupid: randomAvailableDeliveryPerson.groupid,
+                  orderId: data.order._id,
                   vendorName: vendor.name,
-                  cutleryQuantity,
-                }
-              );
-            } catch (err) {
-              console.log("Error in sending the WhatsApp message", err);
+                  products: cart,
+                  address,
+                  amount: total,
+                });
+              } catch (err) {
+                console.log("Error in sending the WhatsApp message", err);
+              }
             }
           }, 4000);
         }
 
         // clearCart();
 
-        try {
-          await axios.post("https://citikartt.com/api/orderEmail", {
-            vendorName: vendor.name,
-          });
-        } catch (err) {
-          console.log("Error in sending the email", err);
-        }
+        // try {
+        //   await axios.post("https://citikartt.com/api/orderEmail", {
+        //     vendorName: vendor.name,
+        //   });
+        // } catch (err) {
+        //   console.log("Error in sending the email", err);
+        // }
       } else {
         Alert.alert("Failed to place the order. Please try again later.", {
           autoClose: 3000,
@@ -241,11 +267,18 @@ const FoodCheckout = ({ route }) => {
     (async () => {
       try {
         const { data } = await axios.get("https://mazinda.com/api/mode");
-        console.log(data);
+        setMode(data?.mode);
         if (data.mode === "manual") {
+          const { data } = await axios.get(
+            "https://mazinda.com/api/delivery-boy"
+          );
+          if (data.success) {
+            setDeliveryPersons(data.deliveryBoys);
+          }
         }
       } catch (err) {
         console.log("Network Error");
+        console.log(err);
       }
     })();
   }, []);
@@ -308,12 +341,13 @@ const FoodCheckout = ({ route }) => {
         <Text
           style={{
             fontSize: 23,
-            fontWeight: 600,
-            textAlign: "center",
+            fontWeight: 800,
+            // color: "gray",
+            // textAlign: "center",
             marginBottom: 10,
           }}
         >
-          Checkout
+          CHECKOUT
         </Text>
 
         {Object.keys(cart).map((itemName, index) => (
@@ -365,7 +399,8 @@ const FoodCheckout = ({ route }) => {
           </View>
         ))}
 
-        {externalDeliveryRequired && (
+        {/* {externalDeliveryRequired && ( */}
+        {false && (
           <View style={{ marginVertical: 15 }}>
             <Text style={{ fontSize: 17, fontWeight: 500, marginBottom: 5 }}>
               Cutlery Requirement

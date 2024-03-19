@@ -172,7 +172,7 @@ const CartScreen = () => {
       <ScrollView
         style={{
           flex: 1,
-          backgroundColor: "#b7c9e230",
+          backgroundColor: "#b7c9e210",
           paddingTop: 10,
         }}
       >
