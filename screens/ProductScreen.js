@@ -9,18 +9,25 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import Navbar from "../components/Navbar";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, updateCartOnServer } from "../redux/CartReducer";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import CarouselProduct from "../components/utility/CarouselProduct";
 import { ScrollView } from "react-native-virtualized-view";
 import { setAuthModal } from "../redux/BottomModalsReducer";
+import { setAllowLocationChange } from "../redux/OptionsReducer";
+import tw from "tailwind-react-native-classnames";
 
 const ProductScreen = ({ route }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setAllowLocationChange(false));
+  }, []);
+
   const user = useSelector((state) => state.user.user);
   const cart = useSelector((state) => state.cart.cart);
   const userMode = useSelector((state) => state.user.userMode);
@@ -65,8 +72,6 @@ const ProductScreen = ({ route }) => {
 
   const [storeInfo, setStoreInfo] = useState({});
   const [storeProducts, setStoreProducts] = useState([]);
-
-  const dispatch = useDispatch();
 
   const fetchProduct = async (id) => {
     setLoading(true);
@@ -238,28 +243,23 @@ const ProductScreen = ({ route }) => {
       }}
     >
       <View
-        style={{
-          position: "absolute",
-          bottom: 0,
-          right: 0,
-          left: 0,
-          paddingBottom: Platform.OS === "ios" ? 30 : 12,
-          backgroundColor: "white",
-          zIndex: 2,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 6,
-          },
-          shadowOpacity: 0.37,
-          shadowRadius: 7.49,
+        style={[
+          tw`absolute bottom-0 right-0 left-0 py-3 bg-white z-10`,
+          {
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 6,
+            },
+            shadowOpacity: 0.37,
+            shadowRadius: 7.49,
 
-          elevation: 12,
-        }}
+            elevation: 12,
+          },
+        ]}
       >
         <View
           style={{
-            marginTop: 12,
             flexDirection: "row",
             justifyContent: "center",
             gap: 12,
@@ -333,7 +333,7 @@ const ProductScreen = ({ route }) => {
       </View>
       {/* </View> */}
 
-      <Navbar allowLocationChange={false} />
+      {/* <Navbar allowLocationChange={false} /> */}
 
       <ScrollView
         refreshControl={

@@ -30,10 +30,17 @@ import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
 import LocationModal from "../components/modals/LocationModal";
 import TopCarousel from "../components/home/TopCarousel";
+import {
+  setAllowLocationChange,
+  setSearchQuery,
+  setShowSearchBar,
+} from "../redux/OptionsReducer";
+import tw from "tailwind-react-native-classnames";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
   const { width } = useWindowDimensions();
   const currentLocation = useSelector((state) => state.location.location);
   const currentLocationLoading = useSelector(
@@ -122,6 +129,7 @@ const HomeScreen = () => {
   }, [currentLocation]);
 
   if (!locationServiceable) {
+    dispatch(setShowSearchBar(false));
     return (
       <SafeAreaView
         style={{
@@ -129,7 +137,7 @@ const HomeScreen = () => {
           backgroundColor: "white",
         }}
       >
-        <Navbar showSearchBar={false} />
+        {/* <Navbar showSearchBar={false} /> */}
         <View
           style={{
             flex: 1,
@@ -287,10 +295,11 @@ const HomeScreen = () => {
   }
 
   if (currentLocationLoading) {
+    dispatch(setShowSearchBar(false));
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <>
-          <Navbar showSearchBar={false} />
+          {/* <Navbar showSearchBar={false} /> */}
           <View
             style={{
               flex: 1,
@@ -421,10 +430,14 @@ const HomeScreen = () => {
     );
   }
 
+  dispatch(setShowSearchBar(true));
+  dispatch(setAllowLocationChange(true));
+  dispatch(setSearchQuery(""));
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <>
-        <Navbar showSearchBar={isConnected} />
+        {/* <Navbar showSearchBar={isConnected} /> */}
         {isConnected ? (
           <ScrollView>
             <Story />
@@ -487,25 +500,23 @@ const HomeScreen = () => {
               <Categories />
             </View>
 
-            <View style={{ padding: 10 }}>
+            <View style={[tw`p-3`, { gap: 12 }]}>
               <Text
                 style={{
                   fontSize: 16,
                   fontWeight: 800,
-                  marginBottom: 15,
+                  // marginBottom: 15,
                 }}
               >
                 TOP DEALS
               </Text>
-              <HorizontalProductList filter={"top-deal"} />
-            </View>
 
-            <View style={{ padding: 10 }}>
+              <HorizontalProductList filter={"top-deal"} />
               <Text
                 style={{
                   fontSize: 16,
                   fontWeight: 800,
-                  marginBottom: 15,
+                  // marginBottom: 15,
                 }}
               >
                 TRENDING PRODUCTS

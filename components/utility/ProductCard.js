@@ -4,6 +4,7 @@ import {
   MaterialCommunityIcons,
   Feather,
 } from "@expo/vector-icons";
+import tw from "tailwind-react-native-classnames";
 
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,30 +34,28 @@ const ProductCard = ({ item, showShadows = true }) => {
         navigation.navigate("Product", { item });
       }}
       style={[
+        tw`border border-gray-200 rounded-lg`,
         {
           flex: 1,
           padding: 10,
           position: "relative",
           backgroundColor: "white",
-          borderTopRightRadius: 3,
-          borderBottomRightRadius: 3,
-          borderBottomLeftRadius: 3,
         },
-        showShadows && {
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 1,
-          },
-          shadowOpacity: 0.22,
-          shadowRadius: 2.22,
+        // showShadows && {
+        //   shadowColor: "#000",
+        //   shadowOffset: {
+        //     width: 0,
+        //     height: 1,
+        //   },
+        //   shadowOpacity: 0.22,
+        //   shadowRadius: 2.22,
 
-          elevation: 3,
-        },
-        !showShadows && {
-          borderColor: "#f5f5f5",
-          borderWidth: 1,
-        },
+        //   elevation: 3,
+        // },
+        // !showShadows && {
+        //   borderColor: "#f5f5f5",
+        //   borderWidth: 1,
+        // },
       ]}
     >
       {!(item.pricing.mrp === item.pricing.salesPrice) ? (

@@ -13,9 +13,16 @@ import axios from "axios";
 import { FlatList } from "react-native";
 import { ScrollView } from "react-native-virtualized-view";
 import { useNavigation } from "@react-navigation/native";
+import tw from "tailwind-react-native-classnames";
+import { useDispatch } from "react-redux";
+import {
+  setAllowLocationChange,
+  setShowSearchBar,
+} from "../redux/OptionsReducer";
 
 const CategoriesScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const { width } = useWindowDimensions();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +31,7 @@ const CategoriesScreen = () => {
     <TouchableOpacity
       onPress={() =>
         navigation.navigate("Category", {
-          categoryName: item.categoryName,
+          category_id: item._id,
         })
       }
       style={{
@@ -77,6 +84,11 @@ const CategoriesScreen = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    dispatch(setAllowLocationChange(true));
+    dispatch(setShowSearchBar(true));
+  }, []);
+
   if (loading) {
     return (
       <SafeAreaView
@@ -100,40 +112,26 @@ const CategoriesScreen = () => {
   }
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-      }}
-    >
+    <SafeAreaView style={tw`bg-white h-full`}>
       <Navbar />
       <ScrollView>
-        <View
-          style={{
-            marginTop: 17,
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 27,
-              textAlign: "center",
-              marginBottom: 20,
-            }}
-          >
-            Browse Categories
+        <View>
+          <Text style={tw`font-extrabold text-xl px-8 py-4`}>
+            BROWSE CATEGORIES
           </Text>
 
-          <FlatList
-            gap={25}
-            numColumns={3}
-            keyExtractor={(item) => item._id}
-            data={categories}
-            renderItem={({ item }) => renderCategory(item)}
-            style={{
-              marginVertical: 10,
-            }}
-          />
+          <View style={tw`items-center`}>
+            <FlatList
+              gap={25}
+              numColumns={3}
+              keyExtractor={(item) => item._id}
+              data={categories}
+              renderItem={({ item }) => renderCategory(item)}
+              style={{
+                marginVertical: 10,
+              }}
+            />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

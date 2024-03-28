@@ -9,6 +9,7 @@ import ProductCard from "../utility/ProductCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import tw from "tailwind-react-native-classnames";
 
 const HorizontalProductList = ({ filter }) => {
   const { width } = useWindowDimensions();
@@ -80,7 +81,11 @@ const HorizontalProductList = ({ filter }) => {
   }
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <ScrollView
+      style={tw`pb-2`}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+    >
       {products.map((item) => (
         <View
           key={item._id}

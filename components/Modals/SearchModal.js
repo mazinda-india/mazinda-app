@@ -9,6 +9,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setSearchQuery } from "../../redux/OptionsReducer";
 
 const SearchModal = ({
   existingSearchQuery,
@@ -16,13 +18,15 @@ const SearchModal = ({
   setSearchModalVisible,
 }) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-  const [searchQuery, setSearchQuery] = useState(
+  const [query, setQuery] = useState(
     existingSearchQuery ? existingSearchQuery : ""
   );
 
   const handleSearch = async () => {
-    navigation.navigate("Search", { searchQuery });
+    dispatch(setSearchQuery(query));
+    navigation.navigate("Search");
     setSearchModalVisible(false);
   };
 
@@ -52,8 +56,8 @@ const SearchModal = ({
           <TextInput
             autoCorrect={false}
             placeholder="Enter Here"
-            value={searchQuery}
-            onChangeText={(text) => setSearchQuery(text)}
+            value={query}
+            onChangeText={(text) => setQuery(text)}
             returnKeyType="search"
             autoFocus={true}
             style={{

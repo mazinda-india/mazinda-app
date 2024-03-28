@@ -9,31 +9,38 @@ import {
   Linking,
 } from "react-native";
 
-import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "../components/utility/ProductCard";
 import { useToast } from "react-native-toast-notifications";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { setSearchQuery } from "../redux/OptionsReducer";
 
-const SearchScreen = ({ route }) => {
+const SearchScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const toast = useToast();
   const user = useSelector((state) => state.user.user);
   const userMode = useSelector((state) => state.user.userMode);
 
   const userLoggedIn = user && Object.keys(user).length;
 
-  const { searchQuery } = route.params;
+  const searchQuery = useSelector((state) => state.options.searchQuery);
   const currentLocation = useSelector((state) => state.location.location);
   const [loading, setLoading] = useState(true);
   const [querySubmitLoading, setQuerySubmitLoading] = useState(false);
 
   const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setSearchQuery(""));
+    };
+  }, [navigation]);
 
   useEffect(() => {
     (async () => {
@@ -119,7 +126,7 @@ const SearchScreen = ({ route }) => {
           backgroundColor: "white",
         }}
       >
-        <Navbar searchQuery={searchQuery} />
+        {/* <Navbar searchQuery={searchQuery} /> */}
 
         <View
           style={{
@@ -136,7 +143,7 @@ const SearchScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <Navbar searchQuery={searchQuery} />
+      {/* <Navbar searchQuery={searchQuery} /> */}
 
       {currentLocation._id === "655f1b9f9f019ff01503fc7b" ? (
         <Pressable

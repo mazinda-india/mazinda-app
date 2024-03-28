@@ -1,4 +1,11 @@
-import { Image, Pressable, Text, View, Platform } from "react-native";
+import {
+  Image,
+  Pressable,
+  Text,
+  View,
+  Platform,
+  SafeAreaView,
+} from "react-native";
 import MazindaLogo from "../assets/logo/logo_mazinda_full.png";
 import BusinessLogo from "../assets/logo/business_logo.png";
 import {
@@ -13,12 +20,15 @@ import LocationModal from "./modals/LocationModal";
 import SearchModal from "./modals/SearchModal";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
+import tw from "tailwind-react-native-classnames";
 
-const Navbar = ({
-  searchQuery,
-  showSearchBar = true,
-  allowLocationChange = true,
-}) => {
+const Navbar = () => {
+  let searchQuery = useSelector((state) => state.options.searchQuery);
+  let showSearchBar = useSelector((state) => state.options.showSearchBar);
+  let allowLocationChange = useSelector(
+    (state) => state.options.allowLocationChange
+  );
+
   const [locationsModalVisible, setLocationsModalVisible] = useState(false);
   const [searchModalVisible, setSearchModalVisible] = useState(false);
 
@@ -31,12 +41,7 @@ const Navbar = ({
   const navigation = useNavigation();
 
   return (
-    <View
-      style={{
-        paddingTop: 8,
-        paddingBottom: 10,
-      }}
-    >
+    <SafeAreaView style={tw`bg-white flex`}>
       <LocationModal
         locationsModalVisible={locationsModalVisible}
         setLocationsModalVisible={setLocationsModalVisible}
@@ -154,6 +159,7 @@ const Navbar = ({
               flexDirection: "row",
               alignItems: "center",
               gap: 8,
+              marginBottom: 5,
               width: searchQuery ? "86%" : "95%",
             }}
           >
@@ -169,7 +175,7 @@ const Navbar = ({
           </Pressable>
         </View>
       ) : null}
-    </View>
+    </SafeAreaView>
   );
 };
 

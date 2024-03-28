@@ -74,7 +74,7 @@ const CategoryScreen = ({ route }) => {
           backgroundColor: "white",
         }}
       >
-        <Navbar />
+        {/* <Navbar /> */}
 
         <View
           style={{
@@ -91,7 +91,7 @@ const CategoryScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <Navbar />
+      {/* <Navbar /> */}
 
       {products && products.length ? (
         <>
@@ -100,7 +100,7 @@ const CategoryScreen = ({ route }) => {
               textAlign: "center",
               fontSize: 19,
               marginVertical: 10,
-              fontWeight: "600", // fontWeight should be a string
+              fontWeight: "600",
               color: "gray",
             }}
           >

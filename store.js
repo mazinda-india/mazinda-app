@@ -4,6 +4,7 @@ import UserReducer from "./redux/UserReducer";
 import StoryReducer from "./redux/StoryReducer";
 import LocationReducer from "./redux/LocationReducer";
 import BottomModalsReducer from "./redux/BottomModalsReducer";
+import OptionsReducer from "./redux/OptionsReducer";
 
 export default configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export default configureStore({
     location: LocationReducer,
     stories: StoryReducer,
     bottomSheetModal: BottomModalsReducer,
+    options: OptionsReducer,
   },
 });

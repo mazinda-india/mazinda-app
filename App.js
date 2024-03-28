@@ -1,71 +1,18 @@
-import StackNavigator from "./navigation/StackNavigator";
 import { Provider } from "react-redux";
-import store from "./store";
 import { ModalPortal } from "react-native-modals";
 import { ToastProvider } from "react-native-toast-notifications";
-// import * as Updates from "expo-updates";
-// import { useEffect } from "react";
-// import { Alert, Linking } from "react-native";
-// import axios from "axios";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AuthModal from "./components/modals/auth/AuthModal";
-
-//       light blue gray : "#b7c9e230",
+import store from "./store";
+import Router from "./navigation/Router";
 
 export default function App() {
-  // async function onFetchUpdateAsync() {
-  //   try {
-  //     const update = await Updates.checkForUpdateAsync();
-
-  //     if (update.isAvailable) {
-  //       await Updates.fetchUpdateAsync();
-  //       await Updates.reloadAsync();
-  //     }
-  //   } catch (error) {
-  //     // You can also add an alert() to see the error message in case of an error when fetching updates.
-  //     alert(`Error fetching latest Expo update: ${error}`);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   onFetchUpdateAsync();
-  // }, []);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const { data } = await axios.get(
-  //         "https://mazinda.com/api/fetch-app-version"
-  //       );
-
-  //       if (data.app_version > 2) {
-  //         Alert.alert(
-  //           "App Update Available",
-  //           "A new version of Mazinda is available\nKindly update the app for latest features and bug fixes",
-  //           [
-  //             {
-  //               text: "Update Now",
-  //               onPress: () =>
-  //                 Linking.openURL(
-  //                   "https://play.google.com/store/apps/details?id=com.abhey_gupta.MazindaApp"
-  //                 ),
-  //             },
-  //             { text: "Later", style: "cancel" },
-  //           ]
-  //         );
-  //       }
-  //     } catch (err) {
-  //       Alert.alert(`Oops, a network error occurred`);
-  //     }
-  //   })();
-  // }, []);
-
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ToastProvider>
           <Provider store={store}>
-            <StackNavigator />
+            <Router />
             <ModalPortal />
             <AuthModal />
           </Provider>

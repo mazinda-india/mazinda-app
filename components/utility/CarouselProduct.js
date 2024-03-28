@@ -82,7 +82,7 @@ const CarouselProduct = ({ image_paths, showDotsIndicator = true }) => {
     <View>
       <FlatList
         data={image_paths}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item, index) => index}
         renderItem={renderItem}
         onScroll={handleScroll}
         horizontal

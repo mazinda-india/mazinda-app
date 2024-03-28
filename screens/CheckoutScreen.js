@@ -20,6 +20,10 @@ import Overview from "../components/checkout/Overview";
 import Address from "../components/checkout/Address";
 import Payment from "../components/checkout/Payment";
 import PlaceOrder from "../components/checkout/PlaceOrder";
+import {
+  setAllowLocationChange,
+  setShowSearchBar,
+} from "../redux/OptionsReducer";
 
 const CheckoutScreen = ({ route }) => {
   const { cart } = route.params;
@@ -209,6 +213,11 @@ const CheckoutScreen = ({ route }) => {
       setOrderPlacing(false);
     }
   };
+
+  useEffect(() => {
+    dispatch(setAllowLocationChange(false));
+    dispatch(setShowSearchBar(false));
+  }, []);
 
   return (
     <SafeAreaView

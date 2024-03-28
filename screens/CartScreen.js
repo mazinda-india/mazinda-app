@@ -22,6 +22,10 @@ import {
   updateCartOnServer,
 } from "../redux/CartReducer";
 import AuthModal from "../components/modals/auth/AuthModal";
+import {
+  setAllowLocationChange,
+  setShowSearchBar,
+} from "../redux/OptionsReducer";
 
 const CartScreen = () => {
   // const toast = useToast();
@@ -95,6 +99,11 @@ const CartScreen = () => {
       navigation.navigate("Checkout", { cart });
     }
   }, [isLoggedIn, continueClicked]);
+
+  useEffect(() => {
+    dispatch(setAllowLocationChange(false));
+    dispatch(setShowSearchBar(true));
+  }, []);
 
   if (itemDataLoading) {
     return (
@@ -383,7 +392,7 @@ const CartScreen = () => {
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: Platform.OS === "ios" ? 15 : 10,
+          paddingVertical: 12,
           backgroundColor: "white",
           position: "absolute",
           bottom: 0,
@@ -413,7 +422,6 @@ const CartScreen = () => {
             paddingVertical: 10,
             paddingHorizontal: 20,
             borderRadius: 7,
-            marginBottom: 20,
             width: "90%",
           }}
         >
